@@ -4,7 +4,7 @@ from django.utils.timezone import now
 # Create your models here.
 
 class Author(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True)
     host = models.CharField(max_length=200)
     displayName = models.CharField(max_length=200)
     url = models.CharField(max_length=200)
@@ -36,8 +36,10 @@ class Post(models.Model):
         ("PUBLIC","PUBLIC"),
         ("FRIENDS","FRIENDS")
     )
+    # The type should be constant
+    type = models.CharField(default="Post", editable=False)
     #id, the primary key
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True)
     #title of the post
     title = models.CharField(max_length=200)
     #type of post
@@ -63,6 +65,10 @@ class Post(models.Model):
     def get_id(self):
         return self.id
     
+    #returns number of likes on the post
+    def num_likes(self):
+        return self.count_likes
+    
 
 
 class Comment(models.Model):
@@ -72,8 +78,10 @@ class Comment(models.Model):
         ('text/plain','text/plain')
     )
 
+    # The type should be constant
+    type = models.CharField(default="Comment", editable=False)
     #id, the primary key
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True)
     #post where comment posted
     post = models.ForeignKey(Post,related_name='comments')
     #author of the comment
@@ -85,19 +93,55 @@ class Comment(models.Model):
     #date comment was published
     published_date = models.DateTimeField('date published', default=now)
     
-
+    def get_id(self):
+        return self.id
 
 
 class Like(models.Model):
+
+    TYPE = (
+        ('post','post'),
+        ('comment','comment')
+    )
+    # The type should be constant
+    type = models.CharField(default="Like", editable=False)
     #id, the primary key
-    id = models.AutoField(primary_key=True)
-    #post where comment posted
-    post = models.ForeignKey(Post,related_name='comments')
+    id = models.UUIDField(primary_key=True)
     #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
+    #url of object which is being liked
+    object_summary = models.URLField(null=True,editable=False)
+    #summary of the 
+    summary_type = models.CharField(null=True,choices=TYPE)
     #date comment was published
     published_date = models.DateTimeField('date published', default=now)
 
+
+    def get_id(self):
+        return self.id
+    
+    def summary(self):
+        return self.author + "Likes your" + self.summary_type
+
+
+
 class Inbox(models.Model):
-    pass
+
+    TYPE = (
+        ('post','post'),
+        ("comment","comment"),
+        ('like','like'),
+        ("follow","follow")
+    )
+    
+    # The type should be constant
+    type = models.CharField(default="inbox", editable=False)
+    #id
+    id = models.UUIDField(primary_key=True,null=True)
+    #type of object selected
+    object_type = models.CharField(null=True,choices=TYPE)
+    #date something came in Inbox
+    published_date = models.DateTimeField('date published', default=now)
+
+
 
