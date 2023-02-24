@@ -10,7 +10,7 @@ class Author(models.Model):
     url = models.CharField(max_length=200)
     github = models.CharField(max_length=200)
     #added this -Harsh
-    profile_image = models.URLField(max_length=200, blank=True,null=True,default="")
+    profile_image = models.ImageField(upload_to='profile_images',null=True,default='blank_profile.png')
 
     #returns id of the author
     def get_id(self):
