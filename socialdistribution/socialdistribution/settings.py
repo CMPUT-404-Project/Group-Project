@@ -75,12 +75,22 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+# C:\CMPUT 404\GROUP-PROJECT\Group-Project\socialdistribution>python manage.py createsuperuser
+# Username (leave blank to use 'harshpatel'): globaluser
+# Email address: globaluser@gmail.com
+# Password:globalpassword
+# Password (again):globalpassword
+# Superuser created successfully.
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db_socialdistribution',
         'USER': 'globaluser',
         'PASSWORD': 'globalpassword',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
