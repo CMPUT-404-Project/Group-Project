@@ -37,7 +37,7 @@ class Post(models.Model):
         ("FRIENDS","FRIENDS")
     )
     # The type should be constant
-    type = models.CharField(default="Post", editable=False)
+    type = models.CharField(max_length=200,default="Post", editable=False)
     #id, the primary key
     id = models.UUIDField(primary_key=True)
     #title of the post
@@ -56,7 +56,7 @@ class Post(models.Model):
     #time post was published
     published_time = models.DateTimeField('date published',default=now)
     #visibility of the post
-    visibility = models.CharField(choices=VISIBILITY, default='PUBLIC')
+    visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
     
     def __str__(self):
         return self.title + "(" + str(self.id) + ")"
@@ -79,11 +79,11 @@ class Comment(models.Model):
     )
 
     # The type should be constant
-    type = models.CharField(default="Comment", editable=False)
+    type = models.CharField(max_length=200,default="Comment", editable=False)
     #id, the primary key
     id = models.UUIDField(primary_key=True)
     #post where comment posted
-    post = models.ForeignKey(Post,related_name='comments')
+    post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
     #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     #content type of the comment
@@ -105,7 +105,7 @@ class Like(models.Model):
         ('comment','comment')
     )
     # The type should be constant
-    type = models.CharField(default="Like", editable=False)
+    type = models.CharField(max_length=200,default="Like", editable=False)
     #id, the primary key
     id = models.UUIDField(primary_key=True)
     #author of the comment
@@ -113,7 +113,7 @@ class Like(models.Model):
     #url of object which is being liked
     object_summary = models.URLField(null=True,editable=False)
     #summary of the 
-    summary_type = models.CharField(null=True,choices=TYPE)
+    summary_type = models.CharField(max_length=250,null=True,choices=TYPE)
     #date comment was published
     published_date = models.DateTimeField('date published', default=now)
 
@@ -136,11 +136,11 @@ class Inbox(models.Model):
     )
     
     # The type should be constant
-    type = models.CharField(default="inbox", editable=False)
+    type = models.CharField(max_length=200,default="inbox", editable=False)
     #id
-    id = models.UUIDField(primary_key=True,null=True)
+    id = models.UUIDField(primary_key=True)
     #type of object selected
-    object_type = models.CharField(null=True,choices=TYPE)
+    object_type = models.CharField(max_length=250,null=True,choices=TYPE)
     #date something came in Inbox
     published_date = models.DateTimeField('date published', default=now)
 
