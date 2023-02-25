@@ -96,6 +96,7 @@ class Comment(models.Model):
     def get_id(self):
         return self.id
 
+#
 
 class Like(models.Model):
 
