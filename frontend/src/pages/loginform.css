@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "CustomFont";
+}
+
+@font-face {
+    font-family: "CustomFont";
+    src: url("../fonts/RolexLight.woff2");
+}
+
+
+.cover {
+    background-color: white;
+    width: 25%;
+    height: 65%;
+    position: relative;
+    border-radius: 1em;
+    box-shadow: 0 0.188em 1.550em rgb(156, 156, 156);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+input {
+    border: none;
+    background-color: rgb(229, 226, 226);
+    width: 80%;
+    border-radius: 0.25em;
+    text-align: center;
+    padding: 2em;
+    font-size: 0.75em;
+}
+
+input:focus {
+    outline-color: rgb(32, 177, 255);
+}
+
+.login-btn {
+    width: 40%;
+    height: 3em;
+    background-color: rgb(32, 177, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    border-radius: 0.25em;
+    cursor: pointer;
+}
+
+.login-btn:hover { transform: scale(1.25);}
+
+
+

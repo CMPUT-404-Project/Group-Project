@@ -3,6 +3,7 @@ import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Login_form from './pages/loginform';
 
 function App() {
   return (
