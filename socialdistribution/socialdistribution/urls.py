@@ -20,6 +20,6 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors', include('authors.urls')),
-    path('posts', include('posts.urls')),
+    #path('posts', include('posts.urls')),
     path('inbox', include('inbox.urls')),
 ]
