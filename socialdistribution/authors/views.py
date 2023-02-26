@@ -15,13 +15,14 @@ class AuthorList(APIView):
         serializer = AuthorSerializer(query_set, many=True)
         return Response({"type": "authors", "items": serializer.data}, status=status.HTTP_200_OK)
 
-    def post(self, request): #Do we need post?
-        author_data = request.data
-        serializer = AuthorSerializer(data=author_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    #I do not think we need post
+    # def post(self, request): #Do we need post?
+    #     author_data = request.data
+    #     serializer = AuthorSerializer(data=author_data)
+    #     if serializer.is_valid():
+    #         saved = serializer.save()
+    #         return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
+    #     return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class AuthorDetail(APIView):
     def get(self, request, id):
@@ -38,10 +39,10 @@ class AuthorDetail(APIView):
             return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
         return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    # def delete(self, request, id):
-    #     author_object = get_object_or_404(Author, id=id)
-    #     author_object.delete()
-    #     return Response({"type": "success", "message": "Author deleted"}, status=status.HTTP_200_OK)
+    def delete(self, request, id):
+        author_object = get_object_or_404(Author, id=id)
+        author_object.delete()
+        return Response({"type": "success", "message": "Author deleted"}, status=status.HTTP_200_OK)
 
 
 class FollowersList(APIView):
