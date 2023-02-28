@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'home',
+    'authors',
+    'posts',
+    'inbox',
 ]
 
 MIDDLEWARE = [
@@ -75,12 +78,22 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+# C:\CMPUT 404\GROUP-PROJECT\Group-Project\socialdistribution>python manage.py createsuperuser
+# Username (leave blank to use 'harshpatel'): globaluser
+# Email address: globaluser@gmail.com
+# Password:globalpassword
+# Password (again):globalpassword
+# Superuser created successfully.
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db_socialdistribution',
         'USER': 'globaluser',
         'PASSWORD': 'globalpassword',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
@@ -125,3 +138,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#these 2 are for the images we upload for profile image for author which will be in media folder
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
