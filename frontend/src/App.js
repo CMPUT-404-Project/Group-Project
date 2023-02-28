@@ -1,9 +1,11 @@
+
 import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Post from './components/Post';
 import PostSubmit from './components/PostSubmit';
 import Navigation from './components/Navigation';
+import {submitPost, likeData, getPosts} from './Logic';
 
 var post = {
   "type":"post",
@@ -122,7 +124,7 @@ function App() {
       <br /> <br />
 
       <div id="create-post">
-        <PostSubmit />
+        <PostSubmit submitAction={submitPost}/>
       </div>
 
       <div id="posts-section">
