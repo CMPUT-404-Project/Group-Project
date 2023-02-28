@@ -44,7 +44,7 @@ function PostSubmit(props) {
                     <Form.Control type="text" placeholder="content" />
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
+                <Button variant="primary" type="submit" onClick={() => props.submitAction("Hello")}>
                     Submit
                 </Button>
             </Form>
