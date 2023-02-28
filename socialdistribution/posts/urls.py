@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     #posts
     path('', views.PostList.as_view()),
-    path('<uuid:id>', views.PostDetail.as_view()),
+    path('/<uuid:id>', views.PostDetail.as_view()),
     #Comments
     path('<uuid:id>/comments/',views.CommentList.as_view()),
     #the second id is the id of specific comment
