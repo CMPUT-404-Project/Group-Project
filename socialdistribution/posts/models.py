@@ -62,7 +62,7 @@ class Comment(models.Model):
     # The type should be constant
     type = models.CharField(max_length=200,default="Comment", editable=False)
     #id, the primary key
-    id = models.UUIDField(primary_key=True)
+    comment_id = models.UUIDField(primary_key=True)
     #post where comment posted
     post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
     #author of the comment
@@ -86,7 +86,7 @@ class Like(models.Model):
     # The type should be constant
     type = models.CharField(max_length=200,default="Like", editable=False)
     #id, the primary key
-    id = models.UUIDField(primary_key=True)
+    like_id = models.UUIDField(primary_key=True)
     #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     #url of object which is being liked

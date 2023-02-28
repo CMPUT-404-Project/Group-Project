@@ -4,7 +4,7 @@ import uuid
 
 # Create your models here.
 class Author(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
     displayName = models.CharField(max_length=200)
@@ -14,7 +14,7 @@ class Author(models.Model):
 
     #returns id of the author
     def get_id(self):
-        return self.id
+        return self.id 
     
     def __str__(self):
         return str(self.displayName) + '-' + str(self.id)
@@ -25,10 +25,10 @@ class Followers(models.Model):
     followers = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='followers', editable=False)
     
     def __str__(self):
-        return str(self.author) + '-' + str(self.id)
+        return str(self.author) + '-' + str(self.followers_id)
 
 class FollowRequest(models.Model):
-    id = models.UUIDField(primary_key=True)
+    id  = models.UUIDField(primary_key=True)
     summary = models.CharField(max_length=200)
     type = models.CharField(max_length=20,default="Follow", editable=False)
     actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor')
