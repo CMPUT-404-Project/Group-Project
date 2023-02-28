@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
 import ListGroup from 'react-bootstrap/ListGroup';
+import PostModal from './PostModal';
 
 function Post(props) {
     
@@ -19,7 +20,8 @@ function Post(props) {
               {props.postObject.content}
             </Card.Text>
             {/* implement the onclick for the view comments */}
-            <Button variant="secondary">View Comments</Button>
+            {/* <Button variant="secondary" onClick={() => alert("View Comments")}>View Comments</Button> */}
+            <PostModal postContent={props.postObject}/>
           </Card.Body>
 
           <ListGroup variant="flush">
