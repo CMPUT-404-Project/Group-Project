@@ -45,16 +45,17 @@ function PostSubmit(props) {
                 </Form.Group>
 
 
-                <Button variant="primary" type="submit" onClick={() => props.submitAction("Hello")}>
-                    Submit
-                </Button>
+                
             </Form>
 
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
+            <Button variant="primary" type="submit" onClick={() => props.submitAction("Hello")}>
+              Submit
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
         </Modal.Footer>
       </Modal>
     </>
