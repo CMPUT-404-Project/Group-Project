@@ -4,10 +4,11 @@ import uuid
 
 # Create your models here.
 class Author(models.Model):
+    # user_name = models.CharField(unique=True)
     id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
-    displayName = models.CharField(max_length=200)
+    displayName = models.CharField(max_length=200,unique=True)
     url = models.CharField(max_length=200)
     github = models.CharField(max_length=200)
     profile_image = models.ImageField(upload_to='profile_images',null=True,default='blank_profile.png')
