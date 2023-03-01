@@ -6,7 +6,46 @@ from rest_framework.views import APIView
 
 from .models import Author, Followers, FollowRequest
 from .serializers import AuthorSerializer, FollowRequestSerializer
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
 # Create your views here.
+from .forms import AuthorForm
+from django.contrib import messages
+
+def signup(request):
+    if request.method == 'POST':
+        form = AuthorForm(request.POST)
+        if form.is_valid():
+            author = form.save(commit=False)
+            author.set_password(form.cleaned_data['password'])
+            author.save()
+            return redirect('user_login')
+    else:
+        form = AuthorForm()
+    return render(request, 'signup.html', {'form': form})
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from .forms import LoginForm
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('list')
+            else:
+                messages.error(request, 'Invalid username or password.')
+    else:
+        form = LoginForm()
+
+    return render(request, 'login.html', {'form': form})
+
 
 
 class AuthorList(APIView):
