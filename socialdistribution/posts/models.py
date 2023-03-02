@@ -29,6 +29,10 @@ class Post(models.Model):
     content_type = models.CharField(max_length=150,choices=CONTENT_TYPE,default='text/plain')
     #content of the post
     content = models.TextField(blank=True,null=True)
+
+    #uploading an image
+    image =  models.ImageField(upload_to='post_images')
+
     #caption of the post
     caption = models.CharField(max_length=300,blank=True,null=True)
     #author of the post

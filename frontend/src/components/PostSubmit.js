@@ -6,6 +6,12 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
+
+{/* <input type="file" 
+name="image_url"
+accept="image/jpeg,image/png,image/gif"
+onChange={(e) => {handleImageChange(e)}}/> */}
+
 function PostSubmit(props) {
   const [show, setShow] = useState(false);
 

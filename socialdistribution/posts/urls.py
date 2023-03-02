@@ -4,6 +4,11 @@ from . import views
 urlpatterns = [
     #posts
     path('', views.PostList.as_view()),
+
+    #testing something here
+    #path('posts/', views.PostList.as_view(), name= 'posts_list'),
+
+
     path('/<uuid:id>', views.PostDetail.as_view()),
     #Comments
     path('<uuid:id>/comments/',views.CommentList.as_view()),
@@ -13,5 +18,8 @@ urlpatterns = [
     path('<uuid:id>/likes/',views.LikeList.as_view()),
     #second id referes to specific like
     path('<uuid:id>/likes/<uuid:like_id>',views.LikeDetail.as_view()),
+
+
+    
 ]
 
