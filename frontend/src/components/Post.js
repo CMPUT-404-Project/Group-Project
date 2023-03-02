@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import PostModal from './PostModal';
+import PostEdit from './PostEdit';
 
 function Post(props) {
     
@@ -21,6 +22,7 @@ function Post(props) {
             </Card.Text>
             {/* implement the onclick for the view comments */}
             <PostModal postContent={props.postObject}/>
+            <PostEdit postContent={props.postObject} setPostItems={props.setPostItems}/>
           </Card.Body>
 
           <ListGroup variant="flush">
