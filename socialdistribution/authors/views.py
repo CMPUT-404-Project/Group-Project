@@ -10,20 +10,44 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 # Create your views here.
-from .forms import AuthorForm
+
 from django.contrib import messages
+
+from django.shortcuts import render, redirect
+from .forms import AuthorSignupForm
+from .models import Author
 
 def signup(request):
     if request.method == 'POST':
-        form = AuthorForm(request.POST)
+        form = AuthorSignupForm(request.POST)
         if form.is_valid():
-            author = form.save(commit=False)
-            author.save()
+            form.save()
+            print(form.cleaned_data)
             return redirect('list')
     else:
-        form = AuthorForm()
+        form = AuthorSignupForm()
     return render(request, 'signup.html', {'form': form})
 
+
+from django.contrib.auth import authenticate, login
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # Authentication successful
+            login(request, user)
+            author = user.author
+            # Do something with the author instance
+            return redirect('list')
+        else:
+            # Authentication failed
+            return render(request, 'login.html', {'error': 'Invalid username or password'})
+    else:
+        # Display login form
+        return render(request, 'login.html')
 
 class AuthorList(APIView):
     def get(self, request):
