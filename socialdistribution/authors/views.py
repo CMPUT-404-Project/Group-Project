@@ -31,23 +31,28 @@ def signup(request):
 
 from django.contrib.auth import authenticate, login
 
+from .forms import UserLoginForm
+
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            # Authentication successful
-            login(request, user)
-            author = user.author
-            # Do something with the author instance
-            return redirect('list')
-        else:
-            # Authentication failed
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
+        form = UserLoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                # Authentication successful
+                login(request, user)
+                #author = user.author
+                # Do something with the author instance
+                return redirect('list')
+            else:
+                # Authentication failed
+                return render(request, 'login.html', {'form': form, 'error': 'Invalid email or password'})
     else:
         # Display login form
-        return render(request, 'login.html')
+        form = UserLoginForm()
+    return render(request, 'login.html', {'form': form})
 
 class AuthorList(APIView):
     def get(self, request):

@@ -23,10 +23,10 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    host = models.CharField(max_length=200)
-    displayName = models.CharField(max_length=200)
-    url = models.CharField(max_length=200)
-    github = models.CharField(max_length=200)
+    # host = models.CharField(max_length=200)
+    # displayName = models.CharField(max_length=200)
+    # url = models.CharField(max_length=200)
+    # github = models.CharField(max_length=200)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
