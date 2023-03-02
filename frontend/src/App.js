@@ -18,9 +18,10 @@ function App() {
   useEffect(() => {
     // Update the document title using the browser API
     console.log('hello')
-    axios.get('http://127.0.0.1:8000/authors/' + userID + '/posts').then(res => {
+    if (userID !== ''){
+      axios.get('http://127.0.0.1:8000/authors/' + userID + '/posts').then(res => {
       setPostItems(res.data.items)
-    })
+    })}
   }, [userID]);
   const postItemComponents = postItems.map((onePost) => 
     <Post postObject={onePost} key={onePost.id} />
