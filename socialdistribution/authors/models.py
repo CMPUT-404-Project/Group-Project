@@ -18,7 +18,7 @@ class UserAccountManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser):
-    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=50, unique=True)
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -28,7 +28,7 @@ class User(AbstractBaseUser):
     # url = models.CharField(max_length=200)
     # github = models.CharField(max_length=200)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
     objects = UserAccountManager()

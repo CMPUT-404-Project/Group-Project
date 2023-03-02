@@ -12,7 +12,7 @@ class AuthorSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['email', 'password1', 'password2', 'host', 'displayName', 'url', 'github']
+        fields = ['username', 'password1', 'password2', 'host', 'displayName', 'url', 'github']
 
     def save(self, commit=True):
         user = super(AuthorSignupForm, self).save(commit=False)
@@ -28,11 +28,10 @@ class AuthorSignupForm(UserCreationForm):
 
 class UserLoginForm(AuthenticationForm):
     
-    email = forms.EmailField(label="Email")
 
     class Meta:
         model = User
-        fields = ['email', 'password']
+        fields = ['username', 'password']
 
 
         
