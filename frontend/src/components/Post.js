@@ -20,18 +20,17 @@ function Post(props) {
               {props.postObject.content}
             </Card.Text>
             {/* implement the onclick for the view comments */}
-            {/* <Button variant="secondary" onClick={() => alert("View Comments")}>View Comments</Button> */}
-            {/* <PostModal postContent={props.postObject}/> */}
+            <PostModal postContent={props.postObject}/>
           </Card.Body>
 
-          {/* <ListGroup variant="flush">
+          <ListGroup variant="flush">
             <ListGroup.Item>
                 <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" />
                 <Card.Link href={props.postObject.author.url}>{props.postObject.author.displayName}</Card.Link>
                 |
                 <Card.Link href={props.postObject.author.github}>Github</Card.Link>
             </ListGroup.Item>
-        </ListGroup> */}
+        </ListGroup>
 
           
           
