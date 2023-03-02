@@ -15,6 +15,7 @@ function PostSubmit(props) {
     setContactInfo({
       postTitle: "",
       postContent: "",
+      postID: "",
     })
     setShow(false)
   }
@@ -22,24 +23,34 @@ function PostSubmit(props) {
   const [contactInfo, setContactInfo] = useState({
     postTitle: "",
     postContent: "",
+    postID: "",
   });
 
   const onChangeHandler = (event) => {
     setContactInfo({ ...contactInfo, [event.target.name]: event.target.value });
-    console.log(contactInfo);
   };
 
   const submitPost = () => {
     // do something with the postTitle and postContent variables
     // send the appropriate axios method
     // props.userID will contain the user's ID
-    axios.post('http://127.0.0.1:8000/post', {
-      author: props.userID,
+    axios.post('http://127.0.0.1:8000/authors/' + props.userID + '/posts', {
+      type: "Post",
       title: contactInfo.postTitle,
-      content: contactInfo.postContent
+      id: contactInfo.postID,
+      content_type: "text/plain",
+      content: contactInfo.postContent,
+      caption: null,
+      author: props.userID,
+      count_likes: 0,
+      // published_time: "2023-03-01T03:51:19Z",
+      visibility: "PUBLIC",
     })
     .then(function (response) {
-      console.log(response);
+      axios.get('http://127.0.0.1:8000/authors/' + props.userID + '/posts').then(res => {
+      props.setPostItems(res.data.items)
+      handleClose();
+      })
     })
   };
 
@@ -58,6 +69,12 @@ function PostSubmit(props) {
                 <Form.Group className="mb-3" controlId="postTitle">
                     <Form.Label>Post Title</Form.Label>
                     <Form.Control type="text" placeholder="Title" name="postTitle" value={contactInfo.postTitle} onChange={onChangeHandler}/>
+                </Form.Group>
+
+                
+                <Form.Group className="mb-3" controlId="postID">
+                    <Form.Label>Post ID</Form.Label>
+                    <Form.Control type="text" placeholder="Post ID" name="postID" value={contactInfo.postID} onChange={onChangeHandler}/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="postType">

@@ -39,7 +39,7 @@ function App() {
   return (
     <div className="App">
       <Navigation />
-      <PostSubmit userID={userID}/>
+      <PostSubmit userID={userID} setPostItems={setPostItems}/>
       {postItemComponents}
       <p>{userID}</p>
     </div>
