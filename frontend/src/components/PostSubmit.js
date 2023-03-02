@@ -17,6 +17,9 @@ function PostSubmit(props) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+
+  
   const discardContent = () => {
     setContactInfo({
       postTitle: "",
@@ -36,6 +39,7 @@ function PostSubmit(props) {
     setContactInfo({ ...contactInfo, [event.target.name]: event.target.value });
   };
 
+  const { v4: uuidv4 } = require('uuid');
   const submitPost = () => {
     // do something with the postTitle and postContent variables
     // send the appropriate axios method
@@ -43,7 +47,7 @@ function PostSubmit(props) {
     axios.post('http://127.0.0.1:8000/authors/' + props.userID + '/posts', {
       type: "Post",
       title: contactInfo.postTitle,
-      id: contactInfo.postID,
+      id: uuidv4(),
       content_type: "text/plain",
       content: contactInfo.postContent,
       caption: null,
@@ -54,8 +58,13 @@ function PostSubmit(props) {
     })
     .then(function (response) {
       axios.get('http://127.0.0.1:8000/authors/' + props.userID + '/posts').then(res => {
-      props.setPostItems(res.data.items)
-      handleClose();
+        props.setPostItems(res.data.items)
+        handleClose();
+        setContactInfo({
+        postTitle: "",
+        postContent: "",
+        postID: "",
+        })
       })
     })
   };
@@ -77,15 +86,9 @@ function PostSubmit(props) {
                     <Form.Control type="text" placeholder="Title" name="postTitle" value={contactInfo.postTitle} onChange={onChangeHandler}/>
                 </Form.Group>
 
-                
-                <Form.Group className="mb-3" controlId="postID">
-                    <Form.Label>Post ID</Form.Label>
-                    <Form.Control type="text" placeholder="Post ID" name="postID" value={contactInfo.postID} onChange={onChangeHandler}/>
-                </Form.Group>
-
                 <Form.Group className="mb-3" controlId="postType">
+                    <Form.Label>Post Type</Form.Label>
                     <Form.Select>
-                        <Form.Label>Post Type</Form.Label>
                         <option>text/markdown</option>
                         <option>text/plain</option>
                         <option>application/base64</option>
