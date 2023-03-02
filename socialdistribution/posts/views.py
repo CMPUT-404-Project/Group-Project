@@ -12,6 +12,15 @@ class PostList(APIView):
         query_set = Post.objects.filter(author=id)
         serializer = PostSerializer(query_set, many=True)
         return Response({"type": "posts", "items": serializer.data}, status=status.HTTP_200_OK)
+    
+    def post(self, request, id):
+        post_data = request.data
+        post_data['author'] = id
+        serializer = PostSerializer(data=post_data)
+        if serializer.is_valid():
+            saved = serializer.save()
+            return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 #added this-Harsh
 class PostDetail(APIView):
