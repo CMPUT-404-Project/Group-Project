@@ -12,14 +12,14 @@ function PostModal(props) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const commentCards = props.postContent.commentsSrc.comments.map((oneComment) => 
-                        <CommentCard commentData={oneComment} key={oneComment.id} />
-        );
+  // const commentCards = props.postContent.commentsSrc.comments.map((oneComment) => 
+  //                       <CommentCard commentData={oneComment} key={oneComment.id} />
+  //       );
 
   return (
     <>
       <Button variant="secondary" onClick={handleShow}>
-        View Comments
+        Expand Post
       </Button>
 
       <Modal show={show} onHide={handleClose} centered>
@@ -30,7 +30,7 @@ function PostModal(props) {
         <Modal.Body>
             {props.postContent.content}
             
-            {commentCards}
+            {/* {commentCards} */}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
