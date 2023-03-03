@@ -1,11 +1,12 @@
-<!-- author_login.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Login</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Login">
-  </form>
+    <h1>User Login</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ form.errors }}
+        <input type="submit" value="Login">
+    </form>
 {% endblock %}

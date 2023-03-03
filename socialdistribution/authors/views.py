@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from django.urls import reverse
 
 from .models import Author, Followers, FollowRequest
 from .serializers import AuthorSerializer, FollowRequestSerializer
@@ -10,6 +11,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 # Create your views here.
+
+from django.contrib.auth.forms import AuthenticationForm
+
 
 from django.contrib import messages
 
@@ -35,24 +39,50 @@ from .forms import UserLoginForm
 
 def user_login(request):
     if request.method == 'POST':
-        form = UserLoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                # Authentication successful
-                login(request, user)
-                #author = user.author
-                # Do something with the author instance
-                return redirect('list')
-            else:
-                # Authentication failed
-                return render(request, 'login.html', {'form': form, 'error': 'Invalid email or password'})
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # Authentication successful
+            
+            login(request, user)
+            author = user.author
+            uuid = author.id
+
+            return redirect(reverse('detail', args=[uuid]))
+            # Do something with the author instance
+            #return redirect('list')
+        else:
+            # Authentication failed
+            #return redirect('list')
+            return render(request, 'login.html', {})
     else:
-        # Display login form
         form = UserLoginForm()
-    return render(request, 'login.html', {'form': form})
+        context = {'form': form}
+        return render(request, 'login.html', context=context)
+
+# def user_login(request):
+#     if request.method == 'POST':
+#         form = AuthenticationForm(request.POST)
+        
+#         username = form.cleaned_data['username']
+#         password = form.cleaned_data['password']
+#         user = authenticate(username=username, password=password)
+#         if user is not None:
+#             # Authentication successful
+#             login(request, user)
+#             #author = user.author
+#             # Do something with the author instance
+#             #return redirect('list')
+#         else:
+#             # Authentication failed
+#             #return redirect('list')
+#             return render(request, 'login.html', {'form': form, 'error': 'Invalid email or password'})
+        
+#     else:
+#         # Display login form
+#         form = UserLoginForm()
+#     return render(request, 'login.html', {'form': form})
 
 class AuthorList(APIView):
     def get(self, request):

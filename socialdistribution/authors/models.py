@@ -4,18 +4,19 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.hashers import check_password
 
 class UserAccountManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        user = self.model(email=email, **extra_fields)
+    def create_user(self, username, password=None, **extra_fields):
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, username, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
@@ -35,6 +36,7 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+    
 
 
 # Create your models here.

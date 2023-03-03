@@ -27,7 +27,7 @@ class AuthorSignupForm(UserCreationForm):
         return author
 
 class UserLoginForm(AuthenticationForm):
-    pass
+    
 
     class Meta:
         model = User
