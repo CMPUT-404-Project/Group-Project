@@ -27,7 +27,7 @@ function Post(props) {
             {/* implement the onclick for the view comments */}
             <PostModal postContent={props.postObject}/>
             <PostEdit postContent={props.postObject} setPostItems={props.setPostItems}/>
-            <PostDelete postContent={props.postObject} />
+            <PostDelete postContent={props.postObject} setPostItems={props.setPostItems}/>
           </Card.Body>
 
           <ListGroup variant="flush">
