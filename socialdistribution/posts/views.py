@@ -10,7 +10,7 @@ from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 
 class PostList(APIView):
     
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request, id):
         query_set = Post.objects.filter(author=id)
@@ -20,7 +20,7 @@ class PostList(APIView):
     def post(self, request, id):
         post_data = request.data
         post_data['author'] = id
-        serializer = PostSerializer(data=post_data)
+        serializer = PostSerializer(data = post_data)
         if serializer.is_valid():
             saved = serializer.save()
             return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)

@@ -12,7 +12,8 @@ class Post(models.Model):
         ('text/plain','text/plain'),
         ('application/base64', 'application/base64'),
         ('image/png;base64','image/png;base64'),
-        ('image/jpeg;base64','image/jpeg;base64')
+        ('image/jpeg;base64','image/jpeg;base64'),
+        ('multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW','multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW')
     )
 
     VISIBILITY = (
@@ -31,7 +32,7 @@ class Post(models.Model):
     content = models.TextField(blank=True,null=True)
 
     #uploading an image
-    image =  models.ImageField(upload_to='post_images')
+    image =  models.ImageField(upload_to='post_images',null=True, blank= True)
 
     #caption of the post
     caption = models.CharField(max_length=300,blank=True,null=True)
