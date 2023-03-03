@@ -1,10 +1,7 @@
 from django.db import models
 from django.utils.timezone import now
 import uuid
-from django.contrib.auth.models import AbstractUser
-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.hashers import check_password
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
@@ -18,16 +15,11 @@ class UserAccountManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, password, **extra_fields)
 
-class User(AbstractBaseUser):
+class CustomUser(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
-    # host = models.CharField(max_length=200)
-    # displayName = models.CharField(max_length=200)
-    # url = models.CharField(max_length=200)
-    # github = models.CharField(max_length=200)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
@@ -36,13 +28,11 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username
-    
-
 
 # Create your models here.
 class Author(models.Model):
     # user_name = models.CharField(unique=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='author', default=None)
+    customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', default=None)
     id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
