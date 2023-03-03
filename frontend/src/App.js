@@ -39,29 +39,50 @@ function App() {
   //   );
   // }
   
-  const [username, setUsername] = useState('');
-  if (username === ''){ // if the user has not logged in yet
-
-    return(
-      <div className="App">
-        <Navigation />
-        {/* <SignupView />  */}
-        <SignupForm username={username} setUsername={setUsername} /> 
+  if (userID === ''){ // if the user has not logged in yet
+    const [user, setUser] = useState({
+      username: '',
+      email: '',
+      password: '',
+      host: '',
+      displayName: '',
+      url: '',
+      github: '',
+    });
+  
+    const handleSignup = (e) => {
+      e.preventDefault();
+      axios.post('http://127.0.0.1:8000/authors/signup/', user)
+        .then(response => {
+          console.log(response.data);
+          // Redirect to success page or login page
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  
+    return (
+      <div>
+        <h2>Signup</h2>
+        <SignupForm user={user} setUser={setUser} handleSignup={handleSignup} />
       </div>
     );
   }
-  
+
+}
+
 
   // If we get here, that means that the user has logged in
-  return (
-    <div className="App">
-      <Navigation />
-      <PostSubmit userID={userID} setPostItems={setPostItems}/>
-      {postItemComponents}
-      <p>{userID}</p>
-    </div>
-  );
-}
+  // return (
+  //   <div className="App">
+  //     <Navigation />
+  //     <PostSubmit userID={userID} setPostItems={setPostItems}/>
+  //     {postItemComponents}
+  //     <p>{userID}</p>
+  //   </div>
+  // );
+
 
 export default App;
 

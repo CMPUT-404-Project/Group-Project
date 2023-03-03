@@ -1,34 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 
-function SignupForm(props) {
-    // const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-  
-    // ...
-  
+function SignupForm({ user, setUser, handleSignup }) {
 
-    function handleSubmit(event) {
-    event.preventDefault();
+    const handleChange = (e) => {
+        setUser({
+        ...user,
+        [e.target.name]: e.target.value
+        });
     
-    axios.post('http://127.0.0.1:8000/authors/signup/', {username, password })
-        .then(response => console.log(response.data))
-        .catch(error => console.log(error));
     }
-
+    //   const handleSignup = (e) => {
+    //     e.preventDefault();
+    //     axios.post('http://127.0.0.1:8000/authors/signup/', user)
+    //       .then(response => {
+    //         console.log(response.data);
+    //       })
+    //       .catch(error => {
+    //         console.error(error);
+    //       });
+    
     return (
-        <form onSubmit={handleSubmit}>
-        <label>
-            Username:
-            <input type="text" value={props.username} onChange={event => props.setUsername(event.target.value)} />
-        </label>
-        <label>
-            Password:
-            <input type="password" value={password} onChange={event => setPassword(event.target.value)} />
-        </label>
-        <button type="submit">Sign up</button>
+        <form onSubmit={handleSignup}>
+            <label>
+                Username:
+                <input type="text" name="username" value={user.username} onChange={handleChange} />
+            </label>
+            <label>
+                Password:
+                <input type="password" name="password" value={user.password} onChange={handleChange} />
+            </label>
+            <label>
+                displayName:
+                <input type="text" name="displayName" value={user.displayName} onChange={handleChange} />
+            </label>
+            <label>
+                host:
+                <input type="text" name="host" value={user.host} onChange={handleChange} />
+            </label>
+            <label>
+                url:
+                <input type="text" name="url" value={user.url} onChange={handleChange} />
+            </label>
+            <label>
+                github:
+                <input type="text" name="github" value={user.github} onChange={handleChange} />
+            </label>
+            <button type="submit"onClick={() => {
+                const result = handleSignup();
+                console.log(result); // Use the return value of the function
+                }}> 
+            Signup 
+            </button>
         </form>
-    );
-} 
+   );``
+}
 
 export default SignupForm;
+
+
