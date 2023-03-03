@@ -1,43 +1,48 @@
-import logo from './logo.svg';
+
 import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
+import Post from './components/Post';
+import PostSubmit from './components/PostSubmit';
+import Navigation from './components/Navigation';
+import {submitPost, likeData, getPosts} from './Logic';
+import { useEffect, useState } from 'react';
+import axios from 'axios'; 
+import Login from './components/Login';
+
+
 
 function App() {
+  const [userID, setUserID] = useState('');
+  const [postItems, setPostItems] = useState([]);
+  useEffect(() => {
+    // Update the document title using the browser API
+    console.log('hello')
+    if (userID !== ''){
+      axios.get('http://127.0.0.1:8000/authors/' + userID + '/posts').then(res => {
+      setPostItems(res.data.items)
+    })}
+  }, [userID]);
+  const postItemComponents = postItems.map((onePost) => 
+    <Post postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
+  );
+
+  if (userID === ''){ // if the user has not logged in yet
+    return(
+      <div className="App">
+        <Navigation />
+        <Login setUserID={setUserID}/>
+      </div>
+    );
+  }
+
+  // If we get here, that means that the user has logged in
   return (
     <div className="App">
-      
-      <h1> Hello World! </h1>
-      
-      <Button variant="primary">Primary</Button>{' '}
-      <Button variant="secondary">Secondary</Button>{' '}
-      <Button variant="success">Success</Button>{' '}
-      <Button variant="warning">Warning</Button>{' '}
-      <Button variant="danger">Danger</Button>{' '}
-      <Button variant="info">Info</Button>{' '}
-      <Button variant="light">Light</Button>{' '}
-      <Button variant="dark">Dark</Button>
-      <Button variant="link">Link</Button>
-
-      <br />
-      <br />
-      <br />
-
-      <Card className="text-center">
-        <Card.Header>Featured</Card.Header>
-        <Card.Body>
-          <Card.Title>Special title treatment</Card.Title>
-          <Card.Text>
-            With supporting text below as a natural lead-in to additional content.
-          </Card.Text>
-          <Button variant="primary">Go somewhere</Button>
-        </Card.Body>
-        <Card.Footer className="text-muted">2 days ago</Card.Footer>
-      </Card>
-
-
-      
+      <Navigation />
+      <PostSubmit userID={userID} setPostItems={setPostItems}/>
+      {postItemComponents}
+      <p>{userID}</p>
     </div>
   );
 }
