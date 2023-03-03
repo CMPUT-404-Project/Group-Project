@@ -47,42 +47,19 @@ def user_login(request):
             
             login(request, user)
             author = user.author
+            # Do something with the author instance
             uuid = author.id
 
             return redirect(reverse('detail', args=[uuid]))
-            # Do something with the author instance
-            #return redirect('list')
+            
         else:
             # Authentication failed
-            #return redirect('list')
+    
             return render(request, 'login.html', {})
     else:
         form = UserLoginForm()
         context = {'form': form}
         return render(request, 'login.html', context=context)
-
-# def user_login(request):
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request.POST)
-        
-#         username = form.cleaned_data['username']
-#         password = form.cleaned_data['password']
-#         user = authenticate(username=username, password=password)
-#         if user is not None:
-#             # Authentication successful
-#             login(request, user)
-#             #author = user.author
-#             # Do something with the author instance
-#             #return redirect('list')
-#         else:
-#             # Authentication failed
-#             #return redirect('list')
-#             return render(request, 'login.html', {'form': form, 'error': 'Invalid email or password'})
-        
-#     else:
-#         # Display login form
-#         form = UserLoginForm()
-#     return render(request, 'login.html', {'form': form})
 
 class AuthorList(APIView):
     def get(self, request):
