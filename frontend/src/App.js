@@ -10,7 +10,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios'; 
 import Login from './components/Login';
 
-
+import SignupForm from './components/SignupForm';
+import LoginForm from './components/LoginForm';
+import SignupView from './views/SignupView';
 
 function App() {
   const [userID, setUserID] = useState('');
@@ -27,14 +29,28 @@ function App() {
     <Post postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
   );
 
-  if (userID === ''){ // if the user has not logged in yet
+  // if (userID === ''){ // if the user has not logged in yet
+
+  //   return(
+  //     <div className="App">
+  //       <Navigation />
+  //       <Login setUserID={setUserID}/>
+  //     </div>
+  //   );
+  // }
+  
+  const [username, setUsername] = useState('');
+  if (username === ''){ // if the user has not logged in yet
+
     return(
       <div className="App">
         <Navigation />
-        <Login setUserID={setUserID}/>
+        {/* <SignupView />  */}
+        <SignupForm username={username} setUsername={setUsername} /> 
       </div>
     );
   }
+  
 
   // If we get here, that means that the user has logged in
   return (
@@ -48,3 +64,5 @@ function App() {
 }
 
 export default App;
+
+
