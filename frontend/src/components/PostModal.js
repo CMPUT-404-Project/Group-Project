@@ -19,7 +19,7 @@ function PostModal(props) {
   return (
     <>
       <Button variant="secondary" onClick={handleShow}>
-        View Comments
+        Expand Post
       </Button>
 
       <Modal show={show} onHide={handleClose} centered>

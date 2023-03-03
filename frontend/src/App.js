@@ -24,7 +24,7 @@ function App() {
     })}
   }, [userID]);
   const postItemComponents = postItems.map((onePost) => 
-    <Post postObject={onePost} key={onePost.id} />
+    <Post postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
   );
 
   if (userID === ''){ // if the user has not logged in yet
