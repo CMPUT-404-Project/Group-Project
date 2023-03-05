@@ -8,35 +8,48 @@ from django.urls import reverse
 from .models import Author, Followers, FollowRequest
 from .serializers import AuthorSerializer, FollowRequestSerializer
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+
 from django.shortcuts import render, redirect
 # Create your views here.
 
 from django.contrib.auth.forms import AuthenticationForm
-
-
-from django.contrib import messages
-
-from django.shortcuts import render, redirect
-from .forms import AuthorSignupForm
-from .models import Author
-
-def signup(request):
-    if request.method == 'POST':
-        form = AuthorSignupForm(request.POST)
-        if form.is_valid():
-            form.save()
-            print(form.cleaned_data)
-            return redirect('list')
-    else:
-        form = AuthorSignupForm()
-    return render(request, 'signup.html', {'form': form})
-
+from .forms import AuthorSignupForm, UserLoginForm
+from .models import Author, CustomUser
 
 from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
-from .forms import UserLoginForm
 
+
+@csrf_exempt
+def signup(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        displayName = request.POST['displayName']
+        host = request.POST['host']
+        github = request.POST['github']
+        url = request.POST['url']
+        # profile_image = request.FILES.get('profile_image', default='blank_profile.png')
+
+        user = CustomUser.objects.create_user(username=username, password=password)
+        user.save()
+        author = Author.objects.create(
+            customuser=user,
+            displayName=displayName,
+            host=host,
+            github=github,
+            url = url,
+        )
+        author.save()
+        
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False})
+
+@csrf_exempt
 def user_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -46,16 +59,16 @@ def user_login(request):
             # Authentication successful
             
             login(request, user)
-            author = user.author
+            
             # Do something with the author instance
-            uuid = author.id
+            author_id = user.author.id
 
-            return redirect(reverse('detail', args=[uuid]))
+            return JsonResponse({'success': True, 'author_id': author_id})
             
         else:
             # Authentication failed
     
-            return render(request, 'login.html', {})
+            return JsonResponse({'success': False, 'message': 'Invalid username or password'})
     else:
         form = UserLoginForm()
         context = {'form': form}

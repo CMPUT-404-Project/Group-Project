@@ -23,7 +23,7 @@ class AuthorSignupForm(UserCreationForm):
         if commit:
             user.save()
             author = Author.objects.create(customuser=user, host=host_data, displayName=displayName_data,url=url_data,github=github_data)
-            
+        author.save() 
         return author
 
 class UserLoginForm(AuthenticationForm):
