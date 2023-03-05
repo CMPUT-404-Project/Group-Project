@@ -24,33 +24,47 @@ const AuthorSignupForm = ({ signedup, setSignedup }) => {
 
   return (
     <form onSubmit={handleSignup}>
-      <label>
-        Username:
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </label>
-      <label>
-        Password:
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      <label>
-        Display Name:
-        <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
-      </label>
-      <label>
-        Host:
-        <input type="text" value={host} onChange={(e) => setHost(e.target.value)} />
-      </label>
-      <label>
-        GitHub:
-        <input type="text" value={github} onChange={(e) => setGithub(e.target.value)} />
-      </label>
-      <label>
-        Url:
-        <input type="text" onChange={(e) => setUrl(e.target.value)} />
-      </label>
+      <div>
+        <label>
+          Username:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+        </label>
+      </div>
+      <div>
+        <label>
+          Password:
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </label>
+      </div>
+      <div>
+        <label>
+          Display Name:
+          <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+        </label>
+      </div>
+      <div>
+        <label>
+          Host:
+          <input type="text" value={host} onChange={(e) => setHost(e.target.value)} />
+        </label>
+      </div>
+      <div>
+        <label>
+          GitHub:
+          <input type="text" value={github} onChange={(e) => setGithub(e.target.value)} />
+        </label>
+      </div>
+      <div>
+        <label>
+          Url:
+          <input type="text" onChange={(e) => setUrl(e.target.value)} />
+        </label>
+      </div>
       <button type="submit">Sign Up</button>
     </form>
   );
+
+  
 };
 
 export default AuthorSignupForm;
