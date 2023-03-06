@@ -49,13 +49,13 @@ MIDDLEWARE = [
     
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -106,9 +106,7 @@ DATABASES = {
 
 # White listing the localhost:3000 port
 # for React
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-)
+CORS_ORIGIN_WHITELIST = [    'http://localhost:3000',]
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -152,5 +150,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #these 2 are for the images we upload for profile image for author which will be in media folder
 
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+AUTH_USER_MODEL = 'authors.CustomUser'
+AUTHENTICATION_BACKENDS = [    'django.contrib.auth.backends.ModelBackend', ]
+
+
+
+
