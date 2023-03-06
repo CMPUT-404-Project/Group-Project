@@ -11,6 +11,10 @@ import axios from 'axios';
 import Login from './components/Login';
 
 
+import AuthorSignupForm from './components/AuthorSignupForm';
+import LoginForm from './components/LoginForm';
+import ReactDOM from 'react-dom';
+import React from 'react';
 
 function App() {
   const [userID, setUserID] = useState('');
@@ -27,24 +31,65 @@ function App() {
     <Post postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
   );
 
-  if (userID === ''){ // if the user has not logged in yet
+  // if (userID === ''){ // if the user has not logged in yet
+
+    // return(
+    //   <div className="App">
+    //     <Navigation />
+    //     <Login setUserID={setUserID}/>
+    //   </div>
+    // );
+  // }
+  
+
+
+
+  // // If we get here, that means that the user has logged in
+  // return (
+  //   <div className="App">
+  //     <Navigation />
+  //     <PostSubmit userID={userID} setPostItems={setPostItems}/>
+  //     {postItemComponents}
+  //     <p>{userID}</p>
+  //   </div>
+  // );
+  //my code
+  const [signedup, setSignedup] = useState(false);
+  const [loggedin, setLoggedin] = useState(false);
+  if (signedup === false){
+    return (
+      <div className="App">
+        <Navigation />
+        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
+      </div>
+    );
+  }
+  //do else here
+  //do login
+
+  else if(loggedin === false) {
     return(
       <div className="App">
         <Navigation />
-        <Login setUserID={setUserID}/>
+        <LoginForm setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
     );
   }
 
-  // If we get here, that means that the user has logged in
-  return (
-    <div className="App">
-      <Navigation />
-      <PostSubmit userID={userID} setPostItems={setPostItems}/>
-      {postItemComponents}
-      <p>{userID}</p>
-    </div>
-  );
+  else if (loggedin === true) {
+    return (
+      <div className="App">
+        <Navigation />
+        <PostSubmit userID={userID} setPostItems={setPostItems}/>
+        {postItemComponents}
+        <p>{userID}</p>
+      </div>
+    );
+  }
+  
+  
 }
-
+ReactDOM.render(<App />, document.getElementById('root'));
 export default App;
+
+
