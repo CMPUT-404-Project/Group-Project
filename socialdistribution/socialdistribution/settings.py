@@ -42,10 +42,11 @@ INSTALLED_APPS = [
     'authors',
     'posts',
     'inbox',
-    'corsheaders',
+    'corsheaders', #for rest api
 ]
 
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -54,8 +55,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'socialdistribution.urls'
 
@@ -146,11 +149,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #these 2 are for the images we upload for profile image for author which will be in media folder
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
 
 AUTH_USER_MODEL = 'authors.CustomUser'
 AUTHENTICATION_BACKENDS = [    'django.contrib.auth.backends.ModelBackend', ]
+
 
 
 

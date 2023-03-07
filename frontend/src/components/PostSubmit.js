@@ -1,10 +1,12 @@
 
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';   
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+
+
 
 function PostSubmit(props) {
   const [show, setShow] = useState(false);
@@ -19,6 +21,7 @@ function PostSubmit(props) {
       postTitle: "",
       postContent: "",
       postID: "",
+      image: null,
     })
     setShow(false)
   }
@@ -27,6 +30,7 @@ function PostSubmit(props) {
     postTitle: "",
     postContent: "",
     postID: "",
+    image: null,
   });
 
   const onChangeHandler = (event) => {
@@ -34,7 +38,22 @@ function PostSubmit(props) {
   };
 
   const { v4: uuidv4 } = require('uuid');
+
+  // const handleChange = (event) => {
+  //   this.setState({
+  //     [event.target.id]: event.target.value
+  //   })
+  // };
+
+  // const handleImageChange = (event) => {
+  //   this.setState({
+  //     image: event.target.files[0]
+  //   })
+  // };
+
   const submitPost = () => {
+    // event.preventDefault();
+    // console.log(this.state);
     // do something with the postTitle and postContent variables
     // send the appropriate axios method
     // props.userID will contain the user's ID
@@ -44,15 +63,22 @@ function PostSubmit(props) {
       id: uuidv4(),
       content_type: "text/plain",
       content: contactInfo.postContent,
+      //image: null, //(this.state.image, this.state.image.name),
       caption: null,
       author: props.userID,
       count_likes: 0,
       // published_time: "2023-03-01T03:51:19Z",
       visibility: "PUBLIC",
+      
+      headers: {
+        'content_type' : 'application/json '
+      }
+      
     })
     .then(function (response) {
       axios.get('http://127.0.0.1:8000/authors/' + props.userID + '/posts').then(res => {
         props.setPostItems(res.data.items)
+        //console.log(res.data)
         handleClose();
         setContactInfo({
         postTitle: "",
@@ -96,8 +122,15 @@ function PostSubmit(props) {
                     <Form.Control type="text" placeholder="content" name="postContent" value={contactInfo.postContent} onChange={onChangeHandler}/>
                 </Form.Group>
 
+                {/* <Form.Group className="mb-3" controlId="Add Image">
+                    <Form.Label>Post Image</Form.Label>
+                    <input type="file" 
+                     id = "image"
+                     accept = "image/png, image/jpeg" onChange={this.handleImageChange} /> 
+                    {/* <img src={file} /> */}
+                {/* </Form.Group>
 
-                
+                <input type="submit"/> */}                 
             </Form>
 
         </Modal.Body>

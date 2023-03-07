@@ -2,12 +2,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser 
 
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 # Create your views here.
 
 class PostList(APIView):
+    
+    # parser_classes = (MultiPartParser, FormParser)
+
     def get(self, request, id):
         query_set = Post.objects.filter(author=id)
         serializer = PostSerializer(query_set, many=True)
@@ -16,11 +20,13 @@ class PostList(APIView):
     def post(self, request, id):
         post_data = request.data
         post_data['author'] = id
-        serializer = PostSerializer(data=post_data)
+        serializer = PostSerializer(data = post_data)
         if serializer.is_valid():
             saved = serializer.save()
             return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print('Error', serializer.errors)
+            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 #added this-Harsh
 class PostDetail(APIView):
