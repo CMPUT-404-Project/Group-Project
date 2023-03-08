@@ -20,35 +20,50 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+import uuid
 
 
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        displayName = request.POST['displayName']
-        host = request.POST['host']
-        github = request.POST['github']
-        url = request.POST['url']
-        # profile_image = request.FILES.get('profile_image', default='blank_profile.png')
-
-        user = CustomUser.objects.create_user(username=username, password=password)
-        user.save()
-        author = Author.objects.create(
-            customuser=user,
-            displayName=displayName,
-            host=host,
-            github=github,
-            url = url,
-        )
-        author.save()
+        requestBody = request.POST.dict()
+        print(requestBody)
+        # Check if the author already exists
+        try:
+            Author.objects.get(displayName=requestBody.get('username'))
+            return JsonResponse({'success': False, 'error': 'Author already exists'})
+        except Author.DoesNotExist: 
+            # Create a new user
+            user = CustomUser.objects.create_user(username=requestBody.get('username'), password=requestBody.get('password'))
+            user.save() 
+            # Create a new author
+            author_data = requestBody.copy()
+            author_data['displayName'] = requestBody.get('username')
+            author_data['host'] = request.build_absolute_uri('/')
+            author_data['id'] = uuid.uuid4().hex
+            author_data['url'] = f"{author_data['host']}author/{author_data['id']}"
+            author = Author.objects.create(
+                customuser=user,
+                id = author_data['id'],
+                displayName=author_data['displayName'],
+                host=author_data['host'],
+                github=author_data['github'],
+                url = author_data['url'],
+            )
+            author.save()
+            return JsonResponse({'success': True, 'author_id': author.id})
+            # serializer = AuthorSerializer(data=author_data)
+            # if serializer.is_valid():
+            #     saved = serializer.save()
+            #     return JsonResponse({'success': True, 'author_id': saved.id})
+            # else:
+            #     return JsonResponse({'success': False, 'error': serializer.errors})
+    else:
+        form = AuthorSignupForm()
+        context = {'form': form}
+        return render(request, 'signup.html', context=context)
         
-
-        return JsonResponse({'success': True})
-
-    return JsonResponse({'success': False})
-
+       
 @csrf_exempt
 def user_login(request):
     if request.method == 'POST':
@@ -57,17 +72,13 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             # Authentication successful
-            
-            login(request, user)
-            
-            # Do something with the author instance
             author_id = user.author.id
-
-            return JsonResponse({'success': True, 'author_id': author_id})
-            
+            author = Author.objects.get(id=author_id)
+            if user.is_active:
+                login(request, user)
+                return JsonResponse({'success': True, 'author_id': author_id})
         else:
             # Authentication failed
-    
             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
     else:
         form = UserLoginForm()

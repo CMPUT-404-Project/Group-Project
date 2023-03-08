@@ -1,11 +1,10 @@
 from django.urls import include, path
 from .models import Author
 from . import views
-from .views import signup
 
 urlpatterns = [
     path('/login/', views.user_login, name='user_login'),
-    path('/signup/', signup, name='signup'),
+    path('/signup/', views.signup, name='signup'),
     
     path('', views.AuthorList.as_view(), name = 'list'),
     path('/<uuid:id>', views.AuthorDetail.as_view(), name = 'detail'),
