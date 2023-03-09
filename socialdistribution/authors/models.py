@@ -3,6 +3,9 @@ from django.utils.timezone import now
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+def generate_uuid():
+    return str(uuid.uuid4().hex)
+
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         user = self.model(username=username, **extra_fields)
@@ -33,7 +36,7 @@ class CustomUser(AbstractBaseUser):
 class Author(models.Model):
     # user_name = models.CharField(unique=True)
     customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', default=None)
-    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id  = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
     displayName = models.CharField(max_length=200,unique=True)
