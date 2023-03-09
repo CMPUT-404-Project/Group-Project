@@ -1,7 +1,12 @@
 from django.db import models
 from django.utils.timezone import now
+from django.contrib.postgres.fields import ArrayField
 
 from authors.models import Author
+import uuid 
+
+def generate_uuid():
+    return uuid.uuid4().hex
 
 # Create your models here.
 class Post(models.Model):
@@ -13,38 +18,29 @@ class Post(models.Model):
         ('application/base64', 'application/base64'),
         ('image/png;base64','image/png;base64'),
         ('image/jpeg;base64','image/jpeg;base64'),
-        ('multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW','multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW')
+        #('multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW','multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW')
     )
 
     VISIBILITY = (
-        ("PUBLIC","PUBLIC"),
-        ("FRIENDS","FRIENDS")
+        ("PUBLIC","public"),
+        ("FRIENDS","friends"),
+        ("PRIVATE","private"),
     )
     # The type should be constant
-    type = models.CharField(max_length=20,default="Post", editable=False)
-    #id, the primary key
-    id = models.UUIDField(primary_key=True) #?URL Field?
-    #title of the post
+    type = models.CharField(max_length=20,default="post", editable=False)
     title = models.CharField(max_length=200)
-    #type of post
-    content_type = models.CharField(max_length=150,choices=CONTENT_TYPE,default='text/plain')
-    #content of the post
-    content = models.TextField(blank=True,null=True)
-
-    #uploading an image
-    image =  models.ImageField(upload_to='post_images',null=True, blank= True)
-
-    #caption of the post
-    caption = models.CharField(max_length=300,blank=True,null=True)
-    #author of the post
-    #the on_delete = models.CASCADE deletes all the foreignkey pointing to author from the AUTHOR object
+    id = models.UUIDField(primary_key=True, default=generate_uuid, max_length=200, editable=False)
+    source = models.URLField(max_length=200,blank=True,null=True)
+    origin = models.URLField(max_length=200,blank=True,null=True)
+    description = models.CharField(max_length=500,blank=True,null=True)
+    content_type = models.CharField(max_length=50,choices=CONTENT_TYPE,default='text/plain')
+    #image =  models.ImageField(upload_to='post_images',null=True, blank= True)
+    imagesrc = models.URLField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posted')
-    #number of likes
-    count_likes = models.IntegerField(default=0)
-    #time post was published
-    published_time = models.DateTimeField('date published',default=now)
-    #visibility of the post
+    categories = ArrayField(models.CharField(max_length=200), blank=True, null=True)  
+    published = models.DateTimeField('date published',default=now)
     visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
+    unlisted = models.BooleanField(default=False)
     
     def __str__(self):
         return self.title + "(" + str(self.id) + ")"
@@ -53,10 +49,6 @@ class Post(models.Model):
     def get_id(self):
         return self.id
     
-    #returns number of likes on the post
-    def num_likes(self):
-        return self.count_likes
-
 class Comment(models.Model):
 
     CONTENT_TYPE = (

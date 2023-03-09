@@ -50,20 +50,13 @@ class Author(models.Model):
     
     def __str__(self):
         return str(self.displayName) + '-' + str(self.id)
-    
-class Followers(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    author = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='author', editable=False)
-    followers = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='followers', editable=False)
-    
-    def __str__(self):
-        return str(self.author) + '-' + str(self.followers_id)
+
 
 class FollowRequest(models.Model):
-    id  = models.UUIDField(primary_key=True)
-    summary = models.CharField(max_length=200)
+    id  = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
     type = models.CharField(max_length=20,default="Follow", editable=False)
-    actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor')
+    summary = models.CharField(max_length=200, default="Follow Request", editable=False)
+    actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor', unique=False)
     object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object')
     status = models.BooleanField(default=False)
     request_time = models.DateTimeField('date request came', default=now) 
