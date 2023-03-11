@@ -1,7 +1,10 @@
 from django.db import models
 from django.utils.timezone import now
-import uuid
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+import uuid
+from inbox.models import Inbox
 
 def generate_uuid():
     return str(uuid.uuid4().hex)
@@ -55,8 +58,9 @@ class Author(models.Model):
 class FollowRequest(models.Model):
     id  = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
     type = models.CharField(max_length=20,default="Follow", editable=False)
-    summary = models.CharField(max_length=200, default="Follow Request", editable=False)
+    summary = models.CharField(max_length=300, default="Follow Request", editable=False)
     actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor', unique=False)
     object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object')
     status = models.BooleanField(default=False)
     request_time = models.DateTimeField('date request came', default=now) 
+    inbox = GenericRelation(Inbox, ON_DELETE=models.CASCADE, related_query_name='inbox')    
