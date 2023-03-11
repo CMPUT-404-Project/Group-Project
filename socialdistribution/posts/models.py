@@ -57,9 +57,9 @@ class Comment(models.Model):
     )
 
     # The type should be constant
-    type = models.CharField(max_length=200,default="Comment", editable=False)
+    type = models.CharField(max_length=200,default="comment", editable=False)
     #id, the primary key
-    comment_id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
     #post where comment posted
     post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
     #author of the comment
@@ -69,7 +69,7 @@ class Comment(models.Model):
     #comment on post
     comment = models.TextField()
     #date comment was published
-    published_date = models.DateTimeField('date published', default=now)
+    published = models.DateTimeField('date published', default=now)
     
     def get_id(self):
         return self.id
