@@ -3,8 +3,6 @@ from django.utils.timezone import now
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-from authors.models import Author
-
 import uuid
 
 def generate_uuid():
@@ -17,7 +15,7 @@ class Inbox(models.Model):
     #id
     id = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
     #author that the inbox object is sent to
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey('authors.Author', on_delete=models.CASCADE)
     #Object to sent to author
     #https://docs.djangoproject.com/en/4.1/ref/contrib/contenttypes/
     object_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)

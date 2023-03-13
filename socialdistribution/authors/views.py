@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.urls import reverse
 
-from .models import Author, Followers, FollowRequest
+from .models import Author, FollowRequest
 from .serializers import AuthorSerializer, FollowRequestSerializer
 from django.contrib.auth.forms import UserCreationForm
 

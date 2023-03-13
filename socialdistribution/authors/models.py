@@ -63,4 +63,4 @@ class FollowRequest(models.Model):
     object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object')
     status = models.BooleanField(default=False)
     request_time = models.DateTimeField('date request came', default=now) 
-    inbox = GenericRelation(Inbox, ON_DELETE=models.CASCADE, related_query_name='inbox')    
+    #inbox = GenericRelation(Inbox, ON_DELETE=models.CASCADE, related_query_name='inbox')    
