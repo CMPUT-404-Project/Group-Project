@@ -76,20 +76,22 @@ class Comment(models.Model):
 
 class Like(models.Model):
 
-    TYPE = (
+    OBJECT_TYPE = (
         ('post','post'),
         ('comment','comment')
     )
     # The type should be constant
     type = models.CharField(max_length=200,default="Like", editable=False)
     #id, the primary key
-    like_id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
     #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     #url of object which is being liked
-    object_summary = models.URLField(null=True,editable=False)
+    object = models.URLField(null=True,editable=False)
+    #type of object which is being liked
+    object_type = models.CharField(max_length=150,choices=OBJECT_TYPE,default='post')
     #summary of the 
-    summary_type = models.CharField(max_length=250,null=True,choices=TYPE)
+    summary = models.CharField(max_length=300,null=True,editable=False)
     #date comment was published
     published_date = models.DateTimeField('date published', default=now)
 
@@ -98,4 +100,4 @@ class Like(models.Model):
         return self.id
     
     def summary(self):
-        return self.author + "Likes your" + self.summary_type
+        return self.author + "Likes your" + self.summary

@@ -21,7 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors', include('authors.urls')),
     path('auth/', include('django.contrib.auth.urls')),
-    #path('api/', include('posts.urls')),
-
     path('inbox', include('inbox.urls')),
+    path('service/authors',include('authors.urls')),
 ]
