@@ -129,6 +129,7 @@ class FollowersList(APIView):
         return Response({"type": "followers", "items": serializer.data}, status=status.HTTP_200_OK)
 
 class FollowersDetail(APIView):
+    
     def get(self, request, id, fid):
         author_object = get_object_or_404(Author, id=id)
         follower_object = get_object_or_404(Author, id=fid)
