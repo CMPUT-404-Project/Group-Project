@@ -57,18 +57,16 @@ function App() {
   //my code
   const [signedup, setSignedup] = useState(false);
   const [loggedin, setLoggedin] = useState(false);
-  // if (signedup === false){
-  //   return (
-  //     <div className="App">
-  //       <Navigation />
-  //       <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
-  //     </div>
-  //   );
-  // }
-  //do else here
-  //do login
+  if (signedup === false){
+    return (
+      <div className="App">
+        <Navigation />
+        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
+      </div>
+    );
+  }
 
-  if(loggedin === false) {
+  else if(loggedin === false) {
     return(
       <div className="App">
         <Navigation />
