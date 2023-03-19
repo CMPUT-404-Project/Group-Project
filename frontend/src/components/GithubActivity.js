@@ -1,5 +1,5 @@
 
-
+import './gitstyle.css';
 import React, { useState } from 'react';
 
 function GithubActivity({userID}) {
@@ -25,14 +25,16 @@ function GithubActivity({userID}) {
   return (
     <div>
       <button onClick={handleClick}>View GitHub Activity</button>
-      {activity.slice(0, 10).map(event => (
-        <div key={event.id} style={{border: "1px solid black", padding: "10px", margin: "10px"}}>
-          <h3>{event.type}</h3>
-          {event.payload.ref_type === 'branch' ? <p>Branch: {event.payload.ref}</p> : null}
-          <p>Repository: {event.repo.name}</p>
-          <p>Time: {new Date(event.created_at).toLocaleString()}</p>
-        </div>
-      ))}
+      <div className="activity-container">
+        {activity.slice(0, 10).map(event => (
+          <div className="activity-item" key={event.id}>
+            <h3>{event.type}</h3>
+            {event.payload.ref_type === 'branch' ? <p>Branch: {event.payload.ref}</p> : null}
+            <p>Repository: {event.repo.name}</p>
+            <p>Time: {new Date(event.created_at).toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
