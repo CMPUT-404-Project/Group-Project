@@ -13,7 +13,7 @@ class Inbox(models.Model):
     # The type should be constant
     type = models.CharField(max_length=200,default="inbox", editable=False)
     #id
-    id = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     #author that the inbox object is sent to
     author = models.ForeignKey('authors.Author', on_delete=models.CASCADE)
     #Object to sent to author

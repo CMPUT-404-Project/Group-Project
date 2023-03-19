@@ -60,7 +60,7 @@ class CustomUser(AbstractBaseUser):
 class Author(models.Model):
     # user_name = models.CharField(unique=True)
     customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', default=None)
-    id  = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
+    id  = models.CharField(primary_key=True, default=generate_uuid, editable=False, max_length=200)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
     displayName = models.CharField(max_length=200,unique=True)
@@ -77,11 +77,11 @@ class Author(models.Model):
 
 
 class FollowRequest(models.Model):
-    id  = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
+    id  = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     type = models.CharField(max_length=20,default="Follow", editable=False)
-    summary = models.CharField(max_length=300, default="Follow Request", editable=False)
+    summary = models.CharField(max_length=300, default="Follow Request")
     actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor', unique=False)
-    object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object')
+    object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object', unique=False)
     status = models.BooleanField(default=False)
     request_time = models.DateTimeField('date request came', default=now) 
-    #inbox = GenericRelation(Inbox, ON_DELETE=models.CASCADE, related_query_name='inbox')    
+    inbox = GenericRelation(Inbox, on_delete=models.CASCADE, related_query_name='inbox')
