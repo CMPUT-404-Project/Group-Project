@@ -29,9 +29,15 @@ function GithubActivity({userID}) {
         {activity.slice(0, 10).map(event => (
           <div className="activity-item" key={event.id}>
             <h3>{event.type}</h3>
-            {event.payload.ref_type === 'branch' ? <p>Branch: {event.payload.ref}</p> : null}
-            <p>Repository: {event.repo.name}</p>
-            <p>Time: {new Date(event.created_at).toLocaleString()}</p>
+            {/* {event.payload.ref_type === 'branch' ? <p>Branch: {event.payload.ref}</p> : null} */}
+            {event.type === "CreateEvent" && event.payload.ref_type === "branch" ? (
+              <p>Branch: {event.payload.ref}</p>) : null}
+            {event.type === "PushEvent" && event.payload.ref.startsWith("refs/heads/") ? (
+              <p>Branch: {event.payload.ref.replace("refs/heads/", "")}</p>) : null}
+            {event.type === "DeleteEvent" && event.payload.ref_type === "branch" ? (
+              <p>Branch: {event.payload.ref}</p>) : null}
+              <p>Repository: {event.repo.name}</p>
+              <p>Time: {new Date(event.created_at).toLocaleString()}</p>
           </div>
         ))}
       </div>
