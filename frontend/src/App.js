@@ -13,6 +13,7 @@ import Login from './components/Login';
 
 import AuthorSignupForm from './components/AuthorSignupForm';
 import LoginForm from './components/LoginForm';
+import GithubActivity from './components/GithubActivity';
 import ReactDOM from 'react-dom';
 import React from 'react';
 
@@ -56,18 +57,18 @@ function App() {
   //my code
   const [signedup, setSignedup] = useState(false);
   const [loggedin, setLoggedin] = useState(false);
-  if (signedup === false){
-    return (
-      <div className="App">
-        <Navigation />
-        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
-      </div>
-    );
-  }
+  // if (signedup === false){
+  //   return (
+  //     <div className="App">
+  //       <Navigation />
+  //       <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
+  //     </div>
+  //   );
+  // }
   //do else here
   //do login
 
-  else if(loggedin === false) {
+  if(loggedin === false) {
     return(
       <div className="App">
         <Navigation />
@@ -83,6 +84,7 @@ function App() {
         <PostSubmit userID={userID} setPostItems={setPostItems}/>
         {postItemComponents}
         <p>{userID}</p>
+        <GithubActivity userID={userID}/>
       </div>
     );
   }
