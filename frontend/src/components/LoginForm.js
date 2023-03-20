@@ -8,7 +8,7 @@ const LoginForm = ({ setUserID, setLoggedin}) => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    const response = await fetch('http://127.0.0.1:8000/authors/login/', {
+    const response = await fetch('http://127.0.0.1:8000/service/authors/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
