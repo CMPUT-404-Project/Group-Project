@@ -5,6 +5,12 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser 
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from inbox.models import Inbox
+from authors.models import Author,FollowRequest
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+import authors.views
+import uuid
 # Create your views here.
 
 class PostList(APIView):
@@ -48,28 +54,45 @@ class PostDetail(APIView):
         post_object.delete()
         return Response({"type": "success", "message": "Post deleted"}, status=status.HTTP_200_OK)
 
-class CommentList(APIView):
-    def get(self, request, id):
-        comment_object = get_object_or_404(Comment, id=id)
-        query_set = Comment.objects.filter(author=comment_object)
-        serializer = CommentSerializer(query_set, many=True)
-        data = {
-            "type" : "comments",
-            "post" : serializer.data[0]["post"]["comment_id"],
-            "id" : serializer.data[0]["post"]["comment_id"] + "/comments",
-            "comments" : []
-        }
-        for i in serializer.data:
-            temp = {}
-            for key,item in i.items():
-                if(key!= "type" and key != "post"):
-                    temp[key] = item
-            data["comments"].append(temp)
-        return Response(data, status=status.HTTP_200_OK)
+class CommentDetail(APIView):
+    def get(self, request, author_id, post_id):
+        if request.user.is_authenticated:
+            author_object = get_object_or_404(Author, id=author_id)
+            post_object = get_object_or_404(Post,id=post_id)
+            comments_list = list(post_object.comments.all()) 
+            page_number = request.GET.get('page', 1)
+            size = request.GET.get('size', 10)
+            
+            if page_number and size:
+                paginator = Paginator(comments, size)
+                try:
+                    comments = paginator.page(page_number)
+                except PageNotAnInteger:
+                    comments = paginator.page(1)
+                except EmptyPage:
+                    comments = paginator.page(paginator.num_pages)
+            serializer = CommentSerializer(comments_list, many=True)
+            data = {
+                "type" : "comments",
+                "page" : page_number,
+                "size" : len(serializer),
+                "post" : serializer.data[0]["post"]["comment_id"],
+                "id" : serializer.data[0]["post"]["comment_id"] + "/comments",
+                "comments" : []
+            }
+            for i in serializer.data:
+                temp = {}
+                for key,item in i.items():
+                    if(key!= "type" and key != "post"):
+                        temp[key] = item
+                data["comments"].append(temp)
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, id):
+    def post(self,request,author_id,post_id):
         comment_data = request.data
-        comment_data['author'] = id
+        comment_data['post'] = post_id
         serializer = CommentSerializer(data = comment_data)
         if serializer.is_valid():
             saved = serializer.save()
@@ -77,29 +100,7 @@ class CommentList(APIView):
         else:
             print('Error', serializer.errors)
             return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-class CommentDetail(APIView):
-    #this returns all comments 
-    def get(self, request, author_id, post_id):
-
-        comment_object = get_object_or_404(Comment, id=id)
-        serializer = CommentSerializer(comment_object, many=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        #this function not implemented as i am not sure how to access the other
-    def put(self, request, id):
-        comment_data = request.data
-        comment_object = get_object_or_404(Comment, id=id)
-        serializer = CommentSerializer(comment_object, data=comment_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, id):
-        author_object = get_object_or_404(Comment, id=id)
-        author_object.delete()
-        return Response({"type": "success", "message": "comment deleted"}, status=status.HTTP_200_OK)
-    
+      
 class LikeList(APIView):
     def get(self, request, id):
         Like_object = get_object_or_404(Like, id=id)
