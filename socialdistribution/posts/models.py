@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.timezone import now
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.contenttypes.fields import GenericRelation
 
 from authors.models import Author
+from inbox.models import Inbox
 import uuid 
 
 def generate_uuid():
@@ -29,7 +31,7 @@ class Post(models.Model):
     # The type should be constant
     type = models.CharField(max_length=20,default="post", editable=False)
     title = models.CharField(max_length=200)
-    id = models.UUIDField(primary_key=True, default=generate_uuid, max_length=200, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     source = models.URLField(max_length=200,blank=True,null=True)
     origin = models.URLField(max_length=200,blank=True,null=True)
     description = models.CharField(max_length=500,blank=True,null=True)
@@ -41,6 +43,9 @@ class Post(models.Model):
     published = models.DateTimeField('date published',default=now)
     visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
     unlisted = models.BooleanField(default=False)
+
+    inbox = GenericRelation(Inbox, related_query_name='post')
+
     #content of the post
     content = models.TextField(blank=True,null=True)
 
@@ -61,7 +66,7 @@ class Comment(models.Model):
     # The type should be constant
     type = models.CharField(max_length=200,default="comment", editable=False)
     #id, the primary key
-    id = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     #post where comment posted
     post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
     #author of the comment
@@ -85,7 +90,7 @@ class Like(models.Model):
     # The type should be constant
     type = models.CharField(max_length=200,default="Like", editable=False)
     #id, the primary key
-    id = models.UUIDField(primary_key=True, default=generate_uuid, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     #url of object which is being liked

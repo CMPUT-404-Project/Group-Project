@@ -7,6 +7,20 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profile_image']
 
 class FollowRequestSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(many=False, required=False)
+
     class Meta:
         model = FollowRequest
-        fields = ['id', 'summary', 'type', 'actor', 'object', 'status', 'request_time']
+        fields = '__all__'
+    
+    def create(self, validated_data):
+        id = validated_data.pop('id')
+        foll_req = FollowRequest.objects.create(**validated_data, id=id)
+        foll_req.save()
+        return foll_req
+    
+    def to_representation(self, instance):
+        representation = super(FollowRequestSerializer, self).to_representation(instance)
+        representation['actor'] = AuthorSerializer(instance.actor).data
+        representation['object'] = AuthorSerializer(instance.object).data
+        return representation

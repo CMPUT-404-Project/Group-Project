@@ -10,7 +10,7 @@ from .serializers import AuthorSerializer, FollowRequestSerializer
 from django.contrib.auth.forms import UserCreationForm
 
 from django.shortcuts import render, redirect
-# Create your views here.
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import AuthorSignupForm, UserLoginForm
@@ -21,16 +21,19 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+
+from inbox.models import Inbox
+
 import uuid
 from urllib.parse import urlparse
 from django.views import View
 import requests 
 
+
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':
         requestBody = request.POST.dict()
-        print(requestBody)
         # Check if the author already exists
         try:
             Author.objects.get(displayName=requestBody.get('username'))
@@ -43,8 +46,8 @@ def signup(request):
             author_data = requestBody.copy()
             author_data['displayName'] = requestBody.get('username')
             author_data['host'] = request.build_absolute_uri('/')
-            author_data['id'] = uuid.uuid4().hex
-            author_data['url'] = f"{author_data['host']}author/{author_data['id']}"
+            author_data['id'] = str(uuid.uuid4().hex)
+            author_data['url'] = f"{author_data['host']}/service/authors/{author_data['id']}"
             author = Author.objects.create(
                 customuser=user,
                 id = author_data['id'],
@@ -111,8 +114,7 @@ class AuthorList(APIView):
         serializer = AuthorSerializer(query_set, many=True)
         return Response({"type": "authors", "items": serializer.data}, status=status.HTTP_200_OK)
 
-    # I do not think we need post
-    def post(self, request): #Do we need post?
+    def post(self, request): 
         author_data = request.data
         serializer = AuthorSerializer(data=author_data)
         if serializer.is_valid():
@@ -127,6 +129,7 @@ class AuthorDetail(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id):
+        request.user
         author_data = request.data
         author_object = get_object_or_404(Author, id=id)
         serializer = AuthorSerializer(author_object, data=author_data)
@@ -140,40 +143,98 @@ class AuthorDetail(APIView):
         author_object.delete()
         return Response({"type": "success", "message": "Author deleted"}, status=status.HTTP_200_OK)
 
+def send_request(sender, receiver, requests):
+    if requests:
+        #already following
+        if requests.filter(status=True):
+            return Response({"type": "error", "message": f"{sender.displayName} is already following {receiver.displayName}"}, status=status.HTTP_400_BAD_REQUEST)
+        #follow request already sent (pending)
+        else:
+            return Response({"type": "error", "message": "Follow Request Already Sent"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if sender.displayName == receiver.displayName:
+        return Response({"type": "error", "message": "Cannot follow yourself"}, status=status.HTTP_400_BAD_REQUEST)
+
+    follow_request = {
+        "id": uuid.uuid4().hex,
+        "summary": f"{sender.displayName} wants to follow {receiver.displayName}",
+        "type": "follow",
+        "actor": sender.id,
+        "object": receiver.id,
+    }
+
+    serializer = FollowRequestSerializer(data=follow_request)
+
+    if serializer.is_valid():
+        saved = serializer.save()
+        #send request to receiver
+        followObject = FollowRequest.objects.get(pk=follow_request['id'])
+        inboxObject = Inbox(
+            author=receiver,
+            object=followObject,
+        )
+        inboxObject.save()
+
+        return Response({"follow_request": serializer.data}, status=status.HTTP_200_OK)
+    return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowersList(APIView):
     def get(self, request, id):
         author_object = get_object_or_404(Author, id=id)
-        query_set = Followers.objects.filter(author=author_object)
-        serializer = AuthorSerializer(query_set, many=True)
-        return Response({"type": "followers", "items": serializer.data}, status=status.HTTP_200_OK)
+        query_set = FollowRequest.objects.all().filter(object = author_object.id, status=True).values_list('actor_id', flat=True) 
+        followers = Author.objects.filter(id__in=query_set)
+
+        page_number = request.GET.get('page', 1)
+        size = request.GET.get('size', 10)
+
+        if page_number and size:
+            paginator = Paginator(followers, size)
+            try:
+                followers = paginator.page(page_number)
+            except PageNotAnInteger:
+                followers = paginator.page(1)
+            except EmptyPage:
+                followers = paginator.page(paginator.num_pages)
+        data = AuthorSerializer(followers.object_list, many=True).data
+        
+        return Response({"type": "followers", "items": data}, status=status.HTTP_200_OK)
 
 class FollowersDetail(APIView):
     
     def get(self, request, id, fid):
-        author_object = get_object_or_404(Author, id=id)
         follower_object = get_object_or_404(Author, id=fid)
-        query_set = Followers.objects.filter(author=author_object, followers=follower_object)
-        serializer = AuthorSerializer(query_set, many=True)
-        return Response({"type": "follower", "items": serializer.data}, status=status.HTTP_200_OK)
+        serializer = AuthorSerializer(follower_object, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id, fid):
         author_object = get_object_or_404(Author, id=id)
         follower_object = get_object_or_404(Author, id=fid)
-        query_set = Followers.objects.filter(author=author_object, followers=follower_object)
-        if query_set:
-            return Response({"type": "error", "message": "Already following"}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            new_follower = Followers(author=author_object, followers=follower_object)
-            new_follower.save()
-            return Response({"type": "success", "message": "Followed"}, status=status.HTTP_200_OK)
+        query_set = FollowRequest.objects.all().filter(actor_id = follower_object.id , object_id = author_object.id)     
+        return send_request(follower_object, author_object, query_set)
+                
 
     def delete(self, request, id, fid):
         author_object = get_object_or_404(Author, id=id)
         follower_object = get_object_or_404(Author, id=fid)
-        query_set = Followers.objects.filter(author=author_object, followers=follower_object)
-        if query_set:
-            query_set.delete()
-            return Response({"type": "success", "message": "Unfollowed"}, status=status.HTTP_200_OK)
+        follow_request = get_object_or_404(FollowRequest, actor = follower_object.id, object = author_object.id, status = True)
+        follow_request.delete()
+        return Response({"type": "success", "message": f"{follower_object.displayName} removed as a follower"}, status=status.HTTP_200_OK)
+
+class SendFollowRequest(APIView):
+    def get(self, request, id):
+        if request.user.is_authenticated:
+            author_object = get_object_or_404(Author, id=id)
+            query_set = FollowRequest.objects.all().filter(actor = author_object.id)
+            serializer = FollowRequestSerializer(query_set, many=True)
+            return Response({"type": "followRequests", "items": serializer.data}, status=status.HTTP_200_OK)
         else:
-            return Response({"type": "error", "message": "Not following"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, id):
+        if request.user.is_authenticated:
+            sender = get_object_or_404(Author, id=id)
+            receiver = get_object_or_404(Author, displayName=request.data['displayName'])  
+            current_requests = FollowRequest.objects.all().filter(actor_id = sender.id, object_id = receiver.id)
+            return send_request(sender, receiver, current_requests)
+        else:
+            return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)

@@ -16,6 +16,8 @@ import LoginForm from './components/LoginForm';
 import GithubActivity from './components/GithubActivity';
 import ReactDOM from 'react-dom';
 import React from 'react';
+import AuthorLookup from './components/author_lookup/AuthorLookup';
+import AuthorInbox from './components/author_inbox/AuthorInbox';
 
 function App() {
   const [userID, setUserID] = useState('');
@@ -55,7 +57,7 @@ function App() {
   //   </div>
   // );
   //my code
-  const [signedup, setSignedup] = useState(false);
+  const [signedup, setSignedup] = useState(true);
   const [loggedin, setLoggedin] = useState(false);
   if (signedup === false){
     return (
@@ -70,6 +72,7 @@ function App() {
     return(
       <div className="App">
         <Navigation />
+        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
         <LoginForm setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
     );
@@ -79,7 +82,14 @@ function App() {
     return (
       <div className="App">
         <Navigation />
+
+        {/* Author Actions */}
         <PostSubmit userID={userID} setPostItems={setPostItems}/>
+        <AuthorLookup userID={userID} />
+        <AuthorInbox userID={userID} />
+
+
+
         {postItemComponents}
         <p>{userID}</p>
         <GithubActivity userID={userID}/>
