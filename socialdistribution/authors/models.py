@@ -1,7 +1,13 @@
 from django.db import models
 from django.utils.timezone import now
-import uuid
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+import uuid
+from inbox.models import Inbox
+
+def generate_uuid():
+    return str(uuid.uuid4().hex)
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
@@ -19,6 +25,7 @@ class CustomUser(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True)
     
     is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
@@ -39,11 +46,31 @@ class CustomUser(AbstractBaseUser):
             return True
         return False
 
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+    
+    def has_module_perms(self, app_label):
+        return True
+    
+    def get_id(self):
+        return self.id
+    
+    def get_is_staff(self):
+        return self.is_staff
+    
+    def get_is_active(self):
+        return self.is_active
+    
+    def get_is_superuser(self):
+        return self.is_superuser
+    
+
+
 # Create your models here.
 class Author(models.Model):
     # user_name = models.CharField(unique=True)
     customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', default=None)
-    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id  = models.CharField(primary_key=True, default=generate_uuid, editable=False, max_length=200)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
     displayName = models.CharField(max_length=200,unique=True)
@@ -57,20 +84,14 @@ class Author(models.Model):
     
     def __str__(self):
         return str(self.displayName) + '-' + str(self.id)
-    
-class Followers(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    author = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='author', editable=False)
-    followers = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='followers', editable=False)
-    
-    def __str__(self):
-        return str(self.author) + '-' + str(self.followers_id)
+
 
 class FollowRequest(models.Model):
-    id  = models.UUIDField(primary_key=True)
-    summary = models.CharField(max_length=200)
+    id  = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     type = models.CharField(max_length=20,default="Follow", editable=False)
-    actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor')
-    object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object')
+    summary = models.CharField(max_length=300, default="Follow Request")
+    actor = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='actor', unique=False)
+    object = models.ForeignKey(Author,on_delete=models.CASCADE,related_name='object', unique=False)
     status = models.BooleanField(default=False)
     request_time = models.DateTimeField('date request came', default=now) 
+    inbox = GenericRelation(Inbox, on_delete=models.CASCADE, related_query_name='inbox')

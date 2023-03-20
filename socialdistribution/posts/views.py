@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser 
-
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 # Create your views here.
@@ -54,14 +53,39 @@ class CommentList(APIView):
         comment_object = get_object_or_404(Comment, id=id)
         query_set = Comment.objects.filter(author=comment_object)
         serializer = CommentSerializer(query_set, many=True)
-        return Response({"type": "comment", "items": serializer.data}, status=status.HTTP_200_OK)
+        data = {
+            "type" : "comments",
+            "post" : serializer.data[0]["post"]["comment_id"],
+            "id" : serializer.data[0]["post"]["comment_id"] + "/comments",
+            "comments" : []
+        }
+        for i in serializer.data:
+            temp = {}
+            for key,item in i.items():
+                if(key!= "type" and key != "post"):
+                    temp[key] = item
+            data["comments"].append(temp)
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request, id):
+        comment_data = request.data
+        comment_data['author'] = id
+        serializer = CommentSerializer(data = comment_data)
+        if serializer.is_valid():
+            saved = serializer.save()
+            return Response({"type": "comment", "id": saved.id}, status=status.HTTP_201_CREATED)
+        else:
+            print('Error', serializer.errors)
+            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentDetail(APIView):
-    def get(self, request, id):
+    #this returns all comments 
+    def get(self, request, author_id, post_id):
+
         comment_object = get_object_or_404(Comment, id=id)
         serializer = CommentSerializer(comment_object, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+        #this function not implemented as i am not sure how to access the other
     def put(self, request, id):
         comment_data = request.data
         comment_object = get_object_or_404(Comment, id=id)
@@ -78,10 +102,23 @@ class CommentDetail(APIView):
     
 class LikeList(APIView):
     def get(self, request, id):
-        comment_object = get_object_or_404(Comment, id=id)
-        query_set = Comment.objects.filter(author=comment_object)
-        serializer = CommentSerializer(query_set, many=True)
+        Like_object = get_object_or_404(Like, id=id)
+        query_set = Like.objects.filter(author=Like_object)
+        serializer = LikeSerializer(query_set, many=True)
         return Response({"type": "like", "items": serializer.data}, status=status.HTTP_200_OK)
+    
+    def post(self, request, author_id, post_id):
+        post_data = request.data
+        post_data['author'] = author_id
+        post_data['post'] = post_id
+        serializer = LikeSerializer(data = post_data)
+        if serializer.is_valid():
+            saved = serializer.save()
+            return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+        else:
+            print('Error', serializer.errors)
+            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LikeDetail(APIView):
     def get(self, request, id):

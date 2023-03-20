@@ -5,14 +5,12 @@ from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
 
 class AuthorSignupForm(UserCreationForm):
-    host = forms.CharField(max_length=200)
-    displayName = forms.CharField(max_length=200)
-    url = forms.CharField(max_length=200)
     github = forms.CharField(max_length=200)
+    #profile_pic = forms.ImageField()
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'password1', 'password2', 'host', 'displayName', 'url', 'github']
+        fields = ['username', 'password1', 'password2', 'github'] #, 'profile_pic'] 
 
     def save(self, commit=True):
         user = super(AuthorSignupForm, self).save(commit=False)
