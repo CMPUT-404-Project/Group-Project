@@ -13,6 +13,7 @@ import Login from './components/Login';
 
 import AuthorSignupForm from './components/AuthorSignupForm';
 import LoginForm from './components/LoginForm';
+import GithubActivity from './components/GithubActivity';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import AuthorLookup from './components/author_lookup/AuthorLookup';
@@ -66,8 +67,6 @@ function App() {
       </div>
     );
   }
-  //do else here
-  //do login
 
   else if(loggedin === false) {
     return(
@@ -93,6 +92,7 @@ function App() {
 
         {postItemComponents}
         <p>{userID}</p>
+        <GithubActivity userID={userID}/>
       </div>
     );
   }

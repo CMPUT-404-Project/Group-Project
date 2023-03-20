@@ -3,8 +3,10 @@ from .models import Author
 from . import views
 
 urlpatterns = [
-    # path('/login/', views.user_login, name='user_login'),
-    # path('/signup/', views.signup, name='signup'),
+
+    path('/login/', views.user_login, name='user_login'),
+    path('/signup/', views.signup, name='signup'),
+    path('/github/', views.GithubActivity.as_view(), name='github'),
     
     path('', views.AuthorList.as_view(), name = 'list'),
     path('/<str:id>', views.AuthorDetail.as_view(), name = 'detail'),
