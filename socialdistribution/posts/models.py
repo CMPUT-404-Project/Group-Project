@@ -20,7 +20,7 @@ class Post(models.Model):
         ('application/base64', 'application/base64'),
         ('image/png;base64','image/png;base64'),
         ('image/jpeg;base64','image/jpeg;base64'),
-        #('multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW','multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW')
+        #('multipart/form-data; boundary=----   W','multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW')
     )
 
     VISIBILITY = (
