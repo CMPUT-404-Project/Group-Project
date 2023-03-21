@@ -43,8 +43,12 @@ class Post(models.Model):
     published = models.DateTimeField('date published',default=now)
     visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
     unlisted = models.BooleanField(default=False)
+
     inbox = GenericRelation(Inbox, related_query_name='post')
-    
+
+    #content of the post
+    content = models.TextField(blank=True,null=True)
+
     def __str__(self):
         return self.title + "(" + str(self.id) + ")"
 
