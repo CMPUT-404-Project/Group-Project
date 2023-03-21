@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import authors.views
 import uuid
+from authors.serializers import AuthorSerializer
 # Create your views here.
 
 class PostList(APIView):
@@ -100,44 +101,81 @@ class CommentDetail(APIView):
         else:
             print('Error', serializer.errors)
             return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-      
-class LikeList(APIView):
-    def get(self, request, id):
-        Like_object = get_object_or_404(Like, id=id)
-        query_set = Like.objects.filter(author=Like_object)
-        serializer = LikeSerializer(query_set, many=True)
-        return Response({"type": "like", "items": serializer.data}, status=status.HTTP_200_OK)
-    
-    def post(self, request, author_id, post_id):
-        post_data = request.data
-        post_data['author'] = author_id
-        post_data['post'] = post_id
-        serializer = LikeSerializer(data = post_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+
+class LikesDetail(APIView):
+    def get(self,request,author_id,post_id):
+        if request.user.is_authenticated:
+            # author_object = get_object_or_404(Author, id=author_id)
+            # post_object = get_object_or_404(Post,id=post_id)
+            likes = Like.objects.filter(post = post_id)
+            serializer = LikeSerializer(likes, many=True)
+            
+            return Response({"type": "like", "items": serializer.data}, status=status.HTTP_200_OK)
         else:
-            print('Error', serializer.errors)
             return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-
-class LikeDetail(APIView):
-    def get(self, request, id):
-        like_object = get_object_or_404(Like, id=id)
-        serializer = LikeSerializer(like_object, many=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, id):
-        like_data = request.data
-        like_object = get_object_or_404(Comment, id=id)
-        serializer = CommentSerializer(like_object, data=like_data)
+            
+    def post(self, request, author_id, post_id):
+        # like_data = request.data
+        # like_data['post'] = post_id
+        # serializer = LikeSerializer(data = like_data)
+        # if serializer.is_valid():
+        #     saved = serializer.save()
+        #     return Response({"type": "like", "id": saved.id}, status=status.HTTP_201_CREATED)
+        # else:
+        #     print('Error', serializer.errors)
+        #     return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST) 
+        request_dict = dict(request.data)
+        try:
+            author_like = Author.objects.get(url=request_dict['author'])   
+        except:
+            return Response({"message": "Author not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        request_dict["author"] = AuthorSerializer(data=author_like).data
+        serializer = LikeSerializer(data = request_dict)
         if serializer.is_valid():
             saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"type": "like", "id": saved.id}, status=status.HTTP_201_CREATED)
+        else:
+            print('Error', serializer.errors)
+            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST) 
+# class LikeList(APIView):
+#     def get(self, request, id):
+#         Like_object = get_object_or_404(Like, id=id)
+#         query_set = Like.objects.filter(author=Like_object)
+#         serializer = LikeSerializer(query_set, many=True)
+#         return Response({"type": "like", "items": serializer.data}, status=status.HTTP_200_OK)
+    
+#     def post(self, request, author_id, post_id):
+#         post_data = request.data
+#         post_data['author'] = author_id
+#         post_data['post'] = post_id
+#         serializer = LikeSerializer(data = post_data)
+#         if serializer.is_valid():
+#             saved = serializer.save()
+#             return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+#         else:
+#             print('Error', serializer.errors)
+#             return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id):
-        author_object = get_object_or_404(Comment, id=id)
-        author_object.delete()
-        return Response({"type": "success", "message": "Like deleted"}, status=status.HTTP_200_OK)
+
+# class LikeDetail(APIView):
+#     def get(self, request, id):
+#         like_object = get_object_or_404(Like, id=id)
+#         serializer = LikeSerializer(like_object, many=False)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def put(self, request, id):
+#         like_data = request.data
+#         like_object = get_object_or_404(Comment, id=id)
+#         serializer = CommentSerializer(like_object, data=like_data)
+#         if serializer.is_valid():
+#             saved = serializer.save()
+#             return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
+#         return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+#     def delete(self, request, id):
+#         author_object = get_object_or_404(Comment, id=id)
+#         author_object.delete()
+#         return Response({"type": "success", "message": "Like deleted"}, status=status.HTTP_200_OK)
     
