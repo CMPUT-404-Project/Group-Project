@@ -32,11 +32,24 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(required=False)
     class Meta:
         model = Comment
-        fields = ['type', 'comment_id', 'post', 'author', 'content_type', 'comment', 'published_date']
+        exclude = ['post']
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['author'] = AuthorSerializer(instance.author).data
+        return ret
+
 
 class LikeSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(required=False)
     class Meta:
         model = Like
-        fields = ['type', 'like_id', 'author', 'object_summary', 'summary_type', 'published_date']
+        fields = '__all__' #maybe exclude object_type?
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['author'] = AuthorSerializer(instance.author).data
+        return ret

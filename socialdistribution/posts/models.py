@@ -10,7 +10,6 @@ import uuid
 def generate_uuid():
     return uuid.uuid4().hex
 
-# Create your models here.
 class Post(models.Model):
 
      # To use choices I followed this: https://www.geeksforgeeks.org/how-to-use-django-field-choices 
@@ -28,7 +27,6 @@ class Post(models.Model):
         ("FRIENDS","friends"),
         ("PRIVATE","private"),
     )
-    # The type should be constant
     type = models.CharField(max_length=20,default="post", editable=False)
     title = models.CharField(max_length=200)
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
@@ -59,19 +57,12 @@ class Comment(models.Model):
         ('text/plain','text/plain')
     )
 
-    # The type should be constant
     type = models.CharField(max_length=200,default="comment", editable=False)
-    #id, the primary key
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
-    #post where comment posted
     post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
-    #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
-    #content type of the comment
-    content_type = models.CharField(max_length=150,choices=CONTENT_TYPE,default='text/plain')
-    #comment on post
+    contentType = models.CharField(max_length=150,choices=CONTENT_TYPE,default='text/plain')
     comment = models.TextField()
-    #date comment was published
     published = models.DateTimeField('date published', default=now)
     
     def get_id(self):
@@ -83,21 +74,13 @@ class Like(models.Model):
         ('post','post'),
         ('comment','comment')
     )
-    # The type should be constant
     type = models.CharField(max_length=200,default="Like", editable=False)
-    #id, the primary key
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
-    #author of the comment
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
-    #url of object which is being liked
     object = models.URLField(null=True,editable=False)
-    #type of object which is being liked
     object_type = models.CharField(max_length=150,choices=OBJECT_TYPE,default='post')
-    #summary of the 
     summary = models.CharField(max_length=300,null=True,editable=False)
-    #date comment was published
     published_date = models.DateTimeField('date published', default=now)
-
 
     def get_id(self):
         return self.id
