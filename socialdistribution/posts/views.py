@@ -9,51 +9,91 @@ from inbox.models import Inbox
 from authors.models import Author,FollowRequest
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-import authors.views
 import uuid
 from authors.serializers import AuthorSerializer
 # Create your views here.
 
+
+def create_post(request, author, pid=None):
+    try:
+        request_copy = request.data.copy() #so we don't modify the original request
+        categories = request_copy.data.getlist('categories')
+        request_copy['source'] = request.get_host() + request.path
+        request_copy['origin'] = request.get_host() + request.path
+        if request.method == 'PUT':
+            request_copy['id'] = pid
+
+        post_ser = PostSerializer(data=request_copy)
+        if post_ser.is_valid():
+            post_ser.save(
+                author = AuthorSerializer(author).data, 
+                categories = categories
+            )
+            return Response(post_ser.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(post_ser.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 class PostList(APIView):
     
-    # parser_classes = (MultiPartParser, FormParser)
-
     def get(self, request, id):
-        query_set = Post.objects.filter(author=id)
-        serializer = PostSerializer(query_set, many=True)
-        return Response({"type": "posts", "items": serializer.data}, status=status.HTTP_200_OK)
+        author = get_object_or_404(Author, id=id)
+        posts = author.post_set.all() #get all posts of the authors
+
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+
+        if page_number and size:
+            paginator = Paginator(posts, size)
+            try:
+                posts = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                posts = paginator.get_page(1).object_list
+            except EmptyPage:
+                posts = paginator.get_page(paginator.num_pages).object_list
+        
+        serializer = PostSerializer(posts, many=True)
+        return Response({"type":"posts","items":serializer.data}, status=status.HTTP_200_OK)
     
     def post(self, request, id):
-        post_data = request.data
-        post_data['author'] = id
-        serializer = PostSerializer(data = post_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+        author = get_object_or_404(Author, id=id)
+        if request.user.is_authenticated and request.user.id == author.user.id:
+            return create_post(request, author)
         else:
-            print('Error', serializer.errors)
-            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
-#added this-Harsh
 class PostDetail(APIView):
-    def get(self, request, id):
-        post_object = get_object_or_404(Post, id=id)
-        serializer = PostSerializer(post_object, many=False)
+    def get(self, request, id, pid):
+        post = get_object_or_404(Post, id=pid)
+        serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id):
-        post_data = request.data
-        post_object = get_object_or_404(Post, id=id)
-        serializer = PostSerializer(post_object, data=post_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, id, pid):
+        author = get_object_or_404(Author, id=id)
+        if Post.objects.filter(id=pid).exists():
+            return Response({"type": "error", "message": "Post already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return create_post(request, author, pid)
 
-    def delete(self, request, id):
-        post_object = get_object_or_404(Post, id=id)
-        post_object.delete()
-        return Response({"type": "success", "message": "Post deleted"}, status=status.HTTP_200_OK)
+    def post(self, request, id, pid):
+        if request.user.is_authenticated:
+            author = get_object_or_404(Author, id=id)
+            post = get_object_or_404(Post, id=pid)
+            # update the post whose id is pid
+            serializer = PostSerializer(post, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+    def delete(self, request, id, pid):
+        author = get_object_or_404(Author, id=id)
+        post = get_object_or_404(Post, id=pid)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CommentDetail(APIView):
     def get(self, request, author_id, post_id):

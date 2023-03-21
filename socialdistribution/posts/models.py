@@ -46,7 +46,7 @@ class Post(models.Model):
     inbox = GenericRelation(Inbox, related_query_name='post')
     
     def __str__(self):
-        return self.title + "(" + str(self.id) + ")"
+        return self.title + "(" + str(self.id) + ")"    
 
     #returns id of the post
     def get_id(self):

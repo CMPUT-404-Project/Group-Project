@@ -184,10 +184,13 @@ class FollowersDetail(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id, fid):
-        author_object = get_object_or_404(Author, id=id)
-        follower_object = get_object_or_404(Author, id=fid)
-        query_set = FollowRequest.objects.all().filter(actor_id = follower_object.id , object_id = author_object.id)     
-        return send_request(follower_object, author_object, query_set)
+        if request.user.is_authenticated:
+            author_object = get_object_or_404(Author, id=id)
+            follower_object = get_object_or_404(Author, id=fid)
+            query_set = FollowRequest.objects.all().filter(actor_id = follower_object.id , object_id = author_object.id)     
+            return send_request(follower_object, author_object, query_set)
+        else:
+            return Response({"type": "error", "message": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
                 
 
     def delete(self, request, id, fid):
