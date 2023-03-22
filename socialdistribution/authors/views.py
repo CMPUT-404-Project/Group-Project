@@ -23,6 +23,7 @@ from django.utils.decorators import method_decorator
 
 
 from inbox.models import Inbox
+import base64
 
 import uuid
 from urllib.parse import urlparse
@@ -70,11 +71,49 @@ def signup(request):
         return render(request, 'signup.html', context=context)
         
        
+# @csrf_exempt
+# def user_login(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             # Authentication successful
+#             author_id = user.author.id
+#             author = Author.objects.get(id=author_id)
+#             if user.is_active:
+#                 login(request, user)
+#                 return JsonResponse({'success': True, 'author_id': author_id})
+#         else:
+#             # Authentication failed
+#             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
+#     else:
+#         form = UserLoginForm()
+#         context = {'form': form}
+#         return render(request, 'login.html', context=context)
+
 @csrf_exempt
 def user_login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if 'Authorization' in request.headers:
+        # HTTP basic authentication
+        auth = request.headers['Authorization'].split()
+        if len(auth) == 2 and auth[0].lower() == 'basic':
+            username, password = base64.b64decode(auth[1]).decode().split(':')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # Authentication successful
+                author_id = user.author.id
+                author = Author.objects.get(id=author_id)
+                if user.is_active:
+                    login(request, user)
+                    return JsonResponse({'success': True, 'author_id': author_id})
+            else:
+                # Authentication failed
+                return JsonResponse({'success': False, 'message': 'Invalid username or password'})
+    else:
+        # Django/React-based authentication
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             # Authentication successful
@@ -107,6 +146,7 @@ class GithubActivity(APIView):
             return Response(data)
         else:
             return Response({'error': 'No GitHub username found'}, status=404)
+
 
 class AuthorList(APIView):
     def get(self, request):
@@ -207,10 +247,13 @@ class FollowersDetail(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id, fid):
-        author_object = get_object_or_404(Author, id=id)
-        follower_object = get_object_or_404(Author, id=fid)
-        query_set = FollowRequest.objects.all().filter(actor_id = follower_object.id , object_id = author_object.id)     
-        return send_request(follower_object, author_object, query_set)
+        if request.user.is_authenticated:
+            author_object = get_object_or_404(Author, id=id)
+            follower_object = get_object_or_404(Author, id=fid)
+            query_set = FollowRequest.objects.all().filter(actor_id = follower_object.id , object_id = author_object.id)     
+            return send_request(follower_object, author_object, query_set)
+        else:
+            return Response({"type": "error", "message": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
                 
 
     def delete(self, request, id, fid):

@@ -3,8 +3,9 @@ const signup = async (username, password, github) => {
     formData.append('username', username);
     formData.append('password', password);
     formData.append('github', github);    
-  
-    const response = await fetch('http://127.0.0.1:8000/service/authors/signup/', {
+
+    const response = await fetch('http://127.0.0.1:8000/auth/signup/', {
+
       method: 'POST',
       body: formData,
       //credentials: 'include',

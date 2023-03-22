@@ -1,6 +1,7 @@
 from django.urls import include, path
 from .models import Author
 from . import views
+from posts.urls import urlpatterns as posts_urlpatterns
 
 urlpatterns = [
 
@@ -13,6 +14,7 @@ urlpatterns = [
     path('/<str:id>/followers', views.FollowersList.as_view()),
     path('/<str:id>/followers/<str:fid>', views.FollowersDetail.as_view()),
     path('/<str:id>/followers/sendrequest/', views.SendFollowRequest.as_view()),
-    path('/<str:id>/posts', include('posts.urls')),
+    #path('/<str:id>/posts', include('posts.urls')),
+    path('/<str:id>/posts/', include(posts_urlpatterns)),
     path('/<str:id>/inbox', include('inbox.urls')),
 ]

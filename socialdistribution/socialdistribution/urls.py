@@ -20,7 +20,7 @@ from authors import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('django.contrib.auth.urls')), 
+    # path('auth/', include('django.contrib.auth.urls')),
     path('auth/login/', views.user_login, name='user_login'),
     path('auth/signup/', views.signup, name='signup'),
     path('service/authors',include('authors.urls')),

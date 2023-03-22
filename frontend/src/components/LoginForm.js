@@ -8,10 +8,15 @@ const LoginForm = ({ setUserID, setLoggedin}) => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    const response = await fetch('http://127.0.0.1:8000/service/authors/login/', {
+    const authString = `${authusername}:${authpassword}`;
+    const encodedAuthString = btoa(authString);
+
+    const response = await fetch('http://127.0.0.1:8000/auth/login/', {
+
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'Authorization': `Basic ${encodedAuthString}`
       },
       body: new URLSearchParams({
         username: authusername,

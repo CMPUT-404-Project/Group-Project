@@ -5,138 +5,217 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser 
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from inbox.models import Inbox
+from authors.models import Author,FollowRequest
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+import uuid
+from authors.serializers import AuthorSerializer
+# import django.db.models.signals 
+from django.db.models.signals import post_save
 # Create your views here.
 
+
+def create_post(request, author, post_id=None):
+    try:
+        request_copy = request.data.copy() #so we don't modify the original request
+        categories = request_copy.data.getlist('categories')
+        request_copy['source'] = request.get_host() + request.path
+        request_copy['origin'] = request.get_host() + request.path
+        if request.method == 'PUT':
+            request_copy['id'] = post_id
+
+        post_ser = PostSerializer(data=request_copy)
+        if post_ser.is_valid():
+            post_ser.save(
+                author = AuthorSerializer(author).data, 
+                categories = categories
+            )
+            return Response(post_ser.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(post_ser.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 class PostList(APIView):
     
-    # parser_classes = (MultiPartParser, FormParser)
+    def get(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
+        posts = author.posted.all() #get all posts of the authors
+        
+        page_number, size = request.GET.get('page'), request.GET.get('size')
 
-    def get(self, request, id):
-        query_set = Post.objects.filter(author=id)
-        serializer = PostSerializer(query_set, many=True)
-        return Response({"type": "posts", "items": serializer.data}, status=status.HTTP_200_OK)
+        if page_number and size:
+            paginator = Paginator(posts, size)
+            try:
+                posts = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                posts = paginator.get_page(1).object_list
+            except EmptyPage:
+                posts = paginator.get_page(paginator.num_pages).object_list
+        
+        serializer = PostSerializer(posts, many=True)
+        return Response({"type":"posts","id":serializer.data}, status=status.HTTP_200_OK)
     
-    def post(self, request, id):
-        post_data = request.data
-        post_data['author'] = id
-        serializer = PostSerializer(data = post_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+    def post(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
+        if request.user.is_authenticated and request.user.id == author.user.author_id:
+            return create_post(request, author)
         else:
-            print('Error', serializer.errors)
-            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
-#added this-Harsh
 class PostDetail(APIView):
-    def get(self, request, id):
-        post_object = get_object_or_404(Post, id=id)
-        serializer = PostSerializer(post_object, many=False)
+    def get(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id):
-        post_data = request.data
-        post_object = get_object_or_404(Post, id=id)
-        serializer = PostSerializer(post_object, data=post_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        if Post.objects.filter(id=post_id).exists():
+            return Response({"type": "error", "message": "Post already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return create_post(request, author, post_id)
 
-    def delete(self, request, id):
-        post_object = get_object_or_404(Post, id=id)
-        post_object.delete()
-        return Response({"type": "success", "message": "Post deleted"}, status=status.HTTP_200_OK)
+    def post(self, request, author_id, post_id):
+        if request.user.is_authenticated:
+            author = get_object_or_404(Author, id=author_id)
+            post = get_object_or_404(Post, id=post_id)
+            # update the post whose id is pid
+            serializer = PostSerializer(post, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+    def delete(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CommentList(APIView):
-    def get(self, request, id):
-        comment_object = get_object_or_404(Comment, id=id)
-        query_set = Comment.objects.filter(author=comment_object)
-        serializer = CommentSerializer(query_set, many=True)
-        data = {
-            "type" : "comments",
-            "post" : serializer.data[0]["post"]["comment_id"],
-            "id" : serializer.data[0]["post"]["comment_id"] + "/comments",
-            "comments" : []
-        }
-        for i in serializer.data:
-            temp = {}
-            for key,item in i.items():
-                if(key!= "type" and key != "post"):
-                    temp[key] = item
-            data["comments"].append(temp)
-        return Response(data, status=status.HTTP_200_OK)
-
-    def post(self, request, id):
-        comment_data = request.data
-        comment_data['author'] = id
-        serializer = CommentSerializer(data = comment_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "comment", "id": saved.id}, status=status.HTTP_201_CREATED)
-        else:
-            print('Error', serializer.errors)
-            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-class CommentDetail(APIView):
-    #this returns all comments 
     def get(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        comments = post.comments.all().order_by('-published')
 
-        comment_object = get_object_or_404(Comment, id=id)
-        serializer = CommentSerializer(comment_object, many=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        #this function not implemented as i am not sure how to access the other
-    def put(self, request, id):
-        comment_data = request.data
-        comment_object = get_object_or_404(Comment, id=id)
-        serializer = CommentSerializer(comment_object, data=comment_data)
-        if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+        if page_number and size:
+            paginator = Paginator(comments, size)
+            try:
+                comments = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                comments = paginator.get_page(1).object_list
+            except EmptyPage:
+                comments = paginator.get_page(paginator.num_pages).object_list
+        
+        serializer = CommentSerializer(comments, many=True)
+        return Response({"type":"comments","items":serializer.data}, status=status.HTTP_200_OK)
 
-    def delete(self, request, id):
-        author_object = get_object_or_404(Comment, id=id)
-        author_object.delete()
-        return Response({"type": "success", "message": "comment deleted"}, status=status.HTTP_200_OK)
-    
-class LikeList(APIView):
-    def get(self, request, id):
-        Like_object = get_object_or_404(Like, id=id)
-        query_set = Like.objects.filter(author=Like_object)
-        serializer = LikeSerializer(query_set, many=True)
-        return Response({"type": "like", "items": serializer.data}, status=status.HTTP_200_OK)
-    
-    def post(self, request, author_id, post_id):
-        post_data = request.data
-        post_data['author'] = author_id
-        post_data['post'] = post_id
-        serializer = LikeSerializer(data = post_data)
+    def post(self,request,author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        request_copy = request.data.copy()
+        request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
+
+        serializer = CommentSerializer(data=request_copy)
         if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "post", "id": saved.id}, status=status.HTTP_201_CREATED)
+            serializer.save(author=author, post=post)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print('Error', serializer.errors)
-            return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class PostLikes(APIView):
+    def get(self,request,author_id,post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        post_url = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
 
-class LikeDetail(APIView):
-    def get(self, request, id):
-        like_object = get_object_or_404(Like, id=id)
-        serializer = LikeSerializer(like_object, many=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        likes = Like.objects.all().filter(object=post_url)
+        if not likes:
+            return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+        if page_number and size:
+            paginator = Paginator(likes, size)
+            try:
+                likes = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                likes = paginator.get_page(1).object_list
+            except EmptyPage:
+                likes = paginator.get_page(paginator.num_pages).object_list
 
-    def put(self, request, id):
-        like_data = request.data
-        like_object = get_object_or_404(Comment, id=id)
-        serializer = CommentSerializer(like_object, data=like_data)
+        serializer = LikeSerializer(likes, many=True)
+        return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
+
+            
+    def post(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        request_copy = request.data.copy()
+
+        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
+        request_copy['summary'] = f"{author.displayName} likes your post"
+        request_copy['object_type'] = "post"
+
+        serializer = LikeSerializer(data=request_copy)
         if serializer.is_valid():
-            saved = serializer.save()
-            return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
-        return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save(author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id):
-        author_object = get_object_or_404(Comment, id=id)
-        author_object.delete()
-        return Response({"type": "success", "message": "Like deleted"}, status=status.HTTP_200_OK)
-    
+class CommentLikes(APIView):
+    def get(self,request,author_id,post_id,comment_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        comment = get_object_or_404(Comment, id = comment_id)
+        post_url = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{comment_id}"
+
+        likes = Like.objects.all().filter(object=post_url)
+        if not likes:
+            return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+        if page_number and size:
+            paginator = Paginator(likes, size)
+            try:
+                likes = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                likes = paginator.get_page(1).object_list
+            except EmptyPage:
+                likes = paginator.get_page(paginator.num_pages).object_list
+
+        serializer = LikeSerializer(likes, many=True)
+        return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
+
+            
+    def post(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        request_copy = request.data.copy()
+
+        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
+        request_copy['summary'] = f"{author.displayName} likes your comment"
+        request_copy['object_type'] = "post"
+
+        serializer = LikeSerializer(data=request_copy)
+        if serializer.is_valid():
+            serializer.save(author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AuthorLiked(APIView):
+    def get(self,request,author_id,post_id,comment_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        author_liked = Like.objects.filter(author = author)
+        serializer = LikeSerializer(author_liked)
+        return Response( {"type": "liked", "items": serializer.data},status=status.HTTP_200_OK)
+        
