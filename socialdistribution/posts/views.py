@@ -11,6 +11,8 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import uuid
 from authors.serializers import AuthorSerializer
+# import django.db.models.signals 
+from django.db.models.signals import post_save
 # Create your views here.
 
 
@@ -39,7 +41,7 @@ class PostList(APIView):
     
     def get(self, request, id):
         author = get_object_or_404(Author, id=id)
-        posts = author.post_set.all() #get all posts of the authors
+        posts = author.posted.all() #get all posts of the authors
 
         page_number, size = request.GET.get('page'), request.GET.get('size')
 
@@ -158,6 +160,47 @@ class PostLikes(APIView):
 
         request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
         request_copy['summary'] = f"{author.displayName} likes your post"
+        request_copy['object_type'] = "post"
+
+        serializer = LikeSerializer(data=request_copy)
+        if serializer.is_valid():
+            serializer.save(author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CommentLikes(APIView):
+    def get(self,request,id,pid,comment_id):
+        author = get_object_or_404(Author, id=id)
+        post = get_object_or_404(Post, id=pid)
+        comment = get_object_or_404(Comment, id = comment_id)
+        post_url = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}/comments/{comment_id}"
+
+        likes = Like.objects.all().filter(object=post_url)
+        if not likes:
+            return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+        if page_number and size:
+            paginator = Paginator(likes, size)
+            try:
+                likes = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                likes = paginator.get_page(1).object_list
+            except EmptyPage:
+                likes = paginator.get_page(paginator.num_pages).object_list
+
+        serializer = LikeSerializer(likes, many=True)
+        return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
+
+            
+    def post(self, request, id, pid):
+        author = get_object_or_404(Author, id=id)
+        post = get_object_or_404(Post, id=pid)
+        request_copy = request.data.copy()
+
+        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
+        request_copy['summary'] = f"{author.displayName} likes your comment"
         request_copy['object_type'] = "post"
 
         serializer = LikeSerializer(data=request_copy)
