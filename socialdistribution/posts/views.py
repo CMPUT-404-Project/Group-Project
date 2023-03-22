@@ -16,14 +16,14 @@ from django.db.models.signals import post_save
 # Create your views here.
 
 
-def create_post(request, author, pid=None):
+def create_post(request, author, post_id=None):
     try:
         request_copy = request.data.copy() #so we don't modify the original request
         categories = request_copy.data.getlist('categories')
         request_copy['source'] = request.get_host() + request.path
         request_copy['origin'] = request.get_host() + request.path
         if request.method == 'PUT':
-            request_copy['id'] = pid
+            request_copy['id'] = post_id
 
         post_ser = PostSerializer(data=request_copy)
         if post_ser.is_valid():
@@ -39,8 +39,8 @@ def create_post(request, author, pid=None):
     
 class PostList(APIView):
     
-    def get(self, request, id):
-        author = get_object_or_404(Author, id=id)
+    def get(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
         posts = author.posted.all() #get all posts of the authors
         
         page_number, size = request.GET.get('page'), request.GET.get('size')
@@ -57,30 +57,31 @@ class PostList(APIView):
         serializer = PostSerializer(posts, many=True)
         return Response({"type":"posts","id":serializer.data}, status=status.HTTP_200_OK)
     
-    def post(self, request, id):
-        author = get_object_or_404(Author, id=id)
-        if request.user.is_authenticated and request.user.id == author.user.id:
+    def post(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
+        if request.user.is_authenticated and request.user.id == author.user.author_id:
             return create_post(request, author)
         else:
             return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PostDetail(APIView):
-    def get(self, request, id, pid):
-        post = get_object_or_404(Post, id=pid)
+    def get(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id, pid):
-        author = get_object_or_404(Author, id=id)
-        if Post.objects.filter(id=pid).exists():
+    def put(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        if Post.objects.filter(id=post_id).exists():
             return Response({"type": "error", "message": "Post already exists"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return create_post(request, author, pid)
+            return create_post(request, author, post_id)
 
-    def post(self, request, id, pid):
+    def post(self, request, author_id, post_id):
         if request.user.is_authenticated:
-            author = get_object_or_404(Author, id=id)
-            post = get_object_or_404(Post, id=pid)
+            author = get_object_or_404(Author, id=author_id)
+            post = get_object_or_404(Post, id=post_id)
             # update the post whose id is pid
             serializer = PostSerializer(post, data=request.data, partial=True)
             if serializer.is_valid():
@@ -91,16 +92,16 @@ class PostDetail(APIView):
         else:
             return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
         
-    def delete(self, request, id, pid):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
+    def delete(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CommentList(APIView):
-    def get(self, request, id, pid):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
+    def get(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         comments = post.comments.all().order_by('-published')
 
         page_number, size = request.GET.get('page'), request.GET.get('size')
@@ -114,13 +115,13 @@ class CommentList(APIView):
                 comments = paginator.get_page(paginator.num_pages).object_list
         
         serializer = CommentSerializer(comments, many=True)
-        return Response({"type":"comments","id":serializer.data}, status=status.HTTP_200_OK)
+        return Response({"type":"comments","items":serializer.data}, status=status.HTTP_200_OK)
 
-    def post(self,request,id, pid):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
+    def post(self,request,author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         request_copy = request.data.copy()
-        request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}/comments/{request.data.get('id')}"
+        request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
 
         serializer = CommentSerializer(data=request_copy)
         if serializer.is_valid():
@@ -130,10 +131,10 @@ class CommentList(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostLikes(APIView):
-    def get(self,request,id,pid):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
-        post_url = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
+    def get(self,request,author_id,post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        post_url = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
 
         likes = Like.objects.all().filter(object=post_url)
         if not likes:
@@ -153,12 +154,12 @@ class PostLikes(APIView):
         return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
 
             
-    def post(self, request, id, pid):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
+    def post(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         request_copy = request.data.copy()
 
-        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
+        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
         request_copy['summary'] = f"{author.displayName} likes your post"
         request_copy['object_type'] = "post"
 
@@ -170,11 +171,11 @@ class PostLikes(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentLikes(APIView):
-    def get(self,request,id,pid,comment_id):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
+    def get(self,request,author_id,post_id,comment_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         comment = get_object_or_404(Comment, id = comment_id)
-        post_url = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}/comments/{comment_id}"
+        post_url = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{comment_id}"
 
         likes = Like.objects.all().filter(object=post_url)
         if not likes:
@@ -194,12 +195,12 @@ class CommentLikes(APIView):
         return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
 
             
-    def post(self, request, id, pid):
-        author = get_object_or_404(Author, id=id)
-        post = get_object_or_404(Post, id=pid)
+    def post(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         request_copy = request.data.copy()
 
-        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
+        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
         request_copy['summary'] = f"{author.displayName} likes your comment"
         request_copy['object_type'] = "post"
 
@@ -209,3 +210,12 @@ class CommentLikes(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AuthorLiked(APIView):
+    def get(self,request,author_id,post_id,comment_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        author_liked = Like.objects.filter(author = author)
+        serializer = LikeSerializer(author_liked)
+        return Response({"type": "liked", "items": serializer.data},status=status.HTTP_200_OK)
+        
