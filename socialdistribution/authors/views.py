@@ -21,6 +21,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from inbox.models import Inbox
+import base64
 
 import uuid
 
@@ -64,11 +65,49 @@ def signup(request):
         return render(request, 'signup.html', context=context)
         
        
+# @csrf_exempt
+# def user_login(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             # Authentication successful
+#             author_id = user.author.id
+#             author = Author.objects.get(id=author_id)
+#             if user.is_active:
+#                 login(request, user)
+#                 return JsonResponse({'success': True, 'author_id': author_id})
+#         else:
+#             # Authentication failed
+#             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
+#     else:
+#         form = UserLoginForm()
+#         context = {'form': form}
+#         return render(request, 'login.html', context=context)
+
 @csrf_exempt
 def user_login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if 'Authorization' in request.headers:
+        # HTTP basic authentication
+        auth = request.headers['Authorization'].split()
+        if len(auth) == 2 and auth[0].lower() == 'basic':
+            username, password = base64.b64decode(auth[1]).decode().split(':')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # Authentication successful
+                author_id = user.author.id
+                author = Author.objects.get(id=author_id)
+                if user.is_active:
+                    login(request, user)
+                    return JsonResponse({'success': True, 'author_id': author_id})
+            else:
+                # Authentication failed
+                return JsonResponse({'success': False, 'message': 'Invalid username or password'})
+    else:
+        # Django/React-based authentication
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             # Authentication successful
@@ -80,10 +119,6 @@ def user_login(request):
         else:
             # Authentication failed
             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
-    else:
-        form = UserLoginForm()
-        context = {'form': form}
-        return render(request, 'login.html', context=context)
 
 class AuthorList(APIView):
     def get(self, request):
