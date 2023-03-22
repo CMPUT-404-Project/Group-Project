@@ -131,10 +131,10 @@ class CommentList(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostLikes(APIView):
-    def get(self,request,author_id,post_id):
-        author = get_object_or_404(Author, id=author_id)
-        post = get_object_or_404(Post, id=post_id)
-        post_url = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
+    def get(self,request,id,pid):
+        author = get_object_or_404(Author, id=id)
+        post = get_object_or_404(Post, id=pid)
+        post_url = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
 
         likes = Like.objects.all().filter(object=post_url)
         if not likes:
