@@ -11,8 +11,8 @@ from .serializers import InboxSerializer
 from authors.models import Author
 from authors.models import FollowRequest
 from authors.serializers import FollowRequestSerializer
-from posts.models import Post,Comment,Like
-from posts.serializers import PostSerializer,CommentSerializer,LikeSerializer
+from posts.models import Post
+from posts.serializers import PostSerializer
 # Create your views here.
 
 
@@ -22,10 +22,6 @@ def get_inbox(data):
         return Post.objects.get(id=data['id'])
     elif data['type'] == 'follow':
         return FollowRequest.objects.get(id=data['id'])
-    elif data['type'] == 'comment':
-        return Comment.objects.get(id=data['id'])
-    elif data['type'] == 'like':
-        return Like.objects.get(id=data['id'])
     
 
 def ser_inbox_items(item):
@@ -34,10 +30,7 @@ def ser_inbox_items(item):
         ser = PostSerializer
     elif item_model is FollowRequest:
         ser = FollowRequestSerializer
-    elif item_model is Comment:
-        ser = CommentSerializer
-    elif item_model is Like:
-        ser = LikeSerializer
+
     return ser(item.object).data
 
 class InboxDetail(APIView):
