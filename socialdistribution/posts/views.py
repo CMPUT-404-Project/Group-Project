@@ -134,7 +134,7 @@ class PostLikes(APIView):
         author = get_object_or_404(Author, id=id)
         post = get_object_or_404(Post, id=pid)
         post_url = f"{request.build_absolute_uri('/')}/service/authors/{id}/posts/{pid}"
-
+        
         likes = Like.objects.all().filter(object=post_url)
         if not likes:
             return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
