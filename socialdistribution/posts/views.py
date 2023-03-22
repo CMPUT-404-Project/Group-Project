@@ -42,7 +42,7 @@ class PostList(APIView):
     def get(self, request, id):
         author = get_object_or_404(Author, id=id)
         posts = author.posted.all() #get all posts of the authors
-
+        
         page_number, size = request.GET.get('page'), request.GET.get('size')
 
         if page_number and size:
@@ -55,7 +55,7 @@ class PostList(APIView):
                 posts = paginator.get_page(paginator.num_pages).object_list
         
         serializer = PostSerializer(posts, many=True)
-        return Response({"type":"posts","items":serializer.data}, status=status.HTTP_200_OK)
+        return Response({"type":"posts","id":serializer.data}, status=status.HTTP_200_OK)
     
     def post(self, request, id):
         author = get_object_or_404(Author, id=id)
@@ -101,7 +101,7 @@ class CommentList(APIView):
     def get(self, request, id, pid):
         author = get_object_or_404(Author, id=id)
         post = get_object_or_404(Post, id=pid)
-        comments = post.comment_set.all().order_by('-published')
+        comments = post.comments.all().order_by('-published')
 
         page_number, size = request.GET.get('page'), request.GET.get('size')
         if page_number and size:
@@ -114,7 +114,7 @@ class CommentList(APIView):
                 comments = paginator.get_page(paginator.num_pages).object_list
         
         serializer = CommentSerializer(comments, many=True)
-        return Response({"type":"comments","items":serializer.data}, status=status.HTTP_200_OK)
+        return Response({"type":"comments","id":serializer.data}, status=status.HTTP_200_OK)
 
     def post(self,request,id, pid):
         author = get_object_or_404(Author, id=id)

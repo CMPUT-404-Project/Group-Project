@@ -10,7 +10,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
-        depth  = 2
+        # depth  = 2
     
     def create(self, validated_data):
         author = Author.objects.get(id=validated_data['author'].id)
@@ -22,13 +22,13 @@ class PostSerializer(serializers.ModelSerializer):
         return post
 
     
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        comments = Comment.objects.filter(post=instance)
-        likes = Like.objects.filter(post=instance)
-        ret['comments'] = CommentSerializer(comments, many=True).data
-        ret['likes'] = LikeSerializer(likes, many=True).data
-        return ret
+    # def to_representation(self, instance):
+    #     ret = super().to_representation(instance)
+    #     comments = Comment.objects.filter(post=instance)
+    #     likes = Like.objects.filter(post=instance)
+    #     ret['comments'] = CommentSerializer(comments, many=True).data
+    #     ret['likes'] = LikeSerializer(likes, many=True).data
+    #     return ret
 
 
 class CommentSerializer(serializers.ModelSerializer):
