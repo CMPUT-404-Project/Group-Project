@@ -19,11 +19,17 @@ from .models import Author, CustomUser
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 
 from inbox.models import Inbox
 import base64
 
 import uuid
+from urllib.parse import urlparse
+from django.views import View
+import requests 
+
 
 @csrf_exempt
 def signup(request):
@@ -119,6 +125,28 @@ def user_login(request):
         else:
             # Authentication failed
             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
+    else:
+        form = UserLoginForm()
+        context = {'form': form}
+        return render(request, 'login.html', context=context)
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class GithubActivity(APIView):
+    def post(self, request):
+        author_id = request.data.get('userID')
+        author = get_object_or_404(Author, id=author_id)
+        parsed = urlparse(author.github)
+        path_parts = parsed.path.split('/')
+        github_username = path_parts[1]
+
+        if github_username:
+            url = f'https://api.github.com/users/{github_username}/events/public'
+            response = requests.get(url)
+            data = response.json()
+            return Response(data)
+        else:
+            return Response({'error': 'No GitHub username found'}, status=404)
+
 
 class AuthorList(APIView):
     def get(self, request):
