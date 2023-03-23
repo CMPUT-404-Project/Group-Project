@@ -36,12 +36,19 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    #changed this to read_only=true from required=false and it works
     author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = '__all__'
-        # exclude = ['post']  
+        exclude = ['post']  
+    
+    def create(self, validated_data):
+        author_data = validated_data.pop('author')
+        author = Author.objects.get(id=author_data.get('id'))
+        print(self.context)
+        comment = Comment.objects.create(**validated_data, author=author)
+        comment.url = f"{self.context['orig_auth_url']}/posts/{comment.post.id}/comments/{comment.id}"
+        comment.save()
+        return comment
     
     def to_representation(self, instance):
         ret = super().to_representation(instance)

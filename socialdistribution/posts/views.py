@@ -59,10 +59,10 @@ class PostList(APIView):
     
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
-        # if request.user.is_authenticated and request.user.id == author.customuser_id:
-        return create_post(request, author)
-        # else:
-        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        if request.user.is_authenticated:# and request.user.id == author.customuser_id:
+            return create_post(request, author)
+        else:
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PostDetail(APIView):
     def get(self, request, author_id, post_id):
@@ -79,18 +79,18 @@ class PostDetail(APIView):
             return create_post(request, author, post_id)
 
     def post(self, request, author_id, post_id):
-        # if request.user.is_authenticated:
-        author = get_object_or_404(Author, id=author_id)
-        post = get_object_or_404(Post, id=post_id)
-        # update the post whose id is pid
-        serializer = PostSerializer(post, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.user.is_authenticated:
+            author = get_object_or_404(Author, id=author_id)
+            post = get_object_or_404(Post, id=post_id)
+            # update the post whose id is pid
+            serializer = PostSerializer(post, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # else:
-        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
         
     def delete(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
@@ -118,17 +118,17 @@ class CommentList(APIView):
         return Response({"type":"comments","id": post.url + "/comments","post": post.url, "url": post.url + "/comments", "comments":serializer.data}, status=status.HTTP_200_OK)
 
     def post(self,request,author_id, post_id,comment_id=None):
-        author = get_object_or_404(Author, id=author_id)
+        original_author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
-        # comment = get_object_or_404(Comment,id = comment_id)
         request_copy = request.data.copy()
-        request_copy['author']['id'] = author_id
-        request_copy['post'] = post_id  
-        # request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
+        author_data = request_copy.get('author')
+        author = get_object_or_404(Author, id=author_data.get('id')) #author who will comment on the current post - can be different than the original author
+        
+        request_copy['post'] = post_id 
 
-        serializer = CommentSerializer(data=request_copy)
+        serializer = CommentSerializer(data=request_copy, context={'orig_auth_url': original_author.url})
         if serializer.is_valid():
-            serializer.save(author=author, post=post)
+            serializer.save(author=AuthorSerializer(author).data, post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

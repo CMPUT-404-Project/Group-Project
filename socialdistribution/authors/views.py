@@ -48,7 +48,7 @@ def signup(request):
             author_data['displayName'] = requestBody.get('username')
             author_data['host'] = request.build_absolute_uri('/')
             author_data['id'] = str(uuid.uuid4().hex)
-            author_data['url'] = f"{author_data['host']}/service/authors/{author_data['id']}"
+            author_data['url'] = f"{author_data['host']}service/authors/{author_data['id']}"
             author = Author.objects.create(
                 customuser=user,
                 id = author_data['id'],
