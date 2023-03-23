@@ -137,9 +137,8 @@ class PostLikes(APIView):
     def get(self,request,author_id,post_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
-        post_url = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
 
-        likes = Like.objects.all().filter(object=post_url)
+        likes = Like.objects.all().filter(object=post.url)
         if not likes:
             return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
         
@@ -157,11 +156,18 @@ class PostLikes(APIView):
 
             
     def post(self, request, author_id, post_id):
-        author = get_object_or_404(Author, id=author_id)
+        original_author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
         request_copy = request.data.copy()
+        author_data = request_copy.get('author')
+        request_copy = request.data.copy()
+        author = get_object_or_404(Author, id=author_data.get('id')) #author who will comment on the current post - can be different than the original author
 
-        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
+        #check if author has already liked the post
+        if Like.objects.filter(author=author, object=post.url).exists():
+            return Response({"type": "error", "message": "You have already liked this post"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        request_copy['object'] = f"{original_author.url}/posts/{post_id}"
         request_copy['summary'] = f"{author.displayName} likes your post"
         request_copy['object_type'] = "post"
 

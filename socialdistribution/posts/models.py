@@ -89,5 +89,5 @@ class Like(models.Model):
     def get_id(self):   
         return self.id
     
-    def summary(self):
+    def get_summary(self):
         return self.author + "Likes your" + self.summary
