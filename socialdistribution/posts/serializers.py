@@ -16,6 +16,7 @@ class PostSerializer(serializers.ModelSerializer):
         author_data = validated_data.pop('author')
         author = Author.objects.get(id=author_data.get('id'))
         post = Post.objects.create(**validated_data, author=author)
+        post.url = f"{author.url}/posts/{post.id}"
         if categories:
             for category in categories:
                 post.categories.add(category)
@@ -27,7 +28,6 @@ class PostSerializer(serializers.ModelSerializer):
         ret = super().to_representation(instance)
         comments = Comment.objects.filter(post=instance)
         ret['count'] = len(comments)
-        ret['url'] = f"{instance.author.url}/posts/{instance.id}"
         ret['comments'] = f"{ret['url']}/comments"
 
         # likes = Like.objects.filter(object=instance)
@@ -41,10 +41,10 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         exclude = ['post']
     
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['author'] = AuthorSerializer(instance.author).data
-        return ret
+    # def to_representation(self, instance):
+    #     ret = super().to_representation(instance)
+    #     ret['author'] = AuthorSerializer(instance.author).data
+    #     return ret
 
 
 class LikeSerializer(serializers.ModelSerializer):
