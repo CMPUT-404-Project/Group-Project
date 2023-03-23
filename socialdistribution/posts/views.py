@@ -59,10 +59,10 @@ class PostList(APIView):
     
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
-        # if request.user.is_authenticated and request.user.id == author.user.author_id:
-        return create_post(request, author)
-        # else:
-        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        if request.user.is_authenticated and request.user.id == author.customuser_id:
+            return create_post(request, author)
+        else:
+            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PostDetail(APIView):
     def get(self, request, author_id, post_id):
