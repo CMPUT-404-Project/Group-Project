@@ -79,18 +79,18 @@ class PostDetail(APIView):
             return create_post(request, author, post_id)
 
     def post(self, request, author_id, post_id):
-        if request.user.is_authenticated:
-            author = get_object_or_404(Author, id=author_id)
-            post = get_object_or_404(Post, id=post_id)
-            # update the post whose id is pid
-            serializer = PostSerializer(post, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if request.user.is_authenticated:
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        # update the post whose id is pid
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
         
     def delete(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
@@ -115,7 +115,7 @@ class CommentList(APIView):
                 comments = paginator.get_page(paginator.num_pages).object_list
         
         serializer = CommentSerializer(comments, many=True)
-        return Response({"type":"comments","items":serializer.data}, status=status.HTTP_200_OK)
+        return Response({"type":"comments","id": post.url + "/comments","post": post.url, "url": post.url + "/comments", "comments":serializer.data}, status=status.HTTP_200_OK)
 
     def post(self,request,author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
