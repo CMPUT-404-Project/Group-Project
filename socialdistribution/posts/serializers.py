@@ -30,25 +30,28 @@ class PostSerializer(serializers.ModelSerializer):
         ret['count'] = len(comments)
         ret['comments'] = f"{ret['url']}/comments"
 
-        # likes = Like.objects.filter(object=instance)
-        #ret['likes'] = LikeSerializer(likes, many=True).data
+        likes = Like.objects.filter(object=instance)
+        ret['likes'] = LikeSerializer(likes, many=True).data
         return ret
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(required=False)
+    #changed this to read_only=true from required=false and it works
+    author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
-        exclude = ['post']
+        # fields = '__all__'
+        exclude = ['post']  
     
-    # def to_representation(self, instance):
-    #     ret = super().to_representation(instance)
-    #     ret['author'] = AuthorSerializer(instance.author).data
-    #     return ret
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['author'] = AuthorSerializer(instance.author).data
+        return ret
 
 
 class LikeSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(required=False)
+    # author = AuthorSerializer(required=False)
+    author = AuthorSerializer(read_only=True)
     class Meta:
         model = Like
         fields = '__all__' #maybe exclude object_type?

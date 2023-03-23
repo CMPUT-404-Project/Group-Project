@@ -9,7 +9,7 @@ from inbox.models import Inbox
 from authors.models import Author,FollowRequest
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-import uuid
+import base64
 from authors.serializers import AuthorSerializer
 # import django.db.models.signals 
 from django.db.models.signals import post_save
@@ -59,10 +59,10 @@ class PostList(APIView):
     
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
-        if request.user.is_authenticated and request.user.id == author.customuser_id:
-            return create_post(request, author)
-        else:
-            return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        # if request.user.is_authenticated and request.user.id == author.customuser_id:
+        return create_post(request, author)
+        # else:
+        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PostDetail(APIView):
     def get(self, request, author_id, post_id):
@@ -117,10 +117,13 @@ class CommentList(APIView):
         serializer = CommentSerializer(comments, many=True)
         return Response({"type":"comments","id": post.url + "/comments","post": post.url, "url": post.url + "/comments", "comments":serializer.data}, status=status.HTTP_200_OK)
 
-    def post(self,request,author_id, post_id):
+    def post(self,request,author_id, post_id,comment_id=None):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
+        # comment = get_object_or_404(Comment,id = comment_id)
         request_copy = request.data.copy()
+        # request_copy['author']['id'] = author_id
+        # request_copy['post'] = post_id
         request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
 
         serializer = CommentSerializer(data=request_copy)
@@ -218,4 +221,18 @@ class AuthorLiked(APIView):
         author_liked = Like.objects.filter(author = author)
         serializer = LikeSerializer(author_liked)
         return Response( {"type": "liked", "items": serializer.data},status=status.HTTP_200_OK)
+
+class ImageView(APIView):
+    def get(self, request, author_id, post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
+        
+        if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" or post.content_type == "application/base64":
+            return Response(base64.b64decode(post.content),status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    def post(self,request,author_id,post_id):
+        author = get_object_or_404(Author, id=author_id)
+        post = get_object_or_404(Post, id=post_id)
         

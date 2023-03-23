@@ -39,6 +39,7 @@ class Post(models.Model):
     #image =  models.ImageField(upload_to='post_images',null=True, blank= True)
     imagesrc = models.URLField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posted')
+    
     categories = ArrayField(models.CharField(max_length=200), blank=True, null=True)  
     published = models.DateTimeField('date published',default=now)
     visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
@@ -61,6 +62,7 @@ class Comment(models.Model):
 
     type = models.CharField(max_length=200,default="comment", editable=False)
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
+    url = models.URLField(max_length=200, blank=True)
     post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     contentType = models.CharField(max_length=150,choices=CONTENT_TYPE,default='text/plain')
