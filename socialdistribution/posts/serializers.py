@@ -40,8 +40,8 @@ class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
-        # fields = '__all__'
-        exclude = ['post']  
+        fields = '__all__'
+        # exclude = ['post']  
     
     def to_representation(self, instance):
         ret = super().to_representation(instance)

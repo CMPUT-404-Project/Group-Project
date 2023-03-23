@@ -122,8 +122,8 @@ class CommentList(APIView):
         post = get_object_or_404(Post, id=post_id)
         # comment = get_object_or_404(Comment,id = comment_id)
         request_copy = request.data.copy()
-        # request_copy['author']['id'] = author_id
-        # request_copy['post'] = post_id
+        request_copy['author']['id'] = author_id
+        request_copy['post'] = post_id  
         # request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
 
         serializer = CommentSerializer(data=request_copy)
@@ -197,14 +197,15 @@ class CommentLikes(APIView):
         return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
 
             
-    def post(self, request, author_id, post_id):
+    def post(self, request, author_id, post_id,comment_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
+        comment = get_object_or_404(Comment, id = comment_id)
         request_copy = request.data.copy()
 
-        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}"
+        request_copy['object'] = f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{comment_id}"
         request_copy['summary'] = f"{author.displayName} likes your comment"
-        request_copy['object_type'] = "post"
+        request_copy['object_type'] = "comment"
 
         serializer = LikeSerializer(data=request_copy)
         if serializer.is_valid():
