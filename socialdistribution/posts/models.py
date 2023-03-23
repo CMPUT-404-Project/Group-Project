@@ -30,10 +30,12 @@ class Post(models.Model):
     type = models.CharField(max_length=20,default="post", editable=False)
     title = models.CharField(max_length=200)
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
+    url = models.CharField(max_length=200, blank=True)
     source = models.URLField(max_length=200,blank=True,null=True)
     origin = models.URLField(max_length=200,blank=True,null=True)
     description = models.CharField(max_length=500,blank=True,null=True)
     content_type = models.CharField(max_length=50,choices=CONTENT_TYPE,default='text/plain')
+    content = models.TextField(blank=True,null=True)
     #image =  models.ImageField(upload_to='post_images',null=True, blank= True)
     imagesrc = models.URLField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posted')
@@ -41,12 +43,8 @@ class Post(models.Model):
     published = models.DateTimeField('date published',default=now)
     visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
     unlisted = models.BooleanField(default=False)
-
-    inbox = GenericRelation(Inbox, related_query_name='post')
-
-    #content of the post
-    content = models.TextField(blank=True,null=True)
-
+    inbox = GenericRelation(Inbox, on_delete=models.CASCADE, related_query_name='post')
+    
     def __str__(self):
         return self.title + "(" + str(self.id) + ")"    
 
@@ -81,8 +79,7 @@ class Like(models.Model):
     type = models.CharField(max_length=200,default="Like", editable=False)
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
-    #object = models.URLField(null=True,editable=False)
-    object = models.URLField(null=True,max_length=300)
+    object = models.URLField(null=True,editable=False)
     object_type = models.CharField(max_length=150,choices=OBJECT_TYPE,default='post')
     summary = models.CharField(max_length=300,null=True,editable=False)
     published_date = models.DateTimeField('date published', default=now)

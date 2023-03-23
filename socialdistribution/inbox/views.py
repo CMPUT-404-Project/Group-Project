@@ -29,7 +29,7 @@ def get_inbox(data):
     
 
 def ser_inbox_items(item):
-    item_model = item.object_type.model_class()
+    item_model = item.content_type.model_class()
     if item_model is Post:
         ser = PostSerializer
     elif item_model is FollowRequest:
@@ -41,8 +41,8 @@ def ser_inbox_items(item):
     return ser(item.object).data
 
 class InboxDetail(APIView):
-    def get(self, request, id):
-        author = get_object_or_404(Author, id=id)
+    def get(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
         # if not request.user.is_authenticated:
         #     return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
         # if request.user.id != author.user.id:
@@ -53,8 +53,8 @@ class InboxDetail(APIView):
         return Response({"type": "inbox", "author": author.url, "items":inbox_data}, status=status.HTTP_200_OK)
     
 
-    def post(self, request, id):
-        author = get_object_or_404(Author, id=id)
+    def post(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
         data = get_inbox(request.data)
         if data:
             inbox_object = Inbox(author=author, object=data)
@@ -62,8 +62,8 @@ class InboxDetail(APIView):
             return Response({"type": "success", "message": "Inbox added"}, status=status.HTTP_200_OK)
         return Response({"type": "error", "message": "Error adding inbox"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id):
-        author = get_object_or_404(Author, id=id)
+    def delete(self, request, author_id):
+        author = get_object_or_404(Author, id=author_id)
         # if not request.user.is_authenticated:
         #     return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
         # if request.user.id != author.user.id:

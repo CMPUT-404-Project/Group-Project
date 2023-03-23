@@ -69,28 +69,6 @@ def signup(request):
         form = AuthorSignupForm()
         context = {'form': form}
         return render(request, 'signup.html', context=context)
-        
-       
-# @csrf_exempt
-# def user_login(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             # Authentication successful
-#             author_id = user.author.id
-#             author = Author.objects.get(id=author_id)
-#             if user.is_active:
-#                 login(request, user)
-#                 return JsonResponse({'success': True, 'author_id': author_id})
-#         else:
-#             # Authentication failed
-#             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
-#     else:
-#         form = UserLoginForm()
-#         context = {'form': form}
-#         return render(request, 'login.html', context=context)
 
 @csrf_exempt
 def user_login(request):
@@ -159,23 +137,23 @@ class AuthorList(APIView):
         return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class AuthorDetail(APIView):
-    def get(self, request, id):
-        author_object = get_object_or_404(Author, id=id)
+    def get(self, request, author_id):
+        author_object = get_object_or_404(Author, id=author_id)
         serializer = AuthorSerializer(author_object, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id):
+    def put(self, request, author_id):
         request.user
         author_data = request.data
-        author_object = get_object_or_404(Author, id=id)
+        author_object = get_object_or_404(Author, id=author_id)
         serializer = AuthorSerializer(author_object, data=author_data)
         if serializer.is_valid():
             saved = serializer.save()
             return Response({"type": "author", "id": saved.id}, status=status.HTTP_200_OK)
         return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id):
-        author_object = get_object_or_404(Author, id=id)
+    def delete(self, request, author_id):
+        author_object = get_object_or_404(Author, id=author_id)
         author_object.delete()
         return Response({"type": "success", "message": "Author deleted"}, status=status.HTTP_200_OK)
 
@@ -215,8 +193,8 @@ def send_request(sender, receiver, requests):
     return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowersList(APIView):
-    def get(self, request, id):
-        author_object = get_object_or_404(Author, id=id)
+    def get(self, request, author_id):
+        author_object = get_object_or_404(Author, id=author_id)
         query_set = FollowRequest.objects.all().filter(object = author_object.id, status=True).values_list('actor_id', flat=True) 
         followers = Author.objects.filter(id__in=query_set)
 
@@ -237,41 +215,41 @@ class FollowersList(APIView):
 
 class FollowersDetail(APIView):
     
-    def get(self, request, id, fid):
-        follower_object = get_object_or_404(Author, id=fid)
+    def get(self, request, author_id, follower_id):
+        follower_object = get_object_or_404(Author, id=follower_id)
         serializer = AuthorSerializer(follower_object, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id, fid):
+    def put(self, request, author_id, follower_id):
         if request.user.is_authenticated:
-            author_object = get_object_or_404(Author, id=id)
-            follower_object = get_object_or_404(Author, id=fid)
+            author_object = get_object_or_404(Author, id=author_id)
+            follower_object = get_object_or_404(Author, id=follower_id)
             query_set = FollowRequest.objects.all().filter(actor_id = follower_object.id , object_id = author_object.id)     
             return send_request(follower_object, author_object, query_set)
         else:
             return Response({"type": "error", "message": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
                 
 
-    def delete(self, request, id, fid):
-        author_object = get_object_or_404(Author, id=id)
-        follower_object = get_object_or_404(Author, id=fid)
+    def delete(self, request, author_id, follower_id):
+        author_object = get_object_or_404(Author, id=author_id)
+        follower_object = get_object_or_404(Author, id=follower_id)
         follow_request = get_object_or_404(FollowRequest, actor = follower_object.id, object = author_object.id, status = True)
         follow_request.delete()
         return Response({"type": "success", "message": f"{follower_object.displayName} removed as a follower"}, status=status.HTTP_200_OK)
 
 class SendFollowRequest(APIView):
-    def get(self, request, id):
+    def get(self, request, author_id):
         if request.user.is_authenticated:
-            author_object = get_object_or_404(Author, id=id)
+            author_object = get_object_or_404(Author, id=author_id)
             query_set = FollowRequest.objects.all().filter(actor = author_object.id)
             serializer = FollowRequestSerializer(query_set, many=True)
             return Response({"type": "followRequests", "items": serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, id):
+    def post(self, request, author_id):
         if request.user.is_authenticated:
-            sender = get_object_or_404(Author, id=id)
+            sender = get_object_or_404(Author, id=author_id)
             receiver = get_object_or_404(Author, displayName=request.data['displayName'])  
             current_requests = FollowRequest.objects.all().filter(actor_id = sender.id, object_id = receiver.id)
             return send_request(sender, receiver, current_requests)
