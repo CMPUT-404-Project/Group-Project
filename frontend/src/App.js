@@ -63,8 +63,8 @@ function App() {
 
         {/* Author Actions */}
         <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
-        <AuthorLookup author={userID} />
-        <AuthorInbox author={userID} />
+        <AuthorLookup authString={authString} author={userID} />
+        <AuthorInbox authString={authString} author={userID} />
 
 
 
