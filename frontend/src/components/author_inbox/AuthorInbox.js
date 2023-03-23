@@ -68,7 +68,7 @@ function AuthorInbox(props) {
 
 
     const [inboxList, setInboxList] = useState(stubbed_inbox);
-    const inbox_list_components = stubbed_inbox.items.map((message) => <InboxItem message={message}/>);
+    const inbox_list_components = stubbed_inbox.items.map((message) => <InboxItem message={message} key={message.id}/>);
     
     return (
         <>

@@ -3,9 +3,6 @@ import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import Card from 'react-bootstrap/Card';
-import CommentCard from './CommentCard';
-import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
 function PostDelete(props) {
@@ -14,7 +11,6 @@ function PostDelete(props) {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-
     const [contactInfo, setContactInfo] = useState({
         postTitle: props.postContent.title,
         postContent: props.postContent.content,
@@ -22,16 +18,10 @@ function PostDelete(props) {
       });
 
     const handleDelete = () => {
-        axios.delete('http://127.0.0.1:8000/authors/' + props.postContent.author + '/posts/' + props.postContent.id)
+        axios.delete('http://127.0.0.1:8000/service/authors/' + props.postContent.author.id + '/posts/' + props.postContent.id)
         .then(function (response) {
-                    axios.get('http://127.0.0.1:8000/authors/' + props.postContent.author + '/posts').then(res => {
-                    props.setPostItems(res.data.items)
-                    handleClose();
-                    setContactInfo({
-                    postTitle: contactInfo.postTitle,
-                    postContent: contactInfo.postContent,
-                    postID: props.postContent.id,
-                    })
+                    axios.get('http://127.0.0.1:8000/service/authors/' + props.postContent.author.id + '/posts').then(res => {
+                    props.setPostItems(res.data.items);
                 })
             })
         }

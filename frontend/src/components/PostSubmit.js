@@ -18,18 +18,34 @@ function PostSubmit(props) {
   
   const discardContent = () => {
     setContactInfo({
-      postTitle: "",
-      postContent: "",
-      postID: "",
+      title: "",
+      source: "",
+      origin: "",
+      description: "",
+      contentType: "text/plain",
+      content: "",
+      author: props.author,
+      categories: [],
+      comments: "",
+      visibility: "PUBLIC",
+      unlisted: false,
       image: null,
     })
     setShow(false)
   }
 
   const [contactInfo, setContactInfo] = useState({
-    postTitle: "",
-    postContent: "",
-    postID: "",
+    title: "",
+    source: "",
+    origin: "",
+    description: "",
+    contentType: "text/plain",
+    content: "",
+    author: props.author,
+    categories: [],
+    comments: "",
+    visibility: "PUBLIC",
+    unlisted: false,
     image: null,
   });
 
@@ -52,41 +68,35 @@ function PostSubmit(props) {
   // };
 
   const submitPost = () => {
-    // event.preventDefault();
-    // console.log(this.state);
-    // do something with the postTitle and postContent variables
-    // send the appropriate axios method
-    // props.userID will contain the user's ID
-    axios.post('http://127.0.0.1:8000/authors/' + props.userID + '/posts', {
-      type: "Post",
-      title: contactInfo.postTitle,
-      id: uuidv4(),
-      content_type: "text/plain",
-      content: contactInfo.postContent,
-      //image: null, //(this.state.image, this.state.image.name),
-      caption: null,
-      author: props.userID,
-      count_likes: 0,
-      // published_time: "2023-03-01T03:51:19Z",
-      visibility: "PUBLIC",
-      
-      headers: {
-        'content_type' : 'application/json '
-      }
-      
-    })
-    .then(function (response) {
-      axios.get('http://127.0.0.1:8000/authors/' + props.userID + '/posts').then(res => {
-        props.setPostItems(res.data.items)
-        //console.log(res.data)
-        handleClose();
-        setContactInfo({
-        postTitle: "",
-        postContent: "",
-        postID: "",
+    fetch(
+      'http://127.0.0.1:8000/service/authors/' + props.author.id + '/posts/', // url
+      {
+        method: 'POST',
+        headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + props.authString
+        },
+        body: JSON.stringify({
+          title: contactInfo.title,
+          source: contactInfo.source,
+          origin: contactInfo.origin,
+          description: contactInfo.description,
+          contentType: contactInfo.contentType,
+          content: contactInfo.content,
+          author: props.author,
+          // comments: contactInfo.comments,
+          // visibility: contactInfo.visibility,
+          // unlisted: contactInfo.unlisted,
+          // image: null,
         })
-      })
-    })
+      }).then(function (response) {
+        // After Making a post, refresh the 
+        axios.get('http://127.0.0.1:8000/service/authors/' + props.author.id + '/posts').then(res => {
+          props.setPostItems(res.data.items);
+          discardContent();
+        })
+      });
   };
 
   return (
@@ -101,36 +111,67 @@ function PostSubmit(props) {
         </Modal.Header>
         <Modal.Body>
             <Form>
-                <Form.Group className="mb-3" controlId="postTitle">
+                <Form.Group className="mb-3" controlId="title">
                     <Form.Label>Post Title</Form.Label>
-                    <Form.Control type="text" placeholder="Title" name="postTitle" value={contactInfo.postTitle} onChange={onChangeHandler}/>
+                    <Form.Control type="text" placeholder="Title" name="title" value={contactInfo.title} onChange={onChangeHandler}/>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="source">
+                    <Form.Label>Post source</Form.Label>
+                    <Form.Control type="text" placeholder="Enter a valid URL" name="source" value={contactInfo.source} onChange={onChangeHandler}/>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="origin">
+                    <Form.Label>Post origin</Form.Label>
+                    <Form.Control type="text" placeholder="Enter a valid URL" name="origin" value={contactInfo.origin} onChange={onChangeHandler}/>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="description">
+                    <Form.Label>Post Description</Form.Label>
+                    <Form.Control type="text" placeholder="Post Description" name="description" value={contactInfo.description} onChange={onChangeHandler}/>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="postType">
-                    <Form.Label>Post Type</Form.Label>
-                    <Form.Select>
-                        <option>text/markdown</option>
-                        <option>text/plain</option>
-                        <option>application/base64</option>
-                        <option>image/png;base64</option>
-                        <option>image/jpeg;base64</option>
-                    </Form.Select>
+                <Form.Group className="mb-3" controlId="contentType">
+                  <Form.Label>Content Type</Form.Label>
+                  <Form.Control as="select" value={contactInfo.contentType}
+                    onChange={e => {setContactInfo({ ...contactInfo, contentType: e.target.value });}}
+                  >
+                    <option value="text/plain">text/plain</option>
+                    <option value="text/markdown">text/markdown</option>
+                    <option value="application/base64">application/base64</option>
+                    <option value="image/png;base64">image/png;base64</option>
+                    <option value="image/jpeg;base64">image/jpeg;base64</option>
+                  </Form.Control>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="postContent">
+                <Form.Group className="mb-3" controlId="content">
                     <Form.Label>Post Content</Form.Label>
-                    <Form.Control type="text" placeholder="content" name="postContent" value={contactInfo.postContent} onChange={onChangeHandler}/>
+                    <Form.Control type="text" placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
                 </Form.Group>
 
-                {/* <Form.Group className="mb-3" controlId="Add Image">
-                    <Form.Label>Post Image</Form.Label>
-                    <input type="file" 
-                     id = "image"
-                     accept = "image/png, image/jpeg" onChange={this.handleImageChange} /> 
-                    {/* <img src={file} /> */}
-                {/* </Form.Group>
+                <Form.Group className="mb-3" controlId="categories">
+                    <Form.Label>Post Categories</Form.Label>
+                    <Form.Control type="text" placeholder="space separated list of tags" name="categories" value={contactInfo.categories} onChange={onChangeHandler}/>
+                </Form.Group>
 
-                <input type="submit"/> */}                 
+                <Form.Group className="mb-3" controlId="visibility">
+                    <Form.Label>Visibility</Form.Label>
+                  <Form.Control as="select" value={contactInfo.visibility}
+                    onChange={e => {setContactInfo({ ...contactInfo, visibility: e.target.value });}}
+                  >
+                    <option value="PUBLIC">Public</option>
+                    <option value="FRIENDS">Friends</option>
+                  </Form.Control>
+                </Form.Group>
+
+                
+
+                <Form.Group className="mb-3" controlId="unlisted">
+                    {/* <Form.Label>Unlisted</Form.Label> */}
+                    <Form.Check
+                      type="checkbox"
+                      name="unlisted" label="Unlisted"
+                      checked={contactInfo.unlisted}
+                      onChange={() => setContactInfo({ ...contactInfo, unlisted: !contactInfo.unlisted })}/>
+                </Form.Group>
+
             </Form>
 
         </Modal.Body>

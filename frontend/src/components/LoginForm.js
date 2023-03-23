@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import axios from 'axios';
 
-const LoginForm = ({ setUserID, setLoggedin}) => {
+const LoginForm = ({setAuthString, setUserID, setLoggedin}) => {
   const [authusername, setAuthUsername] = useState('');
   const [authpassword, setAuthPassword] = useState('');
   const [result, setResult] = useState(null);
@@ -32,8 +33,13 @@ const LoginForm = ({ setUserID, setLoggedin}) => {
     if (data.success) {
       const authorId = data.author_id;
       // Do something with the authorId value, such as storing it in state or using it to navigate to a different page
-      setUserID(authorId);
-      setLoggedin(true);
+      axios.get('http://127.0.0.1:8000/service/authors/' + authorId)
+        .then((response) => {
+          // console.log(response.data);
+          setAuthString(encodedAuthString);
+          setUserID(response.data);
+          setLoggedin(true);
+        })
     }
   };
 

@@ -20,43 +20,21 @@ import AuthorLookup from './components/author_lookup/AuthorLookup';
 import AuthorInbox from './components/author_inbox/AuthorInbox';
 
 function App() {
-  const [userID, setUserID] = useState('');
+  const [userID, setUserID] = useState({});
+  const [authString, setAuthString] = useState('');
   const [postItems, setPostItems] = useState([]);
   useEffect(() => {
     // Update the document title using the browser API
     console.log('hello')
-    if (userID !== ''){
-      axios.get('http://127.0.0.1:8000/authors/' + userID + '/posts').then(res => {
+    if (authString !== ''){
+      axios.get('http://127.0.0.1:8000/service/authors/' + userID.id + '/posts').then(res => {
       setPostItems(res.data.items)
     })}
-  }, [userID]);
+  }, [authString]);
   const postItemComponents = postItems.map((onePost) => 
     <Post postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
   );
 
-  // if (userID === ''){ // if the user has not logged in yet
-
-    // return(
-    //   <div className="App">
-    //     <Navigation />
-    //     <Login setUserID={setUserID}/>
-    //   </div>
-    // );
-  // }
-  
-
-
-
-  // // If we get here, that means that the user has logged in
-  // return (
-  //   <div className="App">
-  //     <Navigation />
-  //     <PostSubmit userID={userID} setPostItems={setPostItems}/>
-  //     {postItemComponents}
-  //     <p>{userID}</p>
-  //   </div>
-  // );
-  //my code
   const [signedup, setSignedup] = useState(true);
   const [loggedin, setLoggedin] = useState(false);
   if (signedup === false){
@@ -73,7 +51,7 @@ function App() {
       <div className="App">
         <Navigation />
         <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
-        <LoginForm setUserID={setUserID} setLoggedin={setLoggedin}/>
+        <LoginForm setAuthString={setAuthString} setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
     );
   }
@@ -84,15 +62,15 @@ function App() {
         <Navigation />
 
         {/* Author Actions */}
-        <PostSubmit userID={userID} setPostItems={setPostItems}/>
-        <AuthorLookup userID={userID} />
-        <AuthorInbox userID={userID} />
+        <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
+        <AuthorLookup author={userID} />
+        <AuthorInbox author={userID} />
 
 
 
         {postItemComponents}
-        <p>{userID}</p>
-        <GithubActivity userID={userID}/>
+        <p>{userID.id}</p>
+        <GithubActivity userID={userID.id}/>
       </div>
     );
   }
