@@ -125,10 +125,6 @@ def user_login(request):
         else:
             # Authentication failed
             return JsonResponse({'success': False, 'message': 'Invalid username or password'})
-    else:
-        form = UserLoginForm()
-        context = {'form': form}
-        return render(request, 'login.html', context=context)
     
 @method_decorator(csrf_exempt, name='dispatch')
 class GithubActivity(APIView):
