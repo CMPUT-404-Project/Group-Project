@@ -32,7 +32,7 @@ function App() {
     })}
   }, [authString]);
   const postItemComponents = postItems.map((onePost) => 
-    <Post postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
+    <Post authString={authString} postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
   );
 
   const [signedup, setSignedup] = useState(true);
