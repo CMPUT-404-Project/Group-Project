@@ -225,13 +225,13 @@ class CommentLikes(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AuthorLiked(APIView):
-    def get(self,request,author_id,post_id,comment_id):
-        author = get_object_or_404(Author, id=author_id)
-        post = get_object_or_404(Post, id=post_id)
-        author_liked = Like.objects.filter(author = author)
-        serializer = LikeSerializer(author_liked)
-        return Response( {"type": "liked", "items": serializer.data},status=status.HTTP_200_OK)
+# class AuthorLiked(APIView):
+#     def get(self,request,author_id,post_id,comment_id):
+#         author = get_object_or_404(Author, id=author_id)
+#         post = get_object_or_404(Post, id=post_id)
+#         author_liked = Like.objects.filter(author = author)
+#         serializer = LikeSerializer(author_liked)
+#         return Response( {"type": "liked", "items": serializer.data},status=status.HTTP_200_OK)
 
 class ImageView(APIView):
     def get(self, request, author_id, post_id):

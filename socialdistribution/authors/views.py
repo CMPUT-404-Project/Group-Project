@@ -29,6 +29,8 @@ import uuid
 from urllib.parse import urlparse
 from django.views import View
 import requests 
+from posts.models import Like
+from posts.serializers import LikeSerializer
 
 
 @csrf_exempt
@@ -255,3 +257,11 @@ class SendFollowRequest(APIView):
             return send_request(sender, receiver, current_requests)
         else:
             return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+
+class AuthorLiked(APIView):
+    def get(self, request, **kwargs):
+        author_id = kwargs['author_id']
+        author = get_object_or_404(Author, id=author_id)
+        author_liked = Like.objects.filter(author=author)
+        serializer = LikeSerializer(author_liked, many=True)
+        return Response({"type": "liked", "items": serializer.data}, status=status.HTTP_200_OK)
