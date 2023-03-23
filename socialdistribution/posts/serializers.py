@@ -10,25 +10,29 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
-        # depth  = 2
     
     def create(self, validated_data):
-        author = Author.objects.get(id=validated_data['author'].id)
         categories = validated_data.pop('categories')
+        author_data = validated_data.pop('author')
+        author = Author.objects.get(id=author_data.get('id'))
         post = Post.objects.create(**validated_data, author=author)
-        for category in categories:
-            post.categories.add(category)
+        if categories:
+            for category in categories:
+                post.categories.add(category)
         post.save()
         return post
 
     
-    # def to_representation(self, instance):
-    #     ret = super().to_representation(instance)
-    #     comments = Comment.objects.filter(post=instance)
-    #     likes = Like.objects.filter(post=instance)
-    #     ret['comments'] = CommentSerializer(comments, many=True).data
-    #     ret['likes'] = LikeSerializer(likes, many=True).data
-    #     return ret
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        comments = Comment.objects.filter(post=instance)
+        ret['count'] = len(comments)
+        ret['url'] = f"{instance.author.url}/posts/{instance.id}"
+        ret['comments'] = f"{ret['url']}/comments"
+
+        # likes = Like.objects.filter(object=instance)
+        #ret['likes'] = LikeSerializer(likes, many=True).data
+        return ret
 
 
 class CommentSerializer(serializers.ModelSerializer):

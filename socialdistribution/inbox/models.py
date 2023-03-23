@@ -18,8 +18,8 @@ class Inbox(models.Model):
     author = models.ForeignKey('authors.Author', on_delete=models.CASCADE)
     #Object to sent to author
     #https://docs.djangoproject.com/en/4.1/ref/contrib/contenttypes/
-    object_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.CharField(max_length=200, null=True)
-    object = GenericForeignKey('object_type', 'object_id')
+    object = GenericForeignKey('content_type', 'object_id')
     #date something came in Inbox
     published_date = models.DateTimeField('date published', default=now)

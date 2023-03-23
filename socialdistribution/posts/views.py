@@ -19,12 +19,12 @@ from django.db.models.signals import post_save
 def create_post(request, author, post_id=None):
     try:
         request_copy = request.data.copy() #so we don't modify the original request
-        categories = request_copy.data.getlist('categories')
-        request_copy['source'] = request.get_host() + request.path
-        request_copy['origin'] = request.get_host() + request.path
+        categories = request_copy.get('categories')
+        # request_copy['source'] = request.get_host() + request.path
+        # request_copy['origin'] = request.get_host() + request.path
         if request.method == 'PUT':
             request_copy['id'] = post_id
-
+        
         post_ser = PostSerializer(data=request_copy)
         if post_ser.is_valid():
             post_ser.save(
@@ -55,7 +55,7 @@ class PostList(APIView):
                 posts = paginator.get_page(paginator.num_pages).object_list
         
         serializer = PostSerializer(posts, many=True)
-        return Response({"type":"posts","id":serializer.data}, status=status.HTTP_200_OK)
+        return Response({"type":"posts","items":serializer.data}, status=status.HTTP_200_OK)
     
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
