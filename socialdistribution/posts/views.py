@@ -124,7 +124,7 @@ class CommentList(APIView):
         request_copy = request.data.copy()
         # request_copy['author']['id'] = author_id
         # request_copy['post'] = post_id
-        request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
+        # request_copy['url'] =  f"{request.build_absolute_uri('/')}/service/authors/{author_id}/posts/{post_id}/comments/{request.data.get('id')}"
 
         serializer = CommentSerializer(data=request_copy)
         if serializer.is_valid():
@@ -152,7 +152,6 @@ class PostLikes(APIView):
                 likes = paginator.get_page(1).object_list
             except EmptyPage:
                 likes = paginator.get_page(paginator.num_pages).object_list
-
         serializer = LikeSerializer(likes, many=True)
         return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
 
