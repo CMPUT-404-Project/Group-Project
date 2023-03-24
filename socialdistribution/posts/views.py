@@ -23,9 +23,9 @@ def create_post(request, author, post_id=None):
         # request_copy['source'] = request.get_host() + request.path
         # request_copy['origin'] = request.get_host() + request.path
         if request.method == 'PUT':
-            request_copy['id'] = post_id
-        
-        post_ser = PostSerializer(data=request_copy)
+            post_ser = PostSerializer(data=request_copy, context={'post_id': post_id})
+        else:
+            post_ser = PostSerializer(data=request_copy)
         if post_ser.is_valid():
             post_ser.save(
                 author = AuthorSerializer(author).data, 
@@ -124,12 +124,15 @@ class CommentList(APIView):
         return Response({"type":"comments","id": post.url + "/comments","post": post.url, "url": post.url + "/comments", "comments":serializer.data}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(operation_description="Create a comment for a post", request_body = CommentSerializer, responses={201: CommentSerializer(), 400: "Bad request"})
-    def post(self,request,author_id, post_id,comment_id=None):
+    def post(self,request,author_id, post_id):
         original_author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
         request_copy = request.data.copy()
         author_data = request_copy.get('author')
-        author = get_object_or_404(Author, id=author_data.get('id')) #author who will comment on the current post - can be different than the original author
+        new_author_id = author_data.get('id')
+        if '/' in new_author_id:
+            new_author_id = new_author_id.split('/')[-1]
+        author = get_object_or_404(Author, id=new_author_id) #author who will comment on the current post - can be different than the original author
         
         request_copy['post'] = post_id 
 
@@ -168,8 +171,10 @@ class PostLikes(APIView):
         post = get_object_or_404(Post, id=post_id)
         request_copy = request.data.copy()
         author_data = request_copy.get('author')
-        request_copy = request.data.copy()
-        author = get_object_or_404(Author, id=author_data.get('id')) #author who will comment on the current post - can be different than the original author
+        new_author_id = author_data.get('id')
+        if '/' in new_author_id:
+            new_author_id = new_author_id.split('/')[-1]
+        author = get_object_or_404(Author, id=new_author_id) #author who will like the current post - can be different than the original author
 
         #check if author has already liked the post
         if Like.objects.filter(author=author, object=post.url).exists():
@@ -217,7 +222,10 @@ class CommentLikes(APIView):
         comment = get_object_or_404(Comment, id = comment_id)
         request_copy = request.data.copy()
         author_data = request_copy.get('author')
-        author = get_object_or_404(Author, id=author_data.get('id')) #author who will comment on the current post - can be different than the original author
+        new_author_id = author_data.get('id')
+        if '/' in new_author_id:
+            new_author_id = new_author_id.split('/')[-1]
+        author = get_object_or_404(Author, id=new_author_id) #author who will like the current post - can be different than the original author
 
         #check if author has already liked the post
         if Like.objects.filter(author=author, object=comment.url).exists():

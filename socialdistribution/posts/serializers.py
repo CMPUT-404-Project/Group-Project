@@ -15,7 +15,12 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         categories = validated_data.pop('categories')
         author_data = validated_data.pop('author')
-        author = Author.objects.get(id=author_data.get('id'))
+        author_id = author_data.get('id')
+        if '/' in author_id:
+            author_id = author_id.split('/')[-1]
+        author = Author.objects.get(id=author_id)
+        if 'post_id' in self.context:
+            validated_data['id'] = self.context['post_id']
         post = Post.objects.create(**validated_data, author=author)
         post.url = f"{author.url}/posts/{post.id}"
         if categories:
@@ -45,8 +50,10 @@ class CommentSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         author_data = validated_data.pop('author')
-        author = Author.objects.get(id=author_data.get('id'))
-        print(self.context)
+        author_id = author_data.get('id')
+        if '/' in author_id:
+            author_id = author_id.split('/')[-1]
+        author = Author.objects.get(id=author_id)
         comment = Comment.objects.create(**validated_data, author=author)
         comment.url = f"{self.context['orig_auth_url']}/posts/{comment.post.id}/comments/{comment.id}"
         comment.save()
