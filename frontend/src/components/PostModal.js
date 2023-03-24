@@ -15,6 +15,8 @@ function PostModal(props) {
   // const commentCards = props.postContent.commentsSrc.comments.map((oneComment) => 
   //                       <CommentCard commentData={oneComment} key={oneComment.id} />
   //       );
+  let postContent = props.postContent;
+  console.log(postContent);
 
   return (
     <>
@@ -28,7 +30,9 @@ function PostModal(props) {
 
         </Modal.Header>
         <Modal.Body>
-            {props.postContent.content}
+            {props.postContent.content} <br />
+            <p>Source: {postContent.source}</p>
+            <p>Origin: {postContent.origin}</p>
             
             {/* {commentCards} */}
         </Modal.Body>

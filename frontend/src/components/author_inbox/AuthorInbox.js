@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import InboxItem from './InboxItem';
+import { useEffect } from 'react';
+import axios from 'axios'; 
 
 const stubbed_inbox = {
   "type":"inbox",
@@ -67,8 +69,28 @@ function AuthorInbox(props) {
     const handleShow = () => setShow(true);
 
 
-    const [inboxList, setInboxList] = useState(stubbed_inbox);
-    const inbox_list_components = stubbed_inbox.items.map((message) => <InboxItem message={message} key={message.id}/>);
+
+
+    const [inboxList, setInboxList] = useState([]);
+    const inbox_list_components = inboxList.map((message) => <InboxItem author={props.author} authString={props.authString} message={message} key={message.id}/>);
+
+    const refresh_inbox = () => {
+      axios.get(
+        'http://127.0.0.1:8000/service/authors/' + props.author.id +'/inbox', // url
+        { // configs
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + props.authString
+            },
+        }
+      ).then((response) => {
+        console.log(response.data.items);
+        setInboxList(response.data.items);
+      });
+    };
+
+    useEffect(() => {refresh_inbox()}, []); // run this once at the beginning
     
     return (
         <>
@@ -76,7 +98,7 @@ function AuthorInbox(props) {
         Author Inbox
         </Button>
   
-        <Modal show={show} onHide={handleClose} centered>
+        <Modal show={show} onHide={handleClose} fullscreen={true} centered>
           <Modal.Header closeButton>
             <Modal.Title>Inbox</Modal.Title>
           </Modal.Header>
@@ -87,8 +109,8 @@ function AuthorInbox(props) {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
+            <Button variant="outline-success" onClick={refresh_inbox}>
+              Refresh
             </Button>
           </Modal.Footer>
         </Modal>

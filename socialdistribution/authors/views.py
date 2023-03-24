@@ -250,7 +250,7 @@ class SendFollowRequest(APIView):
     def post(self, request, author_id):
         if request.user.is_authenticated:
             sender = get_object_or_404(Author, id=author_id)
-            receiver = get_object_or_404(Author, displayName=request.data['object']['displayName'])
+            receiver = get_object_or_404(Author, displayName=request.data['displayName'])
             current_requests = FollowRequest.objects.all().filter(actor_id = sender.id, object_id = receiver.id)
             return send_request(sender, receiver, current_requests)
         else:
