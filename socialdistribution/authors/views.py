@@ -85,19 +85,24 @@ def user_login(request):
                 return JsonResponse({'success': False, 'message': 'Invalid username or password'})
     else:
         # Django/React-based authentication
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            # Authentication successful
-            author_id = user.author.id
-            author = Author.objects.get(id=author_id)
-            if user.is_active:
-                login(request, user)
-                return JsonResponse({'success': True, 'author_id': author_id})
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # Authentication successful
+                author_id = user.author.id
+                author = Author.objects.get(id=author_id)
+                if user.is_active:
+                    login(request, user)
+                    return JsonResponse({'success': True, 'author_id': author_id})
+            else:
+                # Authentication failed
+                return JsonResponse({'success': False, 'message': 'Invalid username or password'})
         else:
-            # Authentication failed
-            return JsonResponse({'success': False, 'message': 'Invalid username or password'})
+            form = UserLoginForm()
+            context = {'form': form}
+            return render(request, 'login.html', context=context)
     
 @method_decorator(csrf_exempt, name='dispatch')
 class GithubActivity(APIView):
