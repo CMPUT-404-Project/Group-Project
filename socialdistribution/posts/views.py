@@ -13,7 +13,7 @@ import base64
 from authors.serializers import AuthorSerializer
 # import django.db.models.signals 
 from django.db.models.signals import post_save
-# Create your views here.
+from drf_yasg.utils import swagger_auto_schema
 
 
 def create_post(request, author, post_id=None):
@@ -38,7 +38,7 @@ def create_post(request, author, post_id=None):
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 class PostList(APIView):
-    
+    @swagger_auto_schema(operation_description="Get all posts of an author", responses={200: PostSerializer(many=True)})
     def get(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
         posts = author.posted.all() #get all posts of the authors
@@ -56,7 +56,8 @@ class PostList(APIView):
         
         serializer = PostSerializer(posts, many=True)
         return Response({"type":"posts","items":serializer.data}, status=status.HTTP_200_OK)
-    
+
+    @swagger_auto_schema(operation_description="Create a post for an author with a new ID", request_body = PostSerializer, responses={201: PostSerializer(), 400: "Bad request", 401: "type: error, message: Not authorized"}) 
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
         if request.user.is_authenticated:# and request.user.id == author.customuser_id:
@@ -65,12 +66,14 @@ class PostList(APIView):
             return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PostDetail(APIView):
+    @swagger_auto_schema(operation_description="Get a post of an author", responses={200: PostSerializer()})
     def get(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(operation_description="Create a post for an author with a specific ID", request_body = PostSerializer, responses={201: PostSerializer(), 400: "Bad request"})
     def put(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
         if Post.objects.filter(id=post_id).exists():
@@ -78,6 +81,7 @@ class PostDetail(APIView):
         else:
             return create_post(request, author, post_id)
 
+    @swagger_auto_schema(operation_description="Update a post of an author with the given ID", request_body = PostSerializer, responses={200: PostSerializer(), 400: "Bad request", 401: "type: error, message: Not authorized"})
     def post(self, request, author_id, post_id):
         if request.user.is_authenticated:
             author = get_object_or_404(Author, id=author_id)
@@ -91,7 +95,8 @@ class PostDetail(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
-        
+
+    @swagger_auto_schema(operation_description="Delete a post of an author with the given ID", responses={204: "No content"})       
     def delete(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -99,6 +104,7 @@ class PostDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CommentList(APIView):
+    @swagger_auto_schema(operation_description="Get all comments of a post", responses={200: CommentSerializer(many=True)})
     def get(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -117,6 +123,7 @@ class CommentList(APIView):
         serializer = CommentSerializer(comments, many=True)
         return Response({"type":"comments","id": post.url + "/comments","post": post.url, "url": post.url + "/comments", "comments":serializer.data}, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(operation_description="Create a comment for a post", request_body = CommentSerializer, responses={201: CommentSerializer(), 400: "Bad request"})
     def post(self,request,author_id, post_id,comment_id=None):
         original_author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -134,6 +141,7 @@ class CommentList(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostLikes(APIView):
+    @swagger_auto_schema(operation_description="Get all likes of a post", responses={200: LikeSerializer(many=True)})
     def get(self,request,author_id,post_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -154,7 +162,7 @@ class PostLikes(APIView):
         serializer = LikeSerializer(likes, many=True)
         return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
 
-            
+    @swagger_auto_schema(operation_description="Like a post", request_body = LikeSerializer, responses={201: LikeSerializer(), 400: "Bad request"})
     def post(self, request, author_id, post_id):
         original_author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -179,6 +187,7 @@ class PostLikes(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentLikes(APIView):
+    @swagger_auto_schema(operation_description="Get all likes of a comment", responses={200: LikeSerializer(many=True)})
     def get(self,request,author_id,post_id,comment_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -201,7 +210,7 @@ class CommentLikes(APIView):
         serializer = LikeSerializer(likes, many=True)
         return Response({"type":"likes","items":serializer.data}, status=status.HTTP_200_OK)
 
-            
+    @swagger_auto_schema(operation_description="Like a comment", request_body = LikeSerializer, responses={201: LikeSerializer(), 400: "Bad request"})
     def post(self, request, author_id, post_id,comment_id):
         original_author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -226,6 +235,7 @@ class CommentLikes(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AuthorLiked(APIView):
+    @swagger_auto_schema(operation_description="Get all posts liked by an author", responses={200: LikeSerializer(many=True)})
     def get(self,request,author_id,post_id,comment_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
@@ -234,6 +244,7 @@ class AuthorLiked(APIView):
         return Response( {"type": "liked", "items": serializer.data},status=status.HTTP_200_OK)
 
 class ImageView(APIView):
+    @swagger_auto_schema(operation_description="Get image of a post", responses={200: "image/png;base64", 400: "Bad request"})
     def get(self, request, author_id, post_id):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)

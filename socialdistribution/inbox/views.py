@@ -13,7 +13,7 @@ from authors.models import FollowRequest
 from authors.serializers import FollowRequestSerializer
 from posts.models import Post,Comment,Like
 from posts.serializers import PostSerializer,CommentSerializer,LikeSerializer
-# Create your views here.
+from drf_yasg.utils import swagger_auto_schema
 
 
 
@@ -41,6 +41,7 @@ def ser_inbox_items(item):
     return ser(item.object).data
 
 class InboxDetail(APIView):
+    @swagger_auto_schema(operation_description="Get inbox of the current author", responses={200: InboxSerializer(many=True)})
     def get(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
         # if not request.user.is_authenticated:
@@ -53,6 +54,7 @@ class InboxDetail(APIView):
         return Response({"type": "inbox", "author": author.url, "items":inbox_data}, status=status.HTTP_200_OK)
     
 
+    @swagger_auto_schema(operation_description="Add inbox of the current author", responses={200: "type: success, message: Inbox added", 400: "type: error, message: Error adding inbox"})
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
         data = get_inbox(request.data)
@@ -62,6 +64,7 @@ class InboxDetail(APIView):
             return Response({"type": "success", "message": "Inbox added"}, status=status.HTTP_200_OK)
         return Response({"type": "error", "message": "Error adding inbox"}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(operation_description="Delete inbox of the current author", responses={200: "type: success, message: Inbox deleted"})
     def delete(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
         # if not request.user.is_authenticated:

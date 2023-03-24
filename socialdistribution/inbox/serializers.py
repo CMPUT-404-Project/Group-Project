@@ -4,4 +4,4 @@ from .models import Inbox
 class InboxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
-        fields = ['type', 'id', 'object_type', 'published_date']
+        fields = '__all__'
