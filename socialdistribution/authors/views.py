@@ -31,7 +31,7 @@ from django.views import View
 import requests 
 from posts.models import Like
 from posts.serializers import LikeSerializer
-
+host_host = 'http://127.0.0.1:8000/service/authors/'
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':

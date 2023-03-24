@@ -53,6 +53,9 @@ class Post(models.Model):
     def get_id(self):
         return self.id
     
+    def get_url(self):
+        return self.url
+    
 class Comment(models.Model):
 
     CONTENT_TYPE = (
@@ -72,6 +75,8 @@ class Comment(models.Model):
     def get_id(self):
         return self.id
 
+    def get_url(self):
+        return self.url
 class Like(models.Model):
 
     OBJECT_TYPE = (
@@ -91,3 +96,6 @@ class Like(models.Model):
     
     def get_summary(self):
         return self.author + "Likes your" + self.summary
+    
+    # def get_url(self):
+    #     return self.url

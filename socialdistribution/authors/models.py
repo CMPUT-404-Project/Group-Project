@@ -82,6 +82,9 @@ class Author(models.Model):
     def get_id(self):
         return self.id 
     
+    def get_url(self):
+        return self.url
+    
     def __str__(self):
         return str(self.displayName) + '-' + str(self.id)
 

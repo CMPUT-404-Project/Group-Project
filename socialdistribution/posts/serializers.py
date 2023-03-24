@@ -5,6 +5,7 @@ from authors.models import Author
 
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(many = False, read_only=True, required=False)
+    id = serializers.CharField(source="get_url", read_only=True)
     categories = serializers.ListField(child=serializers.CharField(), required=False)
 
     class Meta:
@@ -36,6 +37,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source="get_url", read_only=True)
     author = AuthorSerializer(read_only=True)
     class Meta:
         model = Comment
