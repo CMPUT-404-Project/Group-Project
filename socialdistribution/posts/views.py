@@ -19,17 +19,13 @@ from drf_yasg.utils import swagger_auto_schema
 def create_post(request, author, post_id=None):
     try:
         request_copy = request.data.copy() #so we don't modify the original request
-        categories = request_copy.get('categories')
-        # request_copy['source'] = request.get_host() + request.path
-        # request_copy['origin'] = request.get_host() + request.path
         if request.method == 'PUT':
             post_ser = PostSerializer(data=request_copy, context={'post_id': post_id})
         else:
             post_ser = PostSerializer(data=request_copy)
         if post_ser.is_valid():
             post_ser.save(
-                author = AuthorSerializer(author).data, 
-                categories = categories
+                author = AuthorSerializer(author).data 
             )
             return Response(post_ser.data, status=status.HTTP_201_CREATED)
         else:

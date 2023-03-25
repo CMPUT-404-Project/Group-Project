@@ -32,6 +32,16 @@ import requests
 from posts.models import Like
 from posts.serializers import LikeSerializer
 host_host = 'http://127.0.0.1:8000/service/authors/'
+
+def create_new_author(id,data):
+    return Author.objects.create(
+        id = id,
+        displayName=data['displayName'],
+        host=data['host'],
+        github=data['github'],
+        url = data['url'],
+    )
+
 @csrf_exempt
 def signup(request):
     if request.method == 'POST':
@@ -188,12 +198,12 @@ def send_request(sender, receiver, requests):
     if serializer.is_valid():
         saved = serializer.save()
         #send request to receiver
-        followObject = FollowRequest.objects.get(pk=follow_request['id'])
-        inboxObject = Inbox(
-            author=receiver,
-            object=followObject,
-        )
-        inboxObject.save()
+        # followObject = FollowRequest.objects.get(pk=follow_request['id'])
+        # inboxObject = Inbox(
+        #     author=receiver,
+        #     object=followObject,
+        # )
+        # inboxObject.save()
 
         return Response({"follow_request": serializer.data}, status=status.HTTP_200_OK)
     return Response({"type": "error", "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -256,11 +266,24 @@ class SendFollowRequest(APIView):
         else:
             return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    @swagger_auto_schema(operation_description="Send a follow request to a author with a specific display name", responses={200: "{'follow_request': {follow_request}}", 400: "{'type': 'error', 'message': {errors}}", 401: "{'type': 'error', 'message': 'Not logged in'}"})
+    @swagger_auto_schema(operation_description="Send a follow request to an author", responses={200: "{'follow_request': {follow_request}}", 400: "{'type': 'error', 'message': {errors}}", 401: "{'type': 'error', 'message': 'Not logged in'}"})
     def post(self, request, author_id):
         if request.user.is_authenticated:
             sender = get_object_or_404(Author, id=author_id)
-            receiver = get_object_or_404(Author, displayName=request.data['displayName'])  
+
+            #check if receiver exists
+            author_data = request.data
+            author_id = author_data['id']
+            if '/' in author_id:
+                author_id = author_id.split('/')[-1]
+            if Author.objects.filter(id=author_id).exists():
+                receiver = Author.objects.get(id=author_id)
+            else:
+                #create a new receiver and save it to the db
+                receiver = create_new_author(author_id,author_data)
+                receiver.save()
+
+            receiver = get_object_or_404(Author, id=author_id)  
             current_requests = FollowRequest.objects.all().filter(actor_id = sender.id, object_id = receiver.id)
             return send_request(sender, receiver, current_requests)
         else:

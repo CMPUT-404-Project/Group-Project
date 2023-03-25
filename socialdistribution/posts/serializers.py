@@ -6,14 +6,12 @@ from authors.models import Author
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(many = False, read_only=True, required=False)
     id = serializers.CharField(source="get_url", read_only=True)
-    categories = serializers.ListField(child=serializers.CharField(), required=False)
 
     class Meta:
         model = Post
         fields = '__all__'
     
     def create(self, validated_data):
-        categories = validated_data.pop('categories')
         author_data = validated_data.pop('author')
         author_id = author_data.get('id')
         if '/' in author_id:
@@ -23,9 +21,6 @@ class PostSerializer(serializers.ModelSerializer):
             validated_data['id'] = self.context['post_id']
         post = Post.objects.create(**validated_data, author=author)
         post.url = f"{author.url}/posts/{post.id}"
-        if categories:
-            for category in categories:
-                post.categories.add(category)
         post.save()
         return post
 

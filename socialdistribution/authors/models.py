@@ -69,7 +69,7 @@ class CustomUser(AbstractBaseUser):
 # Create your models here.
 class Author(models.Model):
     # user_name = models.CharField(unique=True)
-    customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', default=None)
+    customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', null=True, blank=True)
     id  = models.CharField(primary_key=True, default=generate_uuid, editable=False, max_length=200)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
