@@ -16,7 +16,7 @@ function FollowAcceptReject(props) {
         // console.log('Basic ' + props.authString);
         var actors_id = (object_is_local(props.message.actor.id)) ? author_id_to_number(props.message.actor.id) : props.message.actor;
         axios.put(
-            props.author.id + '/followers/' + actors_id, // url
+            props.author.id + '/followers/' + author_id_to_number(props.message.actor.id), // url
             { // no data
             },
             { headers: { // config

@@ -20,7 +20,7 @@ function Followers(props) {
         // repopulate your_followers set_your_followers
         console.log("Removing a follower: ", authorID);
         let follower_to_delete = (object_is_local(authorID)) ? author_id_to_number(authorID) : authorID;
-        axios.delete(props.author.id + '/followers/'+follower_to_delete).then(
+        axios.delete(props.author.id + '/followers/'+author_id_to_number(authorID)).then(
             axios.get(props.author.id + '/followers').then(response => set_your_followers(response.data))
         );
     }
