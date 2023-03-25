@@ -69,7 +69,7 @@ class CustomUser(AbstractBaseUser):
 # Create your models here.
 class Author(models.Model):
     # user_name = models.CharField(unique=True)
-    customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', default=None)
+    customuser = models.OneToOneField('authors.CustomUser', on_delete=models.CASCADE, related_name='author', null=True, blank=True)
     id  = models.CharField(primary_key=True, default=generate_uuid, editable=False, max_length=200)
     type = models.CharField(max_length=20,default="author", editable=False)
     host = models.CharField(max_length=200)
@@ -81,6 +81,9 @@ class Author(models.Model):
     #returns id of the author
     def get_id(self):
         return self.id 
+    
+    def get_url(self):
+        return self.url
     
     def __str__(self):
         return str(self.displayName) + '-' + str(self.id)

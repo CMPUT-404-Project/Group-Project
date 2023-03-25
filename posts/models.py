@@ -34,12 +34,13 @@ class Post(models.Model):
     source = models.URLField(max_length=200,blank=True,null=True)
     origin = models.URLField(max_length=200,blank=True,null=True)
     description = models.CharField(max_length=500,blank=True,null=True)
-    content_type = models.CharField(max_length=50,choices=CONTENT_TYPE,default='text/plain')
+    contentType = models.CharField(max_length=50,choices=CONTENT_TYPE,default='text/plain')
     content = models.TextField(blank=True,null=True)
     #image =  models.ImageField(upload_to='post_images',null=True, blank= True)
     imagesrc = models.URLField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posted')
-    categories = ArrayField(models.CharField(max_length=200), blank=True, null=True)  
+    categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
+    count = models.IntegerField(default=0)  
     published = models.DateTimeField('date published',default=now)
     visibility = models.CharField(max_length=100,choices=VISIBILITY, default='PUBLIC')
     unlisted = models.BooleanField(default=False)
@@ -52,6 +53,9 @@ class Post(models.Model):
     def get_id(self):
         return self.id
     
+    def get_url(self):
+        return self.url
+    
 class Comment(models.Model):
 
     CONTENT_TYPE = (
@@ -61,6 +65,7 @@ class Comment(models.Model):
 
     type = models.CharField(max_length=200,default="comment", editable=False)
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
+    url = models.URLField(max_length=200, blank=True)
     post = models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     contentType = models.CharField(max_length=150,choices=CONTENT_TYPE,default='text/plain')
@@ -70,6 +75,8 @@ class Comment(models.Model):
     def get_id(self):
         return self.id
 
+    def get_url(self):
+        return self.url
 class Like(models.Model):
 
     OBJECT_TYPE = (
@@ -79,13 +86,16 @@ class Like(models.Model):
     type = models.CharField(max_length=200,default="Like", editable=False)
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=200)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
-    object = models.URLField(null=True,editable=False)
+    object = models.URLField(null=True)
     object_type = models.CharField(max_length=150,choices=OBJECT_TYPE,default='post')
-    summary = models.CharField(max_length=300,null=True,editable=False)
+    summary = models.CharField(max_length=300,null=True)
     published_date = models.DateTimeField('date published', default=now)
 
-    def get_id(self):
+    def get_id(self):   
         return self.id
     
-    def summary(self):
+    def get_summary(self):
         return self.author + "Likes your" + self.summary
+    
+    # def get_url(self):
+    #     return self.url
