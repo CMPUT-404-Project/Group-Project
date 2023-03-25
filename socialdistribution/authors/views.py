@@ -164,7 +164,10 @@ def send_request(sender, receiver, requests):
             return Response({"type": "error", "message": f"{sender.displayName} is already following {receiver.displayName}"}, status=status.HTTP_400_BAD_REQUEST)
         #follow request already sent (pending)
         else:
-            return Response({"type": "error", "message": "Follow Request Already Sent"}, status=status.HTTP_400_BAD_REQUEST)
+            follow_updater = FollowRequest.objects.get(actor_id=sender.id , object_id=receiver.id)
+            follow_updater.status = True
+            follow_updater.save()
+            return Response({"message": f"{receiver.displayName} now follows {sender.displayName}"}, status=status.HTTP_202_ACCEPTED)
 
     if sender.displayName == receiver.displayName:
         return Response({"type": "error", "message": "Cannot follow yourself"}, status=status.HTTP_400_BAD_REQUEST)
