@@ -17,7 +17,7 @@ function FollowAuthor(props) {
     // const handleShow = () => setShow(true);
 
     const [contactInfo, setContactInfo] = useState({
-        hostaddress: "127.0.0.1:8000",
+        // hostaddress: "127.0.0.1:8000",
         id: "",
         actorAuthor: {},
       });
@@ -41,11 +41,35 @@ function FollowAuthor(props) {
         //     contactInfoHolder = { ...contactInfoHolder, actorAuthor: {}};
         //     setContactInfo(contactInfoHolder);
         // });
-        console.log(contactInfo);
+        // console.log(contactInfo);
         setContactInfo(contactInfoHolder);
       };
 
     const sendRequest = () => {
+
+        // GET the author we want to follow
+        axios.get(contactInfo.id)
+            .then((response) => {
+                console.log(response.data);
+                axios.post(
+                    response.data.id + '/inbox', // url
+                    { // body
+                        "type": "Follow",
+                        "summary": props.author.displayName + " wants to follow " + response.data.displayName,
+                        "actor": props.author,
+                        "object": response.data,
+                    }, 
+                    {
+                        'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + props.authString
+                    }
+                )
+            });
+
+
+
+
         // lookup if the user exists
         // console.log(props.author);
         // console.log(contactInfo.actorAuthor);
@@ -87,26 +111,26 @@ function FollowAuthor(props) {
         //         })
 
         // }
-        axios.post(
-            'http://' + contactInfo.hostaddress + '/service/authors/' + props.author.id + '/sendrequest/', // url
-            { // body of the request
-                // "type": "Follow",
-                // "actor": props.author,
-                // "object": contactInfo.actorAuthor,
-                displayName: contactInfo.id,
-            },
-            { // configs
-                headers: {
-                    'Accept': '*/*',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Basic ' + props.authString
-                },
-            }
-        ).then((response) => {
-            // send the response data to the url of the second user
-            console.log(response);
-            alert("SENT!!!");
-        });
+        // axios.post(
+        //     'http://' + contactInfo.hostaddress + '/service/authors/' + props.author.id + '/sendrequest/', // url
+        //     { // body of the request
+        //         // "type": "Follow",
+        //         // "actor": props.author,
+        //         // "object": contactInfo.actorAuthor,
+        //         displayName: contactInfo.id,
+        //     },
+        //     { // configs
+        //         headers: {
+        //             'Accept': '*/*',
+        //             'Content-Type': 'application/json',
+        //             'Authorization': 'Basic ' + props.authString
+        //         },
+        //     }
+        // ).then((response) => {
+        //     // send the response data to the url of the second user
+        //     console.log(response);
+        //     alert("SENT!!!");
+        // });
 
         // if yes, send follow request
         // if (true) {
@@ -130,14 +154,13 @@ function FollowAuthor(props) {
             <Form.Control type="text" placeholder="127.0.0.1" name="hostaddress" value={contactInfo.hostaddress} onChange={onChangeHandler}/>
             </Form.Group> */}
             <h5> Follow Authors </h5>
-
+{/* 
             <InputGroup className="mb-3">
                 <InputGroup.Text id="inputGroup-sizing-default">
                     Host
                 </InputGroup.Text>
-                {/* <Form.Label>Username</Form.Label> */}
                 <Form.Control type="text" placeholder="127.0.0.1" name="hostaddress" value={contactInfo.hostaddress} onChange={onChangeHandler}/>
-            </InputGroup>
+            </InputGroup> */}
 
             {/* <Form.Group className="mb-3" controlId="username">
             <Form.Label>Username</Form.Label>
@@ -146,7 +169,7 @@ function FollowAuthor(props) {
 
             <InputGroup className="mb-3">
                 <InputGroup.Text id="inputGroup-sizing-default">
-                    User
+                    UserID
                 </InputGroup.Text>
                 {/* <Form.Label>Username</Form.Label> */}
                 <Form.Control type="text" placeholder="id" name="id" value={contactInfo.id} onChange={onChangeHandler}/>

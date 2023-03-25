@@ -180,7 +180,11 @@ def send_request(sender, receiver, requests):
             return Response({"type": "error", "message": f"{sender.displayName} is already following {receiver.displayName}"}, status=status.HTTP_400_BAD_REQUEST)
         #follow request already sent (pending)
         else:
-            return Response({"type": "error", "message": "Follow Request Already Sent"}, status=status.HTTP_400_BAD_REQUEST)
+            # If the request has been sent already, and they call the PUT again, it turns to true
+            follow_request_approval = FollowRequest.objects.get(actor_id = sender.id , object_id = receiver.id)
+            follow_request_approval.status = True
+            follow_request_approval.save()
+            return Response({"message": f"{sender.displayName} is following {receiver.displayName}"}, status=status.HTTP_200_OK)
 
     if sender.displayName == receiver.displayName:
         return Response({"type": "error", "message": "Cannot follow yourself"}, status=status.HTTP_400_BAD_REQUEST)

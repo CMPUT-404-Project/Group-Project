@@ -6,26 +6,30 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from 'axios';
+import { author_id_to_number, object_is_local } from '../helper_functions';
 
 function FollowAcceptReject(props) {
 
     // URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
     const acceptFollowRequest = () => {
-        console.log(props.message);
+        // console.log(props.message);
+        // console.log('Basic ' + props.authString);
+        var actors_id = (object_is_local(props.message.actor.id)) ? author_id_to_number(props.message.actor.id) : props.message.actor;
         axios.put(
-            '', // url
-            { // data
-                
+            props.author.id + '/followers/' + actors_id, // url
+            { // no data
             },
-            { // config
-
-            }
-        )
+            { headers: { // config
+                'Authorization': 'Basic ' + props.authString
+            }}
+        ).then(console.log("Done!"))
     };
 
     const rejectFollowRequest = () => {
 
     };
+
+
     
     return (
         <>

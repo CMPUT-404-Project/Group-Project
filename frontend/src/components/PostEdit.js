@@ -21,7 +21,7 @@ function PostEdit(props) {
 
   const saveEdit = () => {
     fetch(
-      'http://127.0.0.1:8000/service/authors/' + props.postContent.author.id + '/posts/' + props.postContent.id, // url
+      props.postContent.id, // url
       {
         method: 'POST',
         headers: {
@@ -44,7 +44,7 @@ function PostEdit(props) {
         })
       }).then(function (response) {
         // After Making a post, refresh the 
-        axios.get('http://127.0.0.1:8000/service/authors/' + props.postContent.author.id + '/posts').then(res => {
+        axios.get(props.postContent.author.id + '/posts').then(res => {
           props.setPostItems(res.data.items);
           handleClose();
         })

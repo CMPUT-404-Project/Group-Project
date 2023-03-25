@@ -69,7 +69,7 @@ function PostSubmit(props) {
 
   const submitPost = () => {
     fetch(
-      'http://127.0.0.1:8000/service/authors/' + props.author.id + '/posts/', // url
+      props.author.id + '/posts/', // url
       {
         method: 'POST',
         headers: {
@@ -92,7 +92,7 @@ function PostSubmit(props) {
         })
       }).then(function (response) {
         // After Making a post, refresh the 
-        axios.get('http://127.0.0.1:8000/service/authors/' + props.author.id + '/posts').then(res => {
+        axios.get(props.author.id + '/posts').then(res => {
           props.setPostItems(res.data.items);
           discardContent();
         })

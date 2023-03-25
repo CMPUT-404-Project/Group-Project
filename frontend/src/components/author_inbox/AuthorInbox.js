@@ -69,37 +69,18 @@ function AuthorInbox(props) {
     const handleShow = () => setShow(true);
 
 
-
-
     const [inboxList, setInboxList] = useState([]);
     const inbox_list_components = inboxList.map((message) => <InboxItem author={props.author} authString={props.authString} message={message} key={message.id}/>);
     // const inbox_list_components = inboxList.map((message) => <InboxItem author={props.author} authString={props.authString} message={message} key={message.id}/>);
 
-    // const refresh_inbox = () => {
-    //   axios.get(
-    //     'http://127.0.0.1:8000/service/authors/' + props.author.id +'/inbox', // url
-    //     { // configs
-    //         headers: {
-    //             'Accept': '*/*',
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Basic ' + props.authString
-    //         },
-    //     }
-    //   ).then((response) => {
-    //     console.log(response.data.items);
-    //     setInboxList(response.data.items);
-    //   });
-    // };
-
-    
     const refresh_inbox = () => {
       axios.get(
-        'https://floating-fjord-51978.herokuapp.com/authors/9/posts/', // url
+        props.author.id +'/inbox', // url
         { // configs
             headers: {
                 'Accept': '*/*',
                 'Content-Type': 'application/json',
-                // 'Authorization': 'Basic ' + props.authString
+                'Authorization': 'Basic ' + props.authString
             },
         }
       ).then((response) => {

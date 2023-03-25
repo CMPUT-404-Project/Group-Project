@@ -47,7 +47,7 @@ function AuthorLookup(props) {
           Author Lookup
         </Button>
   
-        <Modal show={show} onHide={handleClose} centered>
+        <Modal size={'lg'} show={show} onHide={handleClose} centered>
 
           <Modal.Header closeButton>
             <Modal.Title>Other Authors</Modal.Title>
@@ -57,8 +57,8 @@ function AuthorLookup(props) {
         <Modal.Body>
             
             <FollowAuthor authString={props.authString} author={props.author}/> <hr />
-            <Following authString={props.authString}/> <hr />
-            <Followers authString={props.authString}/>
+            <Following authString={props.authString} author={props.author}/> <hr />
+            <Followers authString={props.authString} author={props.author}/>
 
         </Modal.Body>
 

@@ -6,7 +6,7 @@ function GithubActivity({userID}) {
   const [activity, setActivity] = useState([]);
 
   const handleClick = () => {
-    fetch('http://127.0.0.1:8000/service/authors/github/', {
+    fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

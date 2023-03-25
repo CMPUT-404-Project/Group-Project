@@ -12,7 +12,7 @@ const LoginForm = ({setAuthString, setUserID, setLoggedin}) => {
     const authString = `${authusername}:${authpassword}`;
     const encodedAuthString = btoa(authString);
 
-    const response = await fetch('http://127.0.0.1:8000/auth/login/', {
+    const response = await fetch('https://distributed-social-net.herokuapp.com/auth/login/', {
 
       method: 'POST',
       headers: {
@@ -33,7 +33,7 @@ const LoginForm = ({setAuthString, setUserID, setLoggedin}) => {
     if (data.success) {
       const authorId = data.author_id;
       // Do something with the authorId value, such as storing it in state or using it to navigate to a different page
-      axios.get('http://127.0.0.1:8000/service/authors/' + authorId)
+      axios.get('https://distributed-social-net.herokuapp.com/service/authors/' + authorId)
         .then((response) => {
           // console.log(response.data);
           setAuthString(encodedAuthString);

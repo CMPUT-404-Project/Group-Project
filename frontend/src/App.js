@@ -27,7 +27,7 @@ function App() {
     // Update the document title using the browser API
     console.log('hello')
     if (authString !== ''){
-      axios.get('http://127.0.0.1:8000/service/authors/' + userID.id + '/posts').then(res => {
+      axios.get(userID.id + '/posts').then(res => {
       setPostItems(res.data.items)
     })}
   }, [authString]);
