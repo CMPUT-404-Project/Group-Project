@@ -1,6 +1,7 @@
 
 import './gitstyle.css';
 import React, { useState } from 'react';
+import { author_id_to_number } from './helper_functions';
 
 function GithubActivity({userID}) {
   const [activity, setActivity] = useState([]);
@@ -11,7 +12,7 @@ function GithubActivity({userID}) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ userID })
+      body: JSON.stringify({ userID:author_id_to_number(userID) })
     })
       .then(response => response.json())
       .then(data => {
