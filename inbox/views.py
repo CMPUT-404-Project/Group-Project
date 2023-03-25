@@ -209,8 +209,82 @@ def get_inbox(data):
             return Response({"type": "error", "message": "Error creating a new Comment", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # elif data['type'] == 'like':
-    #     return Like.objects.get(id=data['id'])
+    elif data['type'] == 'like':
+        # get the like object data
+        author_data = data.get('author')
+        object_url = data.get('object')
+        
+        # check if required fields are present
+        if not author_data or not object_url:
+            return Response({"type": "error", "message": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # get author id
+        author_id = author_data.get('id')
+        if not author_id: return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if '/' in author_id: author_id = get_author_id(author_id)
+
+        try:
+            # check if the author exists in our db
+            if Author.objects.filter(id=author_id).exists():
+                author = Author.objects.get(id=author_id)
+            else:
+                # make a new author
+                author = create_new_author(author_id, author_data)
+                author.save()
+
+            # object_url checks
+            if ('/' in object_url) and ('posts' in object_url) and ('authors' in object_url): 
+                post_id = get_post_id(object_url)
+                post_auth_id = get_author_id(object_url)
+            else:
+                return Response({"type": "error", "message": "Invalid object format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            ## check if author and post exist
+            
+            #if post author does not exist
+            if not Author.objects.filter(id=post_auth_id).exists():
+                return Response({"type": "error", "message": "Author of the post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            #if post does not exist
+            if not Post.objects.filter(id=post_id).exists():
+                return Response({"type": "error", "message": "Post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if 'comment' in object_url:
+                # do checks for comment like
+
+                # check if the comment exists in our db
+                comment_id = get_comment_id(object_url)
+                if Comment.objects.filter(id=comment_id).exists():
+                    comment = Comment.objects.get(id=comment_id)
+                    type = 'comment'
+                else:
+                    return Response({"type": "error", "message": "Comment does not exist in database"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                # handle post
+                post = Post.objects.get(id=post_id)
+                type = 'post'
+
+            # create a new like object
+
+            like = {
+                    "id": uuid.uuid4().hex,
+                    "summary": f"{author.displayName} likes your {type}",
+                    "object": object_url,
+                    "object_type": type
+            }
+            like_ser = LikeSerializer(data=like)
+        
+            if like_ser.is_valid():
+                #saved = like_ser.save(author=AuthorSerializer(author).data)
+                saved = like_ser.save(author=author)
+            else:
+                return Response({"type": "error", "message": "Error creating a new Like (ser)"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # get the like object data
+            like = Like.objects.get(id=saved.id)
+            inbox_data = like
+        except Exception as e:
+            return Response({"type": "error", "message": "Error creating a new Like", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     return inbox_data
 
