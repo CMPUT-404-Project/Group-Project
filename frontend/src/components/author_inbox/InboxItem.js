@@ -26,6 +26,17 @@ function InboxItem(props) {
                 </Card.Body>
                 </Card>
             );
+        case "comment":
+            return (
+                <Card style={{ width: '100%' }} border={"info"}>
+                <Card.Body>
+                    <Card.Title>{message.comment}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{message.type}</Card.Subtitle>
+                    {/* <Card.Text>{message.summary}</Card.Text> */}
+                    <Card.Link href={message.author.id}>{message.author.displayName}</Card.Link>
+                </Card.Body>
+                </Card>
+            )
         case "like":
             card_style = "success";
             break;
