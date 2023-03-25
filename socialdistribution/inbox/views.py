@@ -36,14 +36,23 @@ def get_inbox(data):
     if data['type'] == 'post':
 
         #get post id
-        post_id = data.pop('id')
-        if not post_id: return Response({"type": "error", "message": "Post id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if '/' in post_id: post_id = get_post_id(post_id)
+        post_id = data.get('id')
+        if not post_id: 
+            return Response({"type": "error", "message": "Post id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if ('/' in post_id) and ('posts' in post_id): 
+            post_id = get_post_id(post_id)
+        else: 
+            return Response({"type": "error", "message": "Invalid post ID format"}, status=status.HTTP_400_BAD_REQUEST)
+        data.pop('id')
 
         #get author id
         author_id = data.get('author').get('id')
-        if not author_id: return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if '/' in author_id: author_id = get_author_id(author_id)
+        if not author_id: 
+            return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if ('/' in author_id) and ('authors' in author_id): 
+            author_id = get_author_id(author_id)
+        else: 
+            return Response({"type": "error", "message": "Invalid author ID format"}, status=status.HTTP_400_BAD_REQUEST)
            
         #if post exists then return it
         if Post.objects.filter(id=post_id).exists():
@@ -78,18 +87,28 @@ def get_inbox(data):
         actor_data = data.get('actor')
         object_data = data.get('object')
 
-        if not actor_data: return Response({"type": "error", "message": "Actor not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if not object_data: return Response({"type": "error", "message": "Object not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if not actor_data: 
+            return Response({"type": "error", "message": "Actor not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if not object_data: 
+            return Response({"type": "error", "message": "Object not found"}, status=status.HTTP_400_BAD_REQUEST)
 
         #get actor id 
         actor_id = actor_data.get('id')
-        if not actor_id: return Response({"type": "error", "message": "Actor id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if '/' in actor_id: actor_id = get_author_id(actor_id)
+        if not actor_id: 
+            return Response({"type": "error", "message": "Actor id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if ('/' in actor_id) and ('authors' in actor_id): 
+            actor_id = get_author_id(actor_id)
+        else: 
+            return Response({"type": "error", "message": "Invalid actor ID format"}, status=status.HTTP_400_BAD_REQUEST)
 
         #get object id
         object_id = object_data.get('id')
-        if not object_id: return Response({"type": "error", "message": "Object id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if '/' in object_id: object_id = get_author_id(object_id)
+        if not object_id: 
+            return Response({"type": "error", "message": "Object id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if ('/' in object_id) and ('authors' in object_id): 
+            object_id = get_author_id(object_id)
+        else: 
+            return Response({"type": "error", "message": "Invalid object ID format"}, status=status.HTTP_400_BAD_REQUEST)
 
         #if follow request exists
         if FollowRequest.objects.filter(actor_id=actor_id,object_id=object_id).exists():
@@ -125,32 +144,69 @@ def get_inbox(data):
             except Exception as e:
                 return Response({"type": "error", "message": "Error creating a new Follow Request", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    # elif data['type'] == 'comment':
-    #     return Comment.objects.get(id=data['id'])
-        # try:
-        #     author_data = data.get('author')
-        #     #check if the author exists in our db
-        #     if Author.objects.filter(id=author_data['id']).exists():
-        #         author = Author.objects.get(id=author_data['id'])
-        #     else:
-        #         #make a new author
-        #         author_ser = AuthorSerializer(data=author_data)
-        #         if author_ser.is_valid():
-        #             author_ser.save()
-        #             author = Author.objects.get(id=author_ser.data['id'])
-        #         else:
-        #             return Response({"type": "error", "message": "Error creating a new Author"}, status=status.HTTP_400_BAD_REQUEST)
+    elif data['type'] == 'comment':
+        #get comment, post and post author id
+        id_url = data.get('id')
+        if not id_url: 
+            return Response({"type": "error", "message": "Comment id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        data.pop('id')
 
-        #     url = data['id'].split('/')
-        #     post_id = url[url.index('posts')+1]
-        #     #check if the post exists in our db
-        #     if Post.objects.filter(id=post_id).exists(): 
-        #         post = Post.objects.get(id=post_id)   
-        #     else:
-        #         return Response({"type": "error", "message": "Post does not exist in the database"}, status=status.HTTP_400_BAD_REQUEST)
-            
-        # except:
-        #     return Response({"type": "error", "message": "Error creating a new comment"}, status=status.HTTP_400_BAD_REQUEST)
+        if ('/' in id_url) and ('posts' in id_url) and ('comments' in id_url) and ('authors' in id_url): 
+            comment_id = get_comment_id(id_url)
+            post_id = get_post_id(id_url)
+            post_auth_id = get_author_id(id_url)
+        else:
+            return Response({"type": "error", "message": "Invalid ID format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        #get author id - one who's commenting
+        author_id = data.get('author').get('id')
+        if not author_id: 
+            return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
+        if ('/' in author_id) and ('authors' in author_id): 
+            author_id = get_author_id(author_id)
+        else: 
+            return Response({"type": "error", "message": "Invalid author ID format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        #if post author does not exist
+        if not Author.objects.filter(id=post_auth_id).exists():
+            return Response({"type": "error", "message": "Author of the post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #if post does not exist
+        if not Post.objects.filter(id=post_id).exists():
+            return Response({"type": "error", "message": "Post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #if comment exists
+        if Comment.objects.filter(id=comment_id).exists():
+            return Response({"type": "error", "message": "Comment with same ID (UUID) already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #create a new comment and return it
+        try:
+            #check if the author exists in our db
+            author_data = data.pop('author')
+            if Author.objects.filter(id=author_id).exists():
+                author = Author.objects.get(id=author_id)
+            else:
+                #make a new author
+                author = create_new_author(author_id,author_data)
+                author.save()
+
+            #get the post
+            post = Post.objects.get(id=post_id)
+            data['post'] = post_id
+            #create a new comment
+            comment_ser = CommentSerializer(data=data, context={'comment_id': comment_id, 'comment_url': id_url})
+            if comment_ser.is_valid():
+                saved = comment_ser.save(
+                    author = AuthorSerializer(author).data, 
+                    post = post,
+                )
+            else:
+                return Response({"type": "error", "message": "Error creating a new Comment (ser)"}, status=status.HTTP_400_BAD_REQUEST)
+            #get the comment data
+            comment = Comment.objects.get(id=saved.id)
+            inbox_data = comment
+        except Exception as e:
+            return Response({"type": "error", "message": "Error creating a new Comment", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
     # elif data['type'] == 'like':

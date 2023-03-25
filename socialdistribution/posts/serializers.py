@@ -49,8 +49,13 @@ class CommentSerializer(serializers.ModelSerializer):
         if '/' in author_id:
             author_id = author_id.split('/')[-1]
         author = Author.objects.get(id=author_id)
+        if 'comment_id' in self.context:
+            validated_data['id'] = self.context['comment_id']
         comment = Comment.objects.create(**validated_data, author=author)
-        comment.url = f"{self.context['orig_auth_url']}/posts/{comment.post.id}/comments/{comment.id}"
+        if 'orig_auth_url' in self.context:
+            comment.url = f"{self.context['orig_auth_url']}/posts/{comment.post.id}/comments/{comment.id}"
+        elif 'comment_url' in self.context:
+            comment.url = f"{self.context['comment_url']}"
         comment.save()
         return comment
     
