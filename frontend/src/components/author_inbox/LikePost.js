@@ -55,9 +55,10 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 function LikePost(props) {
     const [liked, setLiked] = useState(false);
     const [likes, setLikes] = useState([]);
+    const [hasLiked, setHasLiked] = useState(false);
 
     const message = props.message;
-    const origin = message.origin.endsWith('/') ? message.origin : '${message.origin}/';
+    const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
 
     let authorId, postId;
     if (message.author.id.includes("authors")) {
@@ -90,31 +91,35 @@ function LikePost(props) {
     useEffect(() => {
         if (likes.length > 0) {
             setLiked(likes.some(like => like.author.id === props.author.id));
+            setHasLiked(likes.some(like => like.author.id === props.author.id));
         }
     }, [likes, props.author.id]);
     
 
     const processLikeClick = () => {
-        setLiked(true);
         //console.log(props.author.id) //this is me
         //console.log(message.author.id) //this is the author of the post i am seeing in my inbox
-        
+        console.log(message.id)
         // '//service' doesn't work
-        axios.post(
-            `${origin}service/authors/${authorId}/inbox/`,
-            {
-                type: 'like',
-                author: props.author,
-                object: message.url,
-                summary: '${props.author.displayName} likes your post'
-            },
-        )
-            .then(response => {
-                console.log('sent to inbox');
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        if (!hasLiked) {
+            setLiked(true);
+            setHasLiked(true);
+            axios.post(
+                `${origin}service/authors/${authorId}/inbox/`,
+                {
+                    type: 'like',
+                    author: props.author,
+                    object: message.id,
+                    summary: `${props.author.displayName} likes your post`
+                },
+            )
+                .then(response => {
+                    console.log('sent to inbox');
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
     };
 
     return (
@@ -132,3 +137,4 @@ function LikePost(props) {
 }
 
 export default LikePost;
+
