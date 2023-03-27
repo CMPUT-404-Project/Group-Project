@@ -76,7 +76,6 @@ function LikePost(props) {
     
 
     useEffect(() => {
-
         axios.get(`${message.origin}service/authors/${authorId}/posts/${postId}/likes`)
             .then(response => {
                 setLikes(response.data.items);
@@ -84,7 +83,14 @@ function LikePost(props) {
             .catch(error => {
                 console.log(error);
             });
-    }, [message]);
+    }, []);
+    
+    useEffect(() => {
+        if (likes.length > 0) {
+            setLiked(likes.some(like => like.author.id === props.author.id));
+        }
+    }, [likes, props.author.id]);
+    
 
     const processLikeClick = () => {
         setLiked(true);
