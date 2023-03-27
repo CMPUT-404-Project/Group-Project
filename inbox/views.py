@@ -33,7 +33,7 @@ def get_comment_id(url):
 
 def get_inbox(data):
     inbox_data = None
-    if data['type'] == 'post':
+    if data['type'].lower() == 'post':
 
         #get post id
         post_id = data.get('id')
@@ -83,7 +83,7 @@ def get_inbox(data):
             except Exception as e:
                 return Response({"type": "error", "message": "Error creating a new Post", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
 
-    elif data['type'] == 'Follow':
+    elif data['type'].lower() == 'follow':
         actor_data = data.get('actor')
         object_data = data.get('object')
 
@@ -144,7 +144,7 @@ def get_inbox(data):
             except Exception as e:
                 return Response({"type": "error", "message": "Error creating a new Follow Request", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    elif data['type'] == 'comment':
+    elif data['type'].lower() == 'comment':
         #get comment, post and post author id
         id_url = data.get('id')
         if not id_url: 
@@ -209,7 +209,7 @@ def get_inbox(data):
             return Response({"type": "error", "message": "Error creating a new Comment", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    elif data['type'] == 'like':
+    elif data['type'].lower() == 'like':
         # get the like object data
         author_data = data.get('author')
         object_url = data.get('object')
