@@ -93,7 +93,7 @@ function LikePost(props) {
             setLiked(likes.some(like => like.author.id === props.author.id));
             setHasLiked(likes.some(like => like.author.id === props.author.id));
         }
-    }, [likes, props.author.id]);
+    }, [likes, message.author.id]);
     
 
     const processLikeClick = () => {
