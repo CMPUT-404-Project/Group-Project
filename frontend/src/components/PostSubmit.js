@@ -79,8 +79,10 @@ function PostSubmit(props) {
         },
         body: JSON.stringify({
           title: contactInfo.title,
-          source: contactInfo.source,
-          origin: contactInfo.origin,
+          // source: contactInfo.source, // what is this?
+          // origin: contactInfo.origin, // what is this?
+          source: props.author.host, // what is this?
+          origin: props.author.host, // what is this?
           description: contactInfo.description,
           contentType: contactInfo.contentType,
           content: contactInfo.content,
@@ -90,7 +92,17 @@ function PostSubmit(props) {
           // unlisted: contactInfo.unlisted,
           // image: null,
         })
-      }).then(function (response) {
+      }).then((response) => response.json()).then( (resp) => {
+        console.log(resp);
+          axios.get(props.author.id + '/followers/').then((response) => {
+            console.log(response.data);
+            response.data.items.forEach( (minion) => {
+              axios.post(minion.id + '/inbox/', resp);
+              axios.post(minion.id + '/inbox', resp);
+            })
+          })
+        }
+      ).then(function (response) {
         // After Making a post, refresh the 
         axios.get(props.author.id + '/posts').then(res => {
           props.setPostItems(res.data.items);
@@ -115,14 +127,14 @@ function PostSubmit(props) {
                     <Form.Label>Post Title</Form.Label>
                     <Form.Control type="text" placeholder="Title" name="title" value={contactInfo.title} onChange={onChangeHandler}/>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="source">
+                {/* <Form.Group className="mb-3" controlId="source">
                     <Form.Label>Post source</Form.Label>
                     <Form.Control type="text" placeholder="Enter a valid URL" name="source" value={contactInfo.source} onChange={onChangeHandler}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="origin">
                     <Form.Label>Post origin</Form.Label>
                     <Form.Control type="text" placeholder="Enter a valid URL" name="origin" value={contactInfo.origin} onChange={onChangeHandler}/>
-                </Form.Group>
+                </Form.Group> */}
                 <Form.Group className="mb-3" controlId="description">
                     <Form.Label>Post Description</Form.Label>
                     <Form.Control type="text" placeholder="Post Description" name="description" value={contactInfo.description} onChange={onChangeHandler}/>

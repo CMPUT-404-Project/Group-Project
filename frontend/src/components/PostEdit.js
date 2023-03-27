@@ -72,14 +72,14 @@ function PostEdit(props) {
                     <Form.Label>Post Title</Form.Label>
                     <Form.Control type="text" placeholder="Title" name="title" value={contactInfo.title} onChange={onChangeHandler}/>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="source">
+                {/* <Form.Group className="mb-3" controlId="source">
                     <Form.Label>Post source</Form.Label>
                     <Form.Control type="text" placeholder="Enter a valid URL" name="source" value={contactInfo.source} onChange={onChangeHandler}/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="origin">
                     <Form.Label>Post origin</Form.Label>
                     <Form.Control type="text" placeholder="Enter a valid URL" name="origin" value={contactInfo.origin} onChange={onChangeHandler}/>
-                </Form.Group>
+                </Form.Group> */}
                 <Form.Group className="mb-3" controlId="description">
                     <Form.Label>Post Description</Form.Label>
                     <Form.Control type="text" placeholder="Post Description" name="description" value={contactInfo.description} onChange={onChangeHandler}/>

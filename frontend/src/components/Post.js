@@ -27,20 +27,22 @@ function Post(props) {
               {props.postObject.content}
             </Card.Text>
             {/* implement the onclick for the view comments */}
-            <PostModal postContent={props.postObject}/>
+            {/* <PostModal postContent={props.postObject}/> */}
             <PostEdit authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
             <PostDelete postContent={props.postObject} setPostItems={props.setPostItems}/>
             <PostComment postContent={props.postObject} setPostItems={props.setPostItems}/>
             <AddComment authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
-            <LikePost message={props.postObject} />
+            
+            {/* <LikePost  message={props.message} author={props.postObject.author} authString={props.authString} /> */}
+            <LikePost message={props.postObject} author={props.postObject.author}/>
           </Card.Body>
 
           <ListGroup variant="flush">
             <ListGroup.Item>
-                <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" />
+                {/* <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" /> */}
                 <Card.Link href={props.postObject.author.url}>{props.postObject.author.displayName}</Card.Link>
-                |
-                <Card.Link href={props.postObject.author.github}>Github</Card.Link>
+                {/* | */}
+                {/* <Card.Link href={props.postObject.author.github}>Github</Card.Link> */}
             </ListGroup.Item>
         </ListGroup>
 

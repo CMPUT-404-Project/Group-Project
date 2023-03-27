@@ -52,7 +52,8 @@ function FollowAuthor(props) {
             .then((response) => {
                 console.log(response.data);
                 axios.post(
-                    response.data.id + '/inbox/', // url
+                    // response.data.id + '/inbox/', // url for our database
+                    response.data.id + '/inbox', // url for floating fjord
                     { // body
                         "type": "follow",
                         "summary": props.author.displayName + " wants to follow " + response.data.displayName,
@@ -65,6 +66,24 @@ function FollowAuthor(props) {
                         'Authorization': 'Basic ' + props.authString
                     }
                 )
+
+                // DUPLICATED CODE FOR inconsistent APIs
+                axios.post(
+                    // response.data.id + '/inbox/', // url for our database
+                    response.data.id + '/inbox/', // url for floating fjord
+                    { // body
+                        "type": "follow",
+                        "summary": props.author.displayName + " wants to follow " + response.data.displayName,
+                        "actor": props.author,
+                        "object": response.data,
+                    }, 
+                    {
+                        'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + props.authString
+                    }
+                )
+
             });
 
 
@@ -178,7 +197,7 @@ function FollowAuthor(props) {
                 </Button> <br />
             </InputGroup>
             
-            <Form.Text className="text-muted">{"Display Name: " + userPreview}</Form.Text>
+            {/* <Form.Text className="text-muted">{"Display Name: " + userPreview}</Form.Text> */}
         </Form>
     );
 }

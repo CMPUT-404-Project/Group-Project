@@ -57,7 +57,7 @@ function AuthorLookup(props) {
         <Modal.Body>
             
             <FollowAuthor authString={props.authString} author={props.author}/> <hr />
-            <Following authString={props.authString} author={props.author}/> <hr />
+            {/* <Following authString={props.authString} author={props.author}/> <hr /> */}
             <Followers authString={props.authString} author={props.author}/>
 
         </Modal.Body>

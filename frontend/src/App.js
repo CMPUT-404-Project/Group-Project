@@ -69,7 +69,7 @@ function App() {
 
 
         {postItemComponents}
-        <p>{userID.id}</p>
+        {/* <p>{userID.id}</p> */}
         <GithubActivity userID={userID.id}/>
       </div>
     );

@@ -20,7 +20,7 @@ function PostComment(props) {
     .catch(error => console.log(error));
     }
 
-  var commentView = comments.map((comm) => <Card><Card.Body>{comm.comment}</Card.Body></Card>)
+  var commentView = comments.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment}</Card.Body></Card>)
   
   
   return (
