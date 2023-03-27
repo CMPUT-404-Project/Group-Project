@@ -54,7 +54,7 @@ function FollowAuthor(props) {
                 axios.post(
                     response.data.id + '/inbox/', // url
                     { // body
-                        "type": "Follow",
+                        "type": "follow",
                         "summary": props.author.displayName + " wants to follow " + response.data.displayName,
                         "actor": props.author,
                         "object": response.data,
