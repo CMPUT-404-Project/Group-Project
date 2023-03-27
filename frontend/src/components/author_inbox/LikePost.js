@@ -57,6 +57,8 @@ function LikePost(props) {
     const [likes, setLikes] = useState([]);
 
     const message = props.message;
+    const origin = message.origin.endsWith('/') ? message.origin : '${message.origin}/';
+
     let authorId, postId;
     if (message.author.id.includes("authors")) {
         authorId = message.author.id.split("/authors/")[1];
@@ -76,7 +78,7 @@ function LikePost(props) {
     
 
     useEffect(() => {
-        axios.get(`${message.origin}service/authors/${authorId}/posts/${postId}/likes`)
+        axios.get(`${origin}service/authors/${authorId}/posts/${postId}/likes`)
             .then(response => {
                 setLikes(response.data.items);
             })
@@ -97,9 +99,9 @@ function LikePost(props) {
         //console.log(props.author.id) //this is me
         //console.log(message.author.id) //this is the author of the post i am seeing in my inbox
         
-        // assuming the origin ends with a '/'. '//service' doesn't work
+        // '//service' doesn't work
         axios.post(
-            `${message.origin}service/authors/${authorId}/inbox/`,
+            `${origin}service/authors/${authorId}/inbox/`,
             {
                 type: 'like',
                 author: props.author,
