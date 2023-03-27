@@ -75,7 +75,7 @@ function AuthorInbox(props) {
 
     const refresh_inbox = () => {
       axios.get(
-        props.author.id +'/inbox', // url
+        props.author.id +'/inbox/', // url
         { // configs
             headers: {
                 'Accept': '*/*',

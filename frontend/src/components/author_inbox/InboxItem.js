@@ -22,7 +22,7 @@ function InboxItem(props) {
                     <Card.Title>{message.title}</Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">{message.type}</Card.Subtitle>
                     <Card.Text>{message.content}</Card.Text>
-                    {/* <LikePost  message={message} author={props.author} authString={props.authString} /> */}
+                    <LikePost  message={message} author={props.author} authString={props.authString} />
                 </Card.Body>
                 </Card>
             );
