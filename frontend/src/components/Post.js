@@ -8,7 +8,8 @@ import PostModal from './PostModal';
 import PostEdit from './PostEdit';
 import PostDelete from './PostDelete';
 import LikePost from './author_inbox/LikePost';
-
+import PostComment from './PostComment';
+import AddComment from './AddComment';
 
 
 
@@ -29,6 +30,8 @@ function Post(props) {
             <PostModal postContent={props.postObject}/>
             <PostEdit authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
             <PostDelete postContent={props.postObject} setPostItems={props.setPostItems}/>
+            <PostComment postContent={props.postObject} setPostItems={props.setPostItems}/>
+            <AddComment authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
             <LikePost message={props.postObject} />
           </Card.Body>
 
