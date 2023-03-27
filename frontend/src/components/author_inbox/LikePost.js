@@ -26,12 +26,12 @@ function LikePost(props) {
         
       } 
     else {
-        postId = message.id;  
+        postId = message.id;
     }
     
 
     useEffect(() => {
-        axios.get(`${origin}service/authors/${authorId}/posts/${postId}/likes`)
+        axios.get(`${props.message.id}/likes`)
             .then(response => {
                 setLikes(response.data.items);
             })
@@ -57,7 +57,7 @@ function LikePost(props) {
             setLiked(true);
             setHasLiked(true);
             axios.post(
-                `${origin}service/authors/${authorId}/inbox/`,
+                `${props.message.author.id}/inbox/`,
                 {
                     type: 'like',
                     author: props.author,
@@ -71,6 +71,22 @@ function LikePost(props) {
                 .catch(error => {
                     console.log(error);
                 });
+            
+                axios.post(
+                    `${props.message.author.id}/inbox`,
+                    {
+                        type: 'like',
+                        author: props.author,
+                        object: message.id,
+                        summary: `${props.author.displayName} likes your post`
+                    },
+                )
+                    .then(response => {
+                        console.log('sent to inbox');
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
         }
     };
 
