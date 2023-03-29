@@ -37,7 +37,7 @@ class Post(models.Model):
     contentType = models.CharField(max_length=50,choices=CONTENT_TYPE,default='text/plain')
     content = models.TextField(blank=True,null=True)
     #image =  models.ImageField(upload_to='post_images',null=True, blank= True)
-    imagesrc = models.URLField(max_length=500, null=True, blank=True)
+    #imagesrc = models.URLField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posted')
     categories = ArrayField(models.CharField(max_length=200), blank=True, default=list)
     count = models.IntegerField(default=0)  
