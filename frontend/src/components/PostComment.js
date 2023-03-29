@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 import Card from 'react-bootstrap/Card';
+import AddComment from './AddComment';
 
 function PostComment(props) {
   const [show, setShow] = useState(false);
@@ -15,7 +16,6 @@ function PostComment(props) {
   const handleCommentView = () => {
     axios.get( props.postContent.id +'/comments')
     //.then((response) => {setComments(response.data.comments[0].comment);})
-    
     .then((response) => {setComments(response.data.comments)})
     .catch(error => console.log(error));
     }
@@ -35,7 +35,8 @@ function PostComment(props) {
         </Modal.Header>
         
     <Modal.Body>
-    {commentView}
+      <AddComment authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
+      {commentView}
     </Modal.Body>
 
     <Modal.Footer>

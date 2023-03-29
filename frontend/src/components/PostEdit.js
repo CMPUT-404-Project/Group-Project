@@ -57,8 +57,8 @@ function PostEdit(props) {
 
   return (
     <>
-      <Button variant="secondary" onClick={handleShow}>
-        Edit Post
+      <Button variant="outline-secondary" onClick={handleShow}>
+        Edit
       </Button>
 
       <Modal show={show} onHide={handleClose} centered>

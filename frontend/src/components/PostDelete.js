@@ -29,7 +29,7 @@ function PostDelete(props) {
         
             return (
                 <>
-                <Button variant="danger"  onClick={handleShow}>
+                <Button variant="outline-danger"  onClick={handleShow}>
                          Delete
                       </Button>
     
