@@ -10,7 +10,7 @@ import AuthorInbox from './author_inbox/AuthorInbox';
 function Navigation(props) {
   if (!props.loggedin){
     return (
-      <Navbar bg="light" variant="light">
+      <Navbar bg="dark" variant="dark">
         <Container>
           <Navbar.Brand href="#">Social Distribution</Navbar.Brand>
           <Nav className="me-auto">

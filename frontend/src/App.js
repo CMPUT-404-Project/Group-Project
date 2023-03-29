@@ -37,19 +37,19 @@ function App() {
 
   const [signedup, setSignedup] = useState(true);
   const [loggedin, setLoggedin] = useState(false);
-  if (signedup === false){
-    return (
-      <div className="App">
-        <Navigation loggedin={loggedin}/>
-        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
-      </div>
-    );
-  }
+  // if (signedup === false){
+  //   return (
+  //     <div className="App">
+  //       <Navigation loggedin={loggedin}/>
+  //       <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
+  //     </div>
+  //   );
+  // }
 
-  else if(loggedin === false) {
+  if(loggedin === false) {
     return(
       <div className="App">
-        <Navigation loggedin={loggedin}/>
+        {/* <Navigation loggedin={loggedin}/> */}
         <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
         <LoginForm setAuthString={setAuthString} setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
