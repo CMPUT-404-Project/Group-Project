@@ -11,25 +11,7 @@ function LikePost(props) {
 
     const message = props.message;
     const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
-
-    let authorId, postId;
-    if (message.author.id.includes("authors")) {
-        authorId = message.author.id.split("/authors/")[1];
-        
-      } 
-    else {
-        authorId = message.author.id;  
-    }
-
-    if (message.id.includes("posts")) {
-        postId = message.id.split("/posts/")[1];
-        
-      } 
-    else {
-        postId = message.id;
-    }
     
-
     useEffect(() => {
         axios.get(`${props.message.id}/likes`)
             .then(response => {
@@ -64,29 +46,19 @@ function LikePost(props) {
                     object: message.id,
                     summary: `${props.author.displayName} likes your post`
                 },
-            )
-                .then(response => {
-                    console.log('sent to inbox');
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+            ).then(response => {console.log('sent to inbox');}
+            ).catch(error => {console.log(error);});
             
-                axios.post(
-                    `${props.message.author.id}/inbox`,
-                    {
-                        type: 'like',
-                        author: props.author,
-                        object: message.id,
-                        summary: `${props.author.displayName} likes your post`
-                    },
-                )
-                    .then(response => {
-                        console.log('sent to inbox');
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
+            axios.post(
+                `${props.message.author.id}/inbox`,
+                {
+                    type: 'like',
+                    author: props.author,
+                    object: message.id,
+                    summary: `${props.author.displayName} likes your post`
+                },
+            ).then(response => {console.log('sent to inbox');}
+            ).catch(error => {console.log(error);});
         }
     };
 
@@ -105,4 +77,3 @@ function LikePost(props) {
 }
 
 export default LikePost;
-
