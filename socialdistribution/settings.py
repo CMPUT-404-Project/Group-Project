@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'authors',
     'posts',
     'inbox',
+    'nodes',
     'django_heroku',
     'corsheaders', #for rest api
 ]
