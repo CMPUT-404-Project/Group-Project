@@ -63,16 +63,12 @@ function LikePost(props) {
     };
 
     return (
-        <div>
+        <>
             <Button variant="outline-success" onClick={processLikeClick}>
                 {liked ? 'Liked' : 'Like'}
             </Button>
-            <div>
-                {likes.map((like, index) => (
-                    <p key={index}>{like.author.displayName} liked this post</p>
-                ))}
-            </div>
-        </div>
+            {likes.map((like, index) => (<p key={index}>{like.author.displayName} liked this post</p>))}
+        </>
     );
 }
 

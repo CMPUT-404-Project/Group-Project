@@ -10,7 +10,7 @@ import PostDelete from './PostDelete';
 import LikePost from './author_inbox/LikePost';
 import PostComment from './PostComment';
 import AddComment from './AddComment';
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown from 'react-markdown';
 
 
 
