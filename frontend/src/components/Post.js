@@ -10,10 +10,17 @@ import PostDelete from './PostDelete';
 import LikePost from './author_inbox/LikePost';
 import PostComment from './PostComment';
 import AddComment from './AddComment';
+import ReactMarkdown from 'react-markdown'
 
 
 
 function Post(props) {
+
+
+  var main_content = props.postObject.content;
+  if (props.postObject.contentType === "text/markdown"){
+    main_content = <ReactMarkdown>{props.postObject.content}</ReactMarkdown>
+  }
     
     return (
         <Card style={{ width: '70%', margin:'1em' }}>
@@ -24,7 +31,7 @@ function Post(props) {
           <Card.Body>
             <Card.Title>{props.postObject.title}</Card.Title>
             <Card.Text>
-              {props.postObject.content}
+              {main_content}
             </Card.Text>
             {/* implement the onclick for the view comments */}
             {/* <PostModal postContent={props.postObject}/> */}
