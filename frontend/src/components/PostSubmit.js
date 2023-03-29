@@ -81,8 +81,8 @@ function PostSubmit(props) {
           title: contactInfo.title,
           // source: contactInfo.source, // what is this?
           // origin: contactInfo.origin, // what is this?
-          source: props.author.host, // what is this?
-          origin: props.author.host, // what is this?
+          source: props.author.id, // what is this?
+          origin: props.author.id, // what is this?
           description: contactInfo.description,
           contentType: contactInfo.contentType,
           content: contactInfo.content,
@@ -155,7 +155,7 @@ function PostSubmit(props) {
 
                 <Form.Group className="mb-3" controlId="content">
                     <Form.Label>Post Content</Form.Label>
-                    <Form.Control type="text" placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
+                    <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="categories">
