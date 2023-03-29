@@ -40,7 +40,7 @@ function App() {
   if (signedup === false){
     return (
       <div className="App">
-        <Navigation />
+        <Navigation loggedin={loggedin}/>
         <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
       </div>
     );
@@ -49,7 +49,7 @@ function App() {
   else if(loggedin === false) {
     return(
       <div className="App">
-        <Navigation />
+        <Navigation loggedin={loggedin}/>
         <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
         <LoginForm setAuthString={setAuthString} setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
@@ -59,14 +59,12 @@ function App() {
   else if (loggedin === true) {
     return (
       <div className="App">
-        <Navigation />
+        <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems}/>
 
         {/* Author Actions */}
-        <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
+        {/* <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
         <AuthorLookup authString={authString} author={userID} />
-        <AuthorInbox authString={authString} author={userID} />
-
-
+        <AuthorInbox authString={authString} author={userID} /> */}
 
         {postItemComponents}
         {/* <p>{userID.id}</p> */}

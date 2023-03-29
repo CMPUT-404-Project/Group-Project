@@ -93,8 +93,8 @@ function AuthorInbox(props) {
     
     return (
         <>
-        <Button variant="info" onClick={handleShow}>
-        Author Inbox
+        <Button variant="dark" onClick={handleShow}>
+          Inbox
         </Button>
   
         <Modal show={show} onHide={handleClose} fullscreen={true} centered>

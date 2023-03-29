@@ -113,7 +113,7 @@ function PostSubmit(props) {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      <Button variant="dark" onClick={handleShow}>
         Create Post
       </Button>
 
