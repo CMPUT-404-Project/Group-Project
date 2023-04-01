@@ -41,7 +41,7 @@ async function gatherAll(authorObject){
             total_posts = total_posts.concat(local_post.data.items);
         }
 
-        
+        // This is for team 21
         var local_authors_from_team21 = await axios.get(
             "https://social-distribution-group21.herokuapp.com//service/authors/",
             {
@@ -62,8 +62,44 @@ async function gatherAll(authorObject){
             total_posts = total_posts.concat(local_post.data.posts);
         }
 
+        // this is for team 10
+        // var local_authors_from_team10 = await axios.get(
+        //     "https://socialdistcmput404.herokuapp.com/api/authors/",
+        //     {
+        //         headers: {
+        //             Authorization: "Token 510A233343210757FB490505AA2E9B52A3D678BF"
+        //         }
+        //     }); // ^^^ doesn't work
+        var local_authors_from_team10 = await fetch(
+                "https://socialdistcmput404.herokuapp.com/api/authors/",
+                {
+
+                    mode: "cors",
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Accept': '*/*',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Authorization': "Token 510A233343210757FB490505AA2E9B52A3D678BF"
+                    },
+                }
+            );
+        local_authors_from_team10 = local_authors_from_team21.data.items;
+        // console.log(local_authors)
+        for (let i=0; i<local_authors_from_team10.length; i++){
+            var local_post = await axios.get(
+                local_authors_from_team10[i].id + '/posts',
+                {
+                    headers: {
+                        Authorization: "Token 510A233343210757FB490505AA2E9B52A3D678BF"
+                    }
+                });
+            total_posts = total_posts.concat(local_post.data.posts);
+        }
+
+        // combine it with the github activities
         total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
+        // sort it so most recent at the top
         total_posts.sort(function(a,b){
             // Turn your strings into dates, and then subtract them
             // to get a value that is either negative, positive, or zero.
