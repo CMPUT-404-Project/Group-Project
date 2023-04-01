@@ -35,7 +35,7 @@ function PostComment(props) {
         </Modal.Header>
         
     <Modal.Body>
-      <AddComment authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
+      <AddComment author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
       {commentView}
     </Modal.Body>
 

@@ -89,6 +89,22 @@ function AuthorInbox(props) {
       });
     };
 
+    const delete_inbox = () => {
+      axios.delete(
+        props.author.id +'/inbox/', // url
+        { // configs
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + props.authString
+            },
+        }
+      ).then((response) => {
+        console.log(response.data.items);
+        setInboxList([]);
+      });
+    };
+
     useEffect(() => {refresh_inbox()}, []); // run this once at the beginning
     
     return (
@@ -108,6 +124,9 @@ function AuthorInbox(props) {
           </Modal.Body>
 
           <Modal.Footer>
+            <Button variant="outline-danger" onClick={delete_inbox}>
+              Clear
+            </Button>
             <Button variant="outline-success" onClick={refresh_inbox}>
               Refresh
             </Button>

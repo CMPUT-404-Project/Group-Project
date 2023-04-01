@@ -54,7 +54,7 @@ function AddComment( props ) {
     axios.post(
       `${props.postContent.id}/comments`,
       {
-        author: contactInfo.author,
+        author: props.author,
         type: contactInfo.type,
         contentType: contactInfo.contentType,
         comment: contactInfo.comment,
@@ -65,11 +65,24 @@ function AddComment( props ) {
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + props.authString
         }}).then(function (response) {
-            axios.get( props.postContent.author.id + '/posts').then(res => {
-              props.setPostItems(res.data.items);
-              handleCommentView();
-              discardContent();
-            })
+          // response.data.type = "comment";
+          // response.id = response.id;
+          axios.post(
+            `${props.postContent.author.id}/inbox/`,
+            response.data,
+            {
+              headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + props.authString
+            }})
+            handleCommentView();
+            discardContent();
+            // axios.get( props.postContent.author.id + '/posts').then(res => {
+            //   props.setPostItems(res.data.items);
+            //   handleCommentView();
+            //   discardContent();
+            // })
           });
   };
 

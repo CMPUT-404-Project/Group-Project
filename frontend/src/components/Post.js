@@ -7,6 +7,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import PostModal from './PostModal';
 import PostEdit from './PostEdit';
 import PostDelete from './PostDelete';
+import SharePost from './SharePost';
 import LikePost from './author_inbox/LikePost';
 import PostComment from './PostComment';
 import AddComment from './AddComment';
@@ -21,6 +22,23 @@ function Post(props) {
   if (props.postObject.contentType === "text/markdown"){
     main_content = <ReactMarkdown>{props.postObject.content}</ReactMarkdown>
   }
+
+  var extra_buttons = "";
+  if (props.postObject.author.id === props.author.id){
+    // if the post is from the logged-in user
+    extra_buttons = (
+      <>
+        <PostEdit authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
+        <PostDelete author={props.author}  postContent={props.postObject} setPostItems={props.setPostItems}/>
+      </>
+    )
+  } else {
+    extra_buttons = (
+      <>
+        <SharePost authString={props.authString} author={props.author} postContent={props.postObject} setPostItems={props.setPostItems}/>
+      </>
+    )
+  }
     
     return (
         <Card style={{ width: '70%', margin:'1em' }}>
@@ -33,15 +51,15 @@ function Post(props) {
             <Card.Text>
               {main_content}
             </Card.Text>
+            <Card.Subtitle className="mb-2 text-muted">{props.postObject.description}</Card.Subtitle>
             {/* implement the onclick for the view comments */}
             {/* <PostModal postContent={props.postObject}/> */}
-            <PostEdit authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
-            <PostDelete postContent={props.postObject} setPostItems={props.setPostItems}/>
             {/* <PostComment authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/> */}
-            <AddComment authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
+            {extra_buttons}
+            <AddComment author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
             
             {/* <LikePost  message={props.message} author={props.postObject.author} authString={props.authString} /> */}
-            <LikePost message={props.postObject} author={props.postObject.author}/>
+            <LikePost message={props.postObject} author={props.author}/>
           </Card.Body>
 
           <ListGroup variant="flush">

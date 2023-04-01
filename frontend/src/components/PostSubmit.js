@@ -1,10 +1,13 @@
 
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import React, { Component, useState } from 'react';   
+import React, { Component, useState, ChangeEvent, useRef } from 'react';   
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { gatherAll } from '../Logic';
+
+
 
 
 
@@ -13,6 +16,11 @@ function PostSubmit(props) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  
+
+
+
 
 
   
@@ -28,6 +36,7 @@ function PostSubmit(props) {
       categories: [],
       comments: "",
       visibility: "PUBLIC",
+      fileToUpload: null,
       unlisted: false,
       image: null,
     })
@@ -49,7 +58,28 @@ function PostSubmit(props) {
     image: null,
   });
 
+  const [picture, setPicture] = useState(null);
+  // function getBase64(file) {
+  //   var reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = function () {
+  //     console.log("QWERTYUIOPASDFGHJKLZXCVNM<M");
+  //     console.log(reader.result);
+  //     setContactInfo({ ...contactInfo, content: reader.result});
+  //   };
+  //   reader.onerror = function (error) {
+  //     console.log('Error: ', error);
+  //   };
+  // }
+  const onChangePicture = e => {
+    console.log('picture: ', e.target.files[0]);
+    getBase64(e.target.files[0]);
+    // setContactInfo({ ...contactInfo, content: event.target.value });
+    // setPicture(e.target.files[0]);
+};
+
   const onChangeHandler = (event) => {
+    console.log(contactInfo.content);
     setContactInfo({ ...contactInfo, [event.target.name]: event.target.value });
   };
 
@@ -67,6 +97,19 @@ function PostSubmit(props) {
   //   })
   // };
 
+  // Source:  https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
+  function getBase64(file) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      console.log(reader.result);
+      setContactInfo({ ...contactInfo, content: reader.result});
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+ }
+
   const submitPost = () => {
     fetch(
       props.author.id + '/posts/', // url
@@ -79,8 +122,6 @@ function PostSubmit(props) {
         },
         body: JSON.stringify({
           title: contactInfo.title,
-          // source: contactInfo.source, // what is this?
-          // origin: contactInfo.origin, // what is this?
           source: props.author.id, // what is this?
           origin: props.author.id, // what is this?
           description: contactInfo.description,
@@ -88,7 +129,7 @@ function PostSubmit(props) {
           content: contactInfo.content,
           author: props.author,
           // comments: contactInfo.comments,
-          // visibility: contactInfo.visibility,
+          visibility: contactInfo.visibility,
           // unlisted: contactInfo.unlisted,
           // image: null,
         })
@@ -103,11 +144,9 @@ function PostSubmit(props) {
           })
         }
       ).then(function (response) {
-        // After Making a post, refresh the 
-        axios.get(props.author.id + '/posts').then(res => {
-          props.setPostItems(res.data.items);
-          discardContent();
-        })
+        // After Making a post, refresh the main page
+        gatherAll(props.author).then(result => props.setPostItems(result));
+        discardContent();
       });
   };
 
@@ -152,6 +191,12 @@ function PostSubmit(props) {
                     <option value="image/jpeg;base64">image/jpeg;base64</option>
                   </Form.Control>
                 </Form.Group>
+
+                <input
+                  type="file"
+                  //style={{ display: 'none' }}
+                  onChange={onChangePicture}
+                />
 
                 <Form.Group className="mb-3" controlId="content">
                     <Form.Label>Post Content</Form.Label>

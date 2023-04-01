@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { gatherAll } from '../Logic';
 
 function PostEdit(props) {
 
@@ -44,10 +45,12 @@ function PostEdit(props) {
         })
       }).then(function (response) {
         // After Making a post, refresh the 
-        axios.get(props.postContent.author.id + '/posts').then(res => {
-          props.setPostItems(res.data.items);
-          handleClose();
-        })
+        gatherAll(props.author).then(result => props.setPostItems(result));
+        handleClose();
+        // axios.get(props.postContent.author.id + '/posts').then(res => {
+        //   props.setPostItems(res.data.items);
+        //   handleClose();
+        // })
       });
   };
 
@@ -98,9 +101,14 @@ function PostEdit(props) {
                   </Form.Control>
                 </Form.Group>
 
+                {/* <Form.Group className="mb-3" controlId="content">
+                    <Form.Label>Post Content</Form.Label>
+                    <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
+                </Form.Group> */}
+
                 <Form.Group className="mb-3" controlId="content">
                     <Form.Label>Post Content</Form.Label>
-                    <Form.Control type="text" placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
+                    <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="categories">

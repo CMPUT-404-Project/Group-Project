@@ -9,6 +9,7 @@ import {submitPost, likeData, getPosts} from './Logic';
 import { useEffect, useState } from 'react';
 import axios from 'axios'; 
 import Login from './components/Login';
+import { gatherAll } from './Logic';
 
 
 import AuthorSignupForm from './components/AuthorSignupForm';
@@ -18,6 +19,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import AuthorLookup from './components/author_lookup/AuthorLookup';
 import AuthorInbox from './components/author_inbox/AuthorInbox';
+import GithubActivityCard from './components/post_components/GithubActivityCard';
 
 function App() {
   const [userID, setUserID] = useState({});
@@ -25,15 +27,37 @@ function App() {
   const [postItems, setPostItems] = useState([]);
   useEffect(() => {
     // Update the document title using the browser API
-    console.log('hello')
+    console.log('Loading Posts')
     if (authString !== ''){
-      axios.get(userID.id + '/posts').then(res => {
-      setPostItems(res.data.items)
-    })}
+      gatherAll(userID).then((result) => {
+        setPostItems(result);
+      })
+    }
+    
+
+    // if (authString !== ''){
+    //   axios.get(userID.id + '/posts').then(res => {
+    //   setPostItems(res.data.items)
+    // })}
   }, [authString]);
-  const postItemComponents = postItems.map((onePost) => 
-    <Post authString={authString} postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
+  const postItemComponents = postItems.map((onePost) => {
+    if (onePost.type === "post"){
+      return <Post author={userID} authString={authString} postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
+    } else {
+      return <GithubActivityCard githubContent={onePost} key={onePost.id}/>
+    }
+  }
+    
   );
+
+  const refresh_main_page = () => {
+    // make the requests to fetch all posts
+
+    // store them in an array
+
+    // use setPostItems to alter that array
+    
+  }
 
   const [signedup, setSignedup] = useState(true);
   const [loggedin, setLoggedin] = useState(false);
@@ -59,16 +83,20 @@ function App() {
   else if (loggedin === true) {
     return (
       <div className="App">
-        <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems}/>
+        <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems} currPosts={postItems}/>
 
         {/* Author Actions */}
         {/* <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
         <AuthorLookup authString={authString} author={userID} />
         <AuthorInbox authString={authString} author={userID} /> */}
-
-        {postItemComponents}
+        <div style={{
+          margin:'auto',
+          width: '90%',
+          }}>
+          {postItemComponents}
+        </div>
         {/* <p>{userID.id}</p> */}
-        <GithubActivity userID={userID.id}/>
+        {/* <GithubActivity userID={userID.id}/> */}
       </div>
     );
   }

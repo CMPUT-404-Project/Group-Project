@@ -1,160 +1,134 @@
-function submitPost(postData){
-    // Implement the post-submission here. in the backend.
-    console.log("Hello");
+import axios from 'axios';
+import { author_id_to_number } from './components/helper_functions';
+
+
+
+
+async function getGithub(userID){
+    console.log("githubActivities");
+    console.log(userID);
+    let githubActivities = await fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ userID:author_id_to_number(userID.id) })
+    }).then(response => response.json())
+    console.log(githubActivities);
+    return githubActivities;
 }
 
-// function getPosts(userData){
-//     // return all the posts that should appear in the user's feed
-//     var post = {
-//         "type":"post",
-//         // // title of a post
-//         "title":"A post title about a post about web dev",
-//         // id of the post
-//         "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-//         // where did you get this post from?
-//         "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
-//         // where is it actually from
-//         "origin":"http://whereitcamefrom.com/posts/zzzzz",
-//         // a brief description of the post
-//         "description":"This post discusses stuff -- brief",
-//         // The content type of the post
-//         // assume either
-//         // text/markdown -- common mark
-//         // text/plain -- UTF-8
-//         // application/base64
-//         // image/png;base64 // this is an embedded png -- images are POSTS. So you might have a user make 2 posts if a post includes an image!
-//         // image/jpeg;base64 // this is an embedded jpeg
-//         // for HTML you will want to strip tags before displaying
-//         "contentType":"text/plain",
-//         "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
-//         // the author has an ID where by authors can be disambiguated
-//         "author":{
-//               "type":"author",
-//               // ID of the Author
-//               "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-//               // the home host of the author
-//               "host":"http://127.0.0.1:5454/",
-//               // the display name of the author
-//               "displayName":"Lara Croft",
-//               // url to the authors profile
-//               "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-//               // HATEOS url for Github API
-//               "github": "http://github.com/laracroft",
-//               // Image from a public domain (optional, can be missing)
-//               "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
-//         },
-//         // categories this post fits into (a list of strings
-//         "categories":["web","tutorial"],
-//         // comments about the post
-//         // return a maximum number of comments
-//         // total number of comments for this post
-//         "count": 1023,
-//         // the first page of comments
-//         "comments":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-//         // commentsSrc is OPTIONAL and can be missing
-//         // You should return ~ 5 comments per post.
-//         // should be sorted newest(first) to oldest(last)
-//         // this is to reduce API call counts
-//         "commentsSrc":{
-//             "type":"comments",
-//             "page":1,
-//             "size":5,
-//             "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-//             "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-//             "comments":[
-//                 {
-//                     "type":"comment",
-//                     "author":{
-//                         "type":"author",
-//                         // ID of the Author (UUID)
-//                         "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-//                         // url to the authors information
-//                         "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-//                         "host":"http://127.0.0.1:5454/",
-//                         "displayName":"Greg Johnson",
-//                         // HATEOS url for Github API
-//                         "github": "http://github.com/gjohnson",
-//                         // Image from a public domain
-//                         "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
-//                     },
-//                     "comment":"This is the very first comment",
-//                     "contentType":"text/markdown",
-//                     // ISO 8601 TIMESTAMP
-//                     "published":"2015-03-09T13:07:04+00:00",
-//                     // ID of the Comment (UUID)
-//                     "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
-//                 },
-//                 {
-//                     "type":"comment",
-//                     "author":{
-//                         "type":"author",
-//                         // ID of the Author (UUID)
-//                         "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-//                         // url to the authors information
-//                         "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-//                         "host":"http://127.0.0.1:5454/",
-//                         "displayName":"Greg Johnson",
-//                         // HATEOS url for Github API
-//                         "github": "http://github.com/gjohnson",
-//                         // Image from a public domain
-//                         "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
-//                     },
-//                     "comment":"This is the second comment",
-//                     "contentType":"text/markdown",
-//                     // ISO 8601 TIMESTAMP
-//                     "published":"2015-03-09T13:07:04+00:00",
-//                     // ID of the Comment (UUID)
-//                     "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
-//                 },
-//                 {
-//                     "type":"comment",
-//                     "author":{
-//                         "type":"author",
-//                         // ID of the Author (UUID)
-//                         "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-//                         // url to the authors information
-//                         "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-//                         "host":"http://127.0.0.1:5454/",
-//                         "displayName":"John Cena",
-//                         // HATEOS url for Github API
-//                         "github": "http://github.com/gjohnson",
-//                         // Image from a public domain
-//                         "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
-//                     },
-//                     "comment":"Sick Olde English",
-//                     "contentType":"text/markdown",
-//                     // ISO 8601 TIMESTAMP
-//                     "published":"2015-03-09T13:07:04+00:00",
-//                     // ID of the Comment (UUID)
-//                     "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
-//                 }
-//             ]
-//         },
-//         // # ISO 8601 TIMESTAMP
-//         "published":"2015-03-09T13:07:04+00:00",
-//         // # visibility ["PUBLIC","FRIENDS"]
-//         "visibility":"PUBLIC",
-//         // # for visibility PUBLIC means it is open to the wild web
-//         // # FRIENDS means if we're direct friends I can see the post
-//         // # FRIENDS should've already been sent the post so they don't need this
-//         "unlisted":false
-//         // # unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
-//       }
-      
 
-//       return [
-//         post,
-//         post,
-//         post,
-//         post
-//       ];
-// }
+async function gatherAll(authorObject){
+    // console.log(authorObject);
+    var postsToShare;
+    try {
+        
+        let githubActivities = await getGithub(authorObject);
+        githubActivities = githubActivities.map((item ) => {
+            item.published = item.created_at;
+            return item;
+        })
+        // console.log(githubActivities);
 
-// function getPosts(userData){
-//     const response = await fetch('')
-// }
-function submitLike(likeData){
-    // like data will contain user and post info pertaining to the like
+        var total_authors = [];
+        var total_posts = [];
+        var local_authors = await axios.get("https://distributed-social-net.herokuapp.com/service/authors");
+        local_authors = local_authors.data.items;
+        // console.log(local_authors)
+        for (let i=0; i<local_authors.length; i++){
+            var local_post = await axios.get(local_authors[i].id + '/posts/');
+            total_posts = total_posts.concat(local_post.data.items);
+        }
+
+        
+        var local_authors_from_team21 = await axios.get(
+            "https://social-distribution-group21.herokuapp.com//service/authors/",
+            {
+                headers: {
+                    Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+                }
+            });
+        local_authors_from_team21 = local_authors_from_team21.data.items;
+        // console.log(local_authors)
+        for (let i=0; i<local_authors_from_team21.length; i++){
+            var local_post = await axios.get(
+                local_authors_from_team21[i].id + '/posts',
+                {
+                    headers: {
+                        Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+                    }
+                });
+            total_posts = total_posts.concat(local_post.data.posts);
+        }
+
+        total_posts = total_posts.concat(githubActivities);
+        console.log(total_posts);
+        total_posts.sort(function(a,b){
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(b.published) - new Date(a.published);
+          });
+        return total_posts;
+
+        total_authors = total_authors.concat(local_authors.data.items);
+
+        const res = await axios.get("https://distributed-social-net.herokuapp.com/nodes/");
+        let nodes = res.data.nodes;
+
+        // var total_posts = [];
+        
+        for (var i = 2; i < nodes.length; i++) {
+            console.log(nodes[i]);
+            var authors_in_one_node;
+            let node_headers = {
+                'Accept': '*/*',
+                // 'Access-Control-Allow-Methods': 'GET, POST',
+                // 'Content-Type': 'application/json',
+                // 'Access-Control-Allow-Origin': 'socialdistcmput404.herokuapp.com',
+            };
+            if (nodes[i].auth_token){ // there is an auth token
+                node_headers['Authorization'] = nodes[i].auth_token;
+            }
+            console.log(node_headers);
+            // authors_in_one_node = await axios.get(res.data.nodes[i].api_url, {headers:node_headers});
+            try {
+                // authors_in_one_node = await fetch(res.data.nodes[i].api_url, {
+                //     method: 'GET',
+                //     headers: node_headers,
+                //     mode: 'cors',
+                // });
+                authors_in_one_node = await axios.get(res.data.nodes[i].api_url, {headers:node_headers}).catch((err) => console.log(err));
+                authors_in_one_node = authors_in_one_node.data.items;
+                // console.log(authors_in_one_node);
+                for (var j = 0; j < authors_in_one_node.length; j++) {
+                    console.log(authors_in_one_node[j]);
+                    let post_from_one_author = await axios.get(authors_in_one_node[j].id + '/posts/', {headers:node_headers}).catch((err) => console.log(err));
+                    console.log(post_from_one_author);
+                    post_from_one_author = post_from_one_author.data.posts;
+                    total_posts = total_posts.concat(post_from_one_author);
+                    
+                    console.log(total_posts);
+                    // console.log(authors_in_one_node[j]);
+                }
+            } catch (fetch_error) {
+                console.log(fetch_error);
+            }
+            
+            // const authors_in_one_node = await axios.get(res.data.nodes[i].api_url);
+            // console.log(authors_in_one_node.data.items);
+            total_authors = total_authors.concat(authors_in_one_node.data.items);
+            console.log(total_authors);
+        }
+        console.log("The for-loop ended");
+        console.log(total_posts);
+    } catch (error) {
+        // Handle errors
+        console.log(error);
+
+    }
+
 }
 
-// export {submitPost, submitLike, getPosts};
+
+export {gatherAll};

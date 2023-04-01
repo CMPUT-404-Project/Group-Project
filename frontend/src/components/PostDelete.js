@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
+import { gatherAll } from '../Logic';
 
 function PostDelete(props) {
     const [show, setShow] = useState(false);
@@ -20,9 +21,9 @@ function PostDelete(props) {
     const handleDelete = () => {
         axios.delete(props.postContent.id)
         .then(function (response) {
-                    axios.get(props.postContent.author.id + '/posts').then(res => {
-                    props.setPostItems(res.data.items);
-                })
+                    gatherAll(props.author).then(result => props.setPostItems(result));
+                    handleClose();
+                    
             })
         }
     
