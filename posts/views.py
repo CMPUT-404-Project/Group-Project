@@ -258,7 +258,3 @@ class ImageView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
     
-    def post(self,request,author_id,post_id):
-        author = get_object_or_404(Author, id=author_id)
-        post = get_object_or_404(Post, id=post_id)
-        

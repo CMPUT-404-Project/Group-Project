@@ -17,11 +17,22 @@ function PostSubmit(props) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  
+  const [contentType, setContentType] = useState('text/plain');
+  const [showUploadOption, setShowUploadOption] = useState(false);
+  const [showTextOption, setShowTextOption] = useState(false);
 
+  const handleContentChange = (event) => {    
+    
+    //setContentType(event.target.value);
+    console.log(contentType);
+    //setContactInfo({...contactInfo, contentType: event.target.value});
+    console.log(contactInfo.contentType);
+    setShowUploadOption((contentType === 'image/png;base64') || (contentType ==='image/jpeg;base64') || (contentType ==='application/base64'));
+    setShowTextOption(contentType === 'text/plain'||contentType === 'text/markdown');
+    // && event.target.value !== 'text/plain'||'text/markdown');
+    //setShowTextOption(contactInfo.contentType === 'text/plain'||'text/markdown');// && event.target.value !== 'image/png;base64'||'image/jpeg;base64'||'application/base64');
 
-
-
+  };
 
   
   const discardContent = () => {
@@ -85,17 +96,6 @@ function PostSubmit(props) {
 
   const { v4: uuidv4 } = require('uuid');
 
-  // const handleChange = (event) => {
-  //   this.setState({
-  //     [event.target.id]: event.target.value
-  //   })
-  // };
-
-  // const handleImageChange = (event) => {
-  //   this.setState({
-  //     image: event.target.files[0]
-  //   })
-  // };
 
   // Source:  https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
   function getBase64(file) {
@@ -182,7 +182,7 @@ function PostSubmit(props) {
                 <Form.Group className="mb-3" controlId="contentType">
                   <Form.Label>Content Type</Form.Label>
                   <Form.Control as="select" value={contactInfo.contentType}
-                    onChange={e => {setContactInfo({ ...contactInfo, contentType: e.target.value });}}
+                    onChange={e => {setContactInfo({ ...contactInfo, contentType: e.target.value });  setContentType(e.target.value); handleContentChange(e);}}
                   >
                     <option value="text/plain">text/plain</option>
                     <option value="text/markdown">text/markdown</option>
@@ -192,16 +192,22 @@ function PostSubmit(props) {
                   </Form.Control>
                 </Form.Group>
 
-                <input
-                  type="file"
-                  //style={{ display: 'none' }}
-                  onChange={onChangePicture}
-                />
-
+                { showTextOption &&
                 <Form.Group className="mb-3" controlId="content">
                     <Form.Label>Post Content</Form.Label>
                     <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
-                </Form.Group>
+                </Form.Group>}
+
+                {showUploadOption &&
+                <Form.Group className="mb-3" controlId="Add Image">
+                    <Form.Label>Post Image</Form.Label>
+                    <input type="file" 
+                     id = "image"
+                     name = "image"
+                     accept = "image/png, image/jpeg" onChange={onChangePicture} /> 
+                    {/* <img src={file} />  */}
+                </Form.Group> }
+                
 
                 <Form.Group className="mb-3" controlId="categories">
                     <Form.Label>Post Categories</Form.Label>

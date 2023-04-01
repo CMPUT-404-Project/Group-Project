@@ -8,7 +8,7 @@ function GithubActivityCard(props) {
     let githubContent = props.githubContent;
 
     var extra = "";
-    if (githubContent.type == "PushEvent"){
+    if (githubContent.type === "PushEvent"){
         extra = <>Branch: {props.githubContent.payload.ref}<br /></>;
     }
     

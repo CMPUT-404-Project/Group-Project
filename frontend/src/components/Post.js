@@ -43,14 +43,20 @@ function Post(props) {
     return (
         <Card style={{ width: '70%', margin:'1em' }}>
         {/* use the line below for image posts */}
-          {/* { <Card.Img variant="top" src="https://i.pinimg.com/564x/ff/d9/b7/ffd9b7a367a74742ebf0f4e7c892d815.jpg" alt = "This is the uploaded image" /> } */}
+        { props.postObject.contentType === 'text/plain'||props.postObject.contentType === 'text/markdown'? 
+          <Card.Text>
+          {main_content}
+        </Card.Text>:
+           <Card.Img variant="top" src= {props.postObject.content} alt = "This is the uploaded image" /> 
+
+            }
         
           {/* The Card.Body can be rendered conditionally. depending on the type of text that it is. */}
           <Card.Body>
             <Card.Title>{props.postObject.title}</Card.Title>
-            <Card.Text>
+            {/* <Card.Text>
               {main_content}
-            </Card.Text>
+            </Card.Text> */}
             <Card.Subtitle className="mb-2 text-muted">{props.postObject.description}</Card.Subtitle>
             {/* implement the onclick for the view comments */}
             {/* <PostModal postContent={props.postObject}/> */}

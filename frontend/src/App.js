@@ -40,7 +40,7 @@ function App() {
     //   setPostItems(res.data.items)
     // })}
   }, [authString]);
-  const postItemComponents = postItems.map((onePost) => {
+  const postItemComponents = postItems?.map((onePost) => {
     if (onePost.type === "post"){
       return <Post author={userID} authString={authString} postObject={onePost} setPostItems={setPostItems} key={onePost.id} />
     } else {
