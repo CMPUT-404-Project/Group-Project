@@ -1,32 +1,36 @@
 import axios from 'axios';
-import { author_id_to_number } from './components/helper_functions';
+import { author_id_to_number, determine_headers } from './components/helper_functions';
 
 
 
 
-// async function getGithub(userID){
-//     console.log("githubActivities");
-//     console.log(userID);
-//     let githubActivities = await fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({ userID:author_id_to_number(userID.id) })
-//     }).then(response => response.json())
-//     console.log(githubActivities);
-//     return githubActivities;
-// }
+async function getGithub(userID){
+    console.log("githubActivities");
+    console.log(userID);
+    let githubActivities = await fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ userID:author_id_to_number(userID.id) })
+    }).then(response => response.json())
+    console.log(githubActivities);
+    return githubActivities;
+}
 
 
 async function gatherAll(authorObject){
     // console.log(authorObject);
     var postsToShare;
-    // let githubActivities = await getGithub(authorObject);
-    //     githubActivities = githubActivities.map((item ) => {
-    //         item.published = item.created_at;
-    //         return item;
-    //     })
+    var githubActivities = [];
+    try{
+        // githubActivities = await getGithub(authorObject);
+        // githubActivities = githubActivities.map((item ) => {item.published = item.created_at;return item;})
+    } catch (error) {
+        console.log("Something went wrong with github.");
+        console.log("It's either invalid or rate-limited.");
+    }
+    
     var total_posts = [];
     try {
         
@@ -36,10 +40,12 @@ async function gatherAll(authorObject){
         var total_authors = [];
         
         var local_authors = await axios.get("https://distributed-social-net.herokuapp.com/service/authors");
-        local_authors = local_authors.data.items;
+        local_authors = local_authors.data.items.filter(oneaut => oneaut.id.startsWith("https://distributed-social-net.herokuapp.com/service/authors"));
         // console.log(local_authors)
         for (let i=0; i<local_authors.length; i++){
+            console.log(local_authors[i].displayName);
             var local_post = await axios.get(local_authors[i].id + '/posts/');
+            // console.log(local_post.data);
             total_posts = total_posts.concat(local_post.data.items);
         }
 
@@ -47,23 +53,20 @@ async function gatherAll(authorObject){
         var local_authors_from_team21 = await axios.get(
             "https://social-distribution-group21.herokuapp.com//service/authors/",
             {
-                headers: {
-                    Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
-                }
+                headers: determine_headers("https://social-distribution-group21.herokuapp.com//service/authors/")
             });
-        local_authors_from_team21 = local_authors_from_team21.data.items;
+        local_authors_from_team21 = local_authors_from_team21.data.items.filter(oneaut => oneaut.id.startsWith("https://social-distribution-group21.herokuapp.com//service/authors/"));
         // console.log(local_authors)
         for (let i=0; i<local_authors_from_team21.length; i++){
             var local_post = await axios.get(
                 local_authors_from_team21[i].id + '/posts',
                 {
-                    headers: {
-                        Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
-                    }
+                    headers: determine_headers(local_authors_from_team21[i].id)
                 });
             total_posts = total_posts.concat(local_post.data.posts);
         }
 
+        // CORS errors
         // this is for team 10
         // var local_authors_from_team10 = await axios.get(
         //     "https://socialdistcmput404.herokuapp.com/api/authors/",
@@ -72,34 +75,53 @@ async function gatherAll(authorObject){
         //             Authorization: "Token 510A233343210757FB490505AA2E9B52A3D678BF"
         //         }
         //     }); // ^^^ doesn't work
-        var local_authors_from_team10 = await fetch(
-                "https://socialdistcmput404.herokuapp.com/api/authors/",
-                {
+        // var local_authors_from_team10 = await fetch(
+        //         "https://socialdistcmput404.herokuapp.com/api/authors/",
+        //         {
 
-                    mode: "cors",
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Accept': '*/*',
-                        'Accept-Encoding': 'gzip, deflate, br',
-                        'Authorization': "Token 510A233343210757FB490505AA2E9B52A3D678BF"
-                    },
-                }
-            ); // ^^^ doesn't work either
-        local_authors_from_team10 = local_authors_from_team21.data.items;
+        //             mode: "cors",
+        //             headers: {
+        //                 'Access-Control-Allow-Origin': '*',
+        //                 'Accept': '*/*',
+        //                 'Accept-Encoding': 'gzip, deflate, br',
+        //                 'Authorization': "Token 510A233343210757FB490505AA2E9B52A3D678BF"
+        //             },
+        //         }
+        //     ); // ^^^ doesn't work either
+        // local_authors_from_team10 = local_authors_from_team21.data.items;
+        // // console.log(local_authors)
+        // for (let i=0; i<local_authors_from_team10.length; i++){
+        //     var local_post = await axios.get(
+        //         local_authors_from_team10[i].id + '/posts',
+        //         {
+        //             headers: {
+        //                 Authorization: "Token 510A233343210757FB490505AA2E9B52A3D678BF"
+        //             }
+        //         });
+        //     total_posts = total_posts.concat(local_post.data.posts);
+        // }
+
+        // This is for team 21
+        var local_authors_from_team21 = await axios.get(
+            "https://floating-fjord-51978.herokuapp.com/authors/",
+            {
+                headers: determine_headers("https://floating-fjord-51978.herokuapp.com/authors/")
+            });
+        local_authors_from_team21 = local_authors_from_team21.data.items.filter(oneaut => oneaut.id.startsWith("https://floating-fjord-51978.herokuapp.com/authors/"));
         // console.log(local_authors)
-        for (let i=0; i<local_authors_from_team10.length; i++){
+        for (let i=0; i<local_authors_from_team21.length; i++){
             var local_post = await axios.get(
-                local_authors_from_team10[i].id + '/posts',
+                local_authors_from_team21[i].id + '/posts',
                 {
-                    headers: {
-                        Authorization: "Token 510A233343210757FB490505AA2E9B52A3D678BF"
-                    }
+                    headers: determine_headers(local_authors_from_team21[i].id)
                 });
-            total_posts = total_posts.concat(local_post.data.posts);
+                console.log(local_post);
+
+            total_posts = total_posts.concat(local_post.data.items);
         }
 
         // combine it with the github activities
-        //total_posts = total_posts.concat(githubActivities);
+        total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
         // sort it so most recent at the top
         total_posts.sort(function(a,b){
@@ -164,7 +186,7 @@ async function gatherAll(authorObject){
         // Handle errors
         console.log(error);
         // combine it with the github activities
-        //total_posts = total_posts.concat(githubActivities);
+        total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
         // sort it so most recent at the top
         total_posts.sort(function(a,b){
