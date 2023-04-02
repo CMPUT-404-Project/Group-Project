@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import axios from 'axios';
+
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from "@mui/material/IconButton";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
 import './likestyle.css';
+
 
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 

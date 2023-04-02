@@ -21,15 +21,22 @@ function Navigation(props) {
   //     </Navbar>
   //   )
   // } else {
+    console.log(props.author);
     return (
       <Navbar bg="dark" variant="dark">
       <Container>
         <Navbar.Brand href="#">Social Distribution</Navbar.Brand>
         <Nav className="me-auto">
-          <PostSubmit authString={props.authString} author={props.author} setPostItems={props.setPostItems}/>
+          {/* <PostSubmit authString={props.authString} author={props.author} setPostItems={props.setPostItems}/> */}
           <AuthorLookup authString={props.authString} author={props.author} />
           <AuthorInbox authString={props.authString} author={props.author} />
           <Button variant="success" onClick={() => gatherAll(props.author, props.authString)}>Refresh</Button>
+        </Nav>
+        <Nav className="ml-auto">
+          <Nav.Link>{props.author.displayName}</Nav.Link>
+          <img src={props.author.profileImage} width="30" height="30" style={ {borderRadius: "20px" }}/>
+        
+
         </Nav>
       </Container>
     </Navbar>

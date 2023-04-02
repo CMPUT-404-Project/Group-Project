@@ -11,6 +11,7 @@ import SharePost from './SharePost';
 import LikePost from './author_inbox/LikePost';
 import PostComment from './PostComment';
 import AddComment from './AddComment';
+import AuthorInfo from './AuthorInfo';
 import ReactMarkdown from 'react-markdown';
 
 
@@ -66,7 +67,11 @@ function Post(props) {
           <ListGroup variant="flush">
             <ListGroup.Item>
                 {/* <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" /> */}
-                <Card.Link href={props.postObject.author.url}>{props.postObject.author.displayName}</Card.Link>
+                <AuthorInfo author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
+                <Card.Link 
+                  href={props.postObject.author.url}>{props.postObject.author.displayName} 
+                  {/* onChange={(e) => } */}
+                </Card.Link>
                 {/* | */}
                 {/* <Card.Link href={props.postObject.author.github}>Github</Card.Link> */}
             </ListGroup.Item>
