@@ -30,6 +30,12 @@ function GithubActivity({userID}) {
       });
   }
 
+  var activities_components = "";
+  console.log(activity)
+  if (activity.message!=="Not Found"){
+    activities_components  = activity.slice(0, 10).map(act => <GithubActivityCard githubContent={act}/>)
+  }
+
   return (
     <>
       <Button onClick={() => setShow(true)}>GitHub</Button>
@@ -39,9 +45,7 @@ function GithubActivity({userID}) {
         </Modal.Header>
           <Modal.Body>
             {/* <ListGroup>{inbox_list_components}</ListGroup> */}
-            {activity.slice(0, 10).map(act => 
-              <GithubActivityCard githubContent={act}/>
-              )}
+            {activities_components}
           </Modal.Body>
       </Modal>
     </>
