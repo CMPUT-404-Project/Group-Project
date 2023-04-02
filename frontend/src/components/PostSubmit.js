@@ -177,7 +177,7 @@ function PostSubmit(props) {
         }
       ).then(function (response) {
         // After Making a post, refresh the main page
-        // gatherAll(props.author).then(result => props.setPostItems(result));
+        gatherAll(props.author).then(result => props.setPostItems(result));
         discardContent();
       });
   };

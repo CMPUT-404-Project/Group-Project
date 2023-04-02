@@ -116,10 +116,10 @@ async function gatherAll(authorObject){
                     headers: determine_headers(local_authors_from_team21[i].id)
                 });
                 console.log(local_post);
-
             total_posts = total_posts.concat(local_post.data.items);
         }
-
+        // filter by public post
+        total_posts = total_posts.filter(onePost => onePost.visibility==="PUBLIC");
         // combine it with the github activities
         total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
