@@ -31,7 +31,7 @@ def get_comment_id(url):
     url = url.split("/")
     return url[url.index('comments')+1]
 
-def get_inbox(data):
+def get_inbox(receiving_author, data): #receiving_author is the author who is receiving the inbox item
     inbox_data = None
     if data['type'].lower() == 'post':
 
@@ -46,34 +46,36 @@ def get_inbox(data):
         data.pop('id')
 
         #get author id
-        author_id = data.get('author').get('id')
-        if not author_id: 
+        sending_author_id = data.get('author').get('id')
+        if not sending_author_id: 
             return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if ('/' in author_id) and ('authors' in author_id): 
-            author_id = get_author_id(author_id)
+        if ('/' in sending_author_id) and ('authors' in sending_author_id): 
+            sending_author_id = get_author_id(sending_author_id)
         else: 
             return Response({"type": "error", "message": "Invalid author ID format"}, status=status.HTTP_400_BAD_REQUEST)
-           
+        data.pop('author') 
+
         #if post exists then return it
         if Post.objects.filter(id=post_id).exists():
             inbox_data = Post.objects.get(id=post_id)
         #create a new post and return it
         else:
             try:
-                #check if the author exists in our db
-                author_data = data.pop('author')
-                if Author.objects.filter(id=author_id).exists():
-                    author = Author.objects.get(id=author_id)
+                #check to see if the receiving author is following the sending author - only then can the receiving author accept the post
+                if FollowRequest.objects.filter(actor_id=receiving_author.id, object_id=sending_author_id).exists():
+                    follow_request = FollowRequest.objects.get(actor_id=receiving_author.id, object_id=sending_author_id)
+                    if follow_request.status == True:
+                        sending_author = Author.objects.get(id=sending_author_id)
+                    else:
+                        return Response({"type": "error", "message": "receiving post denied as sending author hasn't accepted the follow request from the receiving author"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    #make a new author
-                    author = create_new_author(author_id,author_data)
-                    author.save()
+                    return Response({"type": "error", "message": "receiving post denied as receiving author is not following the sending author"}, status=status.HTTP_400_BAD_REQUEST)
 
                 #create a new post
                 post_ser = PostSerializer(data=data, context={'post_id': post_id})
                 if post_ser.is_valid():
                     saved = post_ser.save(
-                        author = AuthorSerializer(author).data, 
+                        author = AuthorSerializer(sending_author).data, 
                     )
                 else:
                     return Response({"type": "error", "message": "Error creating a new Post (ser)"}, status=status.HTTP_400_BAD_REQUEST)
@@ -154,7 +156,7 @@ def get_inbox(data):
         if ('/' in id_url) and ('posts' in id_url) and ('comments' in id_url) and ('authors' in id_url): 
             comment_id = get_comment_id(id_url)
             post_id = get_post_id(id_url)
-            post_auth_id = get_author_id(id_url)
+            #post_auth_id = get_author_id(id_url)
         else:
             return Response({"type": "error", "message": "Invalid ID format"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -168,8 +170,8 @@ def get_inbox(data):
             return Response({"type": "error", "message": "Invalid author ID format"}, status=status.HTTP_400_BAD_REQUEST)
 
         #if post author does not exist
-        if not Author.objects.filter(id=post_auth_id).exists():
-            return Response({"type": "error", "message": "Author of the post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+        # if not Author.objects.filter(id=post_auth_id).exists():
+        #    return Response({"type": "error", "message": "Author of the post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
         
         #if post does not exist
         if not Post.objects.filter(id=post_id).exists():
@@ -177,36 +179,39 @@ def get_inbox(data):
         
         #if comment exists
         if Comment.objects.filter(id=comment_id).exists():
-            return Response({"type": "error", "message": "Comment with same ID (UUID) already exists"}, status=status.HTTP_400_BAD_REQUEST)
+            inbox_data = Comment.objects.get(id=comment_id)
+            #return Response({"type": "error", "message": "Comment with same ID (UUID) already exists"}, status=status.HTTP_400_BAD_REQUEST)
         
-        #create a new comment and return it
-        try:
-            #check if the author exists in our db
-            author_data = data.pop('author')
-            if Author.objects.filter(id=author_id).exists():
-                author = Author.objects.get(id=author_id)
-            else:
-                #make a new author
-                author = create_new_author(author_id,author_data)
-                author.save()
+        else:
+            #create a new comment and return it
+            try:
+                #check if the author exists in our db
+                author_data = data.pop('author')
+                if Author.objects.filter(id=author_id).exists():
+                    author = Author.objects.get(id=author_id)
+                else:
+                    return Response({"type": "error", "message": "There's no relationship between the sending author and receiving author (none of them follow the other one)"}, status=status.HTTP_400_BAD_REQUEST)
+                    #make a new author
+                    #author = create_new_author(author_id,author_data)
+                    #author.save()
 
-            #get the post
-            post = Post.objects.get(id=post_id)
-            data['post'] = post_id
-            #create a new comment
-            comment_ser = CommentSerializer(data=data, context={'comment_id': comment_id, 'comment_url': id_url})
-            if comment_ser.is_valid():
-                saved = comment_ser.save(
-                    author = AuthorSerializer(author).data, 
-                    post = post,
-                )
-            else:
-                return Response({"type": "error", "message": "Error creating a new Comment (ser)"}, status=status.HTTP_400_BAD_REQUEST)
-            #get the comment data
-            comment = Comment.objects.get(id=saved.id)
-            inbox_data = comment
-        except Exception as e:
-            return Response({"type": "error", "message": "Error creating a new Comment", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                #get the post
+                post = Post.objects.get(id=post_id)
+                data['post'] = post_id
+                #create a new comment
+                comment_ser = CommentSerializer(data=data, context={'comment_id': comment_id, 'comment_url': id_url})
+                if comment_ser.is_valid():
+                    saved = comment_ser.save(
+                        author = AuthorSerializer(author).data, 
+                        post = post,
+                    )
+                else:
+                    return Response({"type": "error", "message": "Error creating a new Comment (ser)"}, status=status.HTTP_400_BAD_REQUEST)
+                #get the comment data
+                comment = Comment.objects.get(id=saved.id)
+                inbox_data = comment
+            except Exception as e:
+                return Response({"type": "error", "message": "Error creating a new Comment", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
     elif data['type'].lower() == 'like':
@@ -221,29 +226,34 @@ def get_inbox(data):
         # get author id
         author_id = author_data.get('id')
         if not author_id: return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if '/' in author_id: author_id = get_author_id(author_id)
+        if ('/' in author_id) and ("authors " in author_id):     
+            author_id = get_author_id(author_id)
+        else: 
+            return Response({"type": "error", "message": "Invalid author ID format"}, status=status.HTTP_400_BAD_REQUEST)
+        
 
         try:
             # check if the author exists in our db
             if Author.objects.filter(id=author_id).exists():
                 author = Author.objects.get(id=author_id)
             else:
+                return Response({"type": "error", "message": "There's no relationship between the sending author and receiving author (none of them follow the other one)"}, status=status.HTTP_400_BAD_REQUEST)
                 # make a new author
-                author = create_new_author(author_id, author_data)
-                author.save()
+                # author = create_new_author(author_id, author_data)
+                # author.save()
 
             # object_url checks
             if ('/' in object_url) and ('posts' in object_url) and ('authors' in object_url): 
                 post_id = get_post_id(object_url)
-                post_auth_id = get_author_id(object_url)
+                #post_auth_id = get_author_id(object_url)
             else:
-                return Response({"type": "error", "message": "Invalid object format"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"type": "error", "message": "Invalid object url format"}, status=status.HTTP_400_BAD_REQUEST)
 
             ## check if author and post exist
             
             #if post author does not exist
-            if not Author.objects.filter(id=post_auth_id).exists():
-                return Response({"type": "error", "message": "Author of the post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+            #if not Author.objects.filter(id=post_auth_id).exists():
+            #    return Response({"type": "error", "message": "Author of the post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
             
             #if post does not exist
             if not Post.objects.filter(id=post_id).exists():
@@ -258,7 +268,7 @@ def get_inbox(data):
                     comment = Comment.objects.get(id=comment_id)
                     type = 'comment'
                 else:
-                    return Response({"type": "error", "message": "Comment does not exist in database"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"type": "error", "message": "Comment does not exist in the database"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 # handle post
                 post = Post.objects.get(id=post_id)
@@ -320,7 +330,7 @@ class InboxDetail(APIView):
     @swagger_auto_schema(operation_description="Add inbox of the current author", responses={200: "type: success, message: Inbox added", 400: "type: error, message: Error adding inbox"})
     def post(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
-        response = get_inbox(request.data)
+        response = get_inbox(author, request.data)
         if type(response) == Response:
             return response
         if response:
