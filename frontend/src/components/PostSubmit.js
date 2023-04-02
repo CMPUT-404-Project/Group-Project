@@ -19,19 +19,14 @@ function PostSubmit(props) {
 
   const [contentType, setContentType] = useState('text/plain');
   const [showUploadOption, setShowUploadOption] = useState(false);
-  const [showTextOption, setShowTextOption] = useState(false);
+  const [showTextOption, setShowTextOption] = useState(true);
 
-  const handleContentChange = (event) => {    
-    
-    //setContentType(event.target.value);
+  const handleContentChange = (e) => {
     console.log(contentType);
-    //setContactInfo({...contactInfo, contentType: event.target.value});
-    console.log(contactInfo.contentType);
+    setContentType(e.target.value);
+    console.log(contentType);
     setShowUploadOption((contentType === 'image/png;base64') || (contentType ==='image/jpeg;base64') || (contentType ==='application/base64'));
     setShowTextOption(contentType === 'text/plain'||contentType === 'text/markdown');
-    // && event.target.value !== 'text/plain'||'text/markdown');
-    //setShowTextOption(contactInfo.contentType === 'text/plain'||'text/markdown');// && event.target.value !== 'image/png;base64'||'image/jpeg;base64'||'application/base64');
-
   };
 
   
@@ -44,7 +39,7 @@ function PostSubmit(props) {
       contentType: "text/plain",
       content: "",
       author: props.author,
-      categories: [],
+      categories: "",
       comments: "",
       visibility: "PUBLIC",
       fileToUpload: null,
@@ -62,7 +57,7 @@ function PostSubmit(props) {
     contentType: "text/plain",
     content: "",
     author: props.author,
-    categories: [],
+    categories: "",
     comments: "",
     visibility: "PUBLIC",
     unlisted: false,
@@ -96,7 +91,6 @@ function PostSubmit(props) {
 
   const { v4: uuidv4 } = require('uuid');
 
-
   // Source:  https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
   function getBase64(file) {
     var reader = new FileReader();
@@ -110,7 +104,38 @@ function PostSubmit(props) {
     };
  }
 
+ var main_content_input;
+ if ((contentType === 'image/png;base64') || (contentType ==='image/jpeg;base64') || (contentType ==='application/base64')){
+  main_content_input =  <Form.Group className="mb-3" controlId="Add Image">
+                          <Form.Label>Post Image</Form.Label>
+                          <input type="file" 
+                          id = "image"
+                          name = "image"
+                          accept = "image/png, image/jpeg" onChange={onChangePicture} /> 
+                          {/* <img src={file} />  */}
+                        </Form.Group>
+ } else { // text input
+  main_content_input =  <Form.Group className="mb-3" controlId="content">
+                          <Form.Label>Post Content</Form.Label>
+                          <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
+                        </Form.Group>
+ }
+
   const submitPost = () => {
+    var body_of_request = {
+      title: contactInfo.title,
+      source: props.author.id, // what is this?
+      origin: props.author.id, // what is this?
+      description: contactInfo.description,
+      contentType: contentType,
+      content: contactInfo.content,
+      author: props.author,
+      visibility: contactInfo.visibility,
+      unlisted: contactInfo.unlisted,
+    }
+    if (contactInfo.categories){
+      body_of_request.categories = contactInfo.categories.split(',').map(cat => cat.trim());
+    }
     fetch(
       props.author.id + '/posts/', // url
       {
@@ -120,20 +145,9 @@ function PostSubmit(props) {
             'Content-Type': 'application/json',
             'Authorization': 'Basic ' + props.authString
         },
-        body: JSON.stringify({
-          title: contactInfo.title,
-          source: props.author.id, // what is this?
-          origin: props.author.id, // what is this?
-          description: contactInfo.description,
-          contentType: contactInfo.contentType,
-          content: contactInfo.content,
-          author: props.author,
-          // comments: contactInfo.comments,
-          visibility: contactInfo.visibility,
-          // unlisted: contactInfo.unlisted,
-          // image: null,
-        })
+        body: JSON.stringify(body_of_request)
       }).then((response) => response.json()).then( (resp) => {
+        // if friends: send to their inbox
         console.log(resp);
           axios.get(props.author.id + '/followers/').then((response) => {
             console.log(response.data);
@@ -181,8 +195,14 @@ function PostSubmit(props) {
 
                 <Form.Group className="mb-3" controlId="contentType">
                   <Form.Label>Content Type</Form.Label>
-                  <Form.Control as="select" value={contactInfo.contentType}
-                    onChange={e => {setContactInfo({ ...contactInfo, contentType: e.target.value });  setContentType(e.target.value); handleContentChange(e);}}
+                  <Form.Control as="select" value={contentType}
+                    onChange={e => {
+                      console.log(e.target.value);
+                      // setContactInfo({ ...contactInfo, contentType: e.target.value });
+                      // console.log(contactInfo);
+                      setContentType(e.target.value);
+                      // handleContentChange(e);
+                    }}
                   >
                     <option value="text/plain">text/plain</option>
                     <option value="text/markdown">text/markdown</option>
@@ -192,7 +212,7 @@ function PostSubmit(props) {
                   </Form.Control>
                 </Form.Group>
 
-                { showTextOption &&
+                {/* { showTextOption &&
                 <Form.Group className="mb-3" controlId="content">
                     <Form.Label>Post Content</Form.Label>
                     <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
@@ -206,7 +226,9 @@ function PostSubmit(props) {
                      name = "image"
                      accept = "image/png, image/jpeg" onChange={onChangePicture} /> 
                     {/* <img src={file} />  */}
-                </Form.Group> }
+                {/* </Form.Group> } */} 
+
+                {main_content_input}
                 
 
                 <Form.Group className="mb-3" controlId="categories">
@@ -221,6 +243,7 @@ function PostSubmit(props) {
                   >
                     <option value="PUBLIC">Public</option>
                     <option value="FRIENDS">Friends</option>
+                    <option value="PRIVATE">Private</option>
                   </Form.Control>
                 </Form.Group>
 

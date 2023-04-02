@@ -30,6 +30,7 @@ function App() {
     console.log('Loading Posts')
     if (authString !== ''){
       gatherAll(userID).then((result) => {
+        console.log(result);
         setPostItems(result);
       })
     }

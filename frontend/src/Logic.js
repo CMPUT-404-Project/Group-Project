@@ -22,17 +22,19 @@ async function getGithub(userID){
 async function gatherAll(authorObject){
     // console.log(authorObject);
     var postsToShare;
-    try {
-        
-        let githubActivities = await getGithub(authorObject);
+    let githubActivities = await getGithub(authorObject);
         githubActivities = githubActivities.map((item ) => {
             item.published = item.created_at;
             return item;
         })
+    var total_posts = [];
+    try {
+        
+        
         // console.log(githubActivities);
 
         var total_authors = [];
-        var total_posts = [];
+        
         var local_authors = await axios.get("https://distributed-social-net.herokuapp.com/service/authors");
         local_authors = local_authors.data.items;
         // console.log(local_authors)
@@ -82,7 +84,7 @@ async function gatherAll(authorObject){
                         'Authorization': "Token 510A233343210757FB490505AA2E9B52A3D678BF"
                     },
                 }
-            );
+            ); // ^^^ doesn't work either
         local_authors_from_team10 = local_authors_from_team21.data.items;
         // console.log(local_authors)
         for (let i=0; i<local_authors_from_team10.length; i++){
@@ -161,7 +163,16 @@ async function gatherAll(authorObject){
     } catch (error) {
         // Handle errors
         console.log(error);
-
+        // combine it with the github activities
+        total_posts = total_posts.concat(githubActivities);
+        console.log(total_posts);
+        // sort it so most recent at the top
+        total_posts.sort(function(a,b){
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(b.published) - new Date(a.published);
+          });
+        return total_posts;
     }
 
 }
