@@ -88,6 +88,7 @@ function App() {
 
         {/* Author Actions */}
         <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
+        <GithubActivity userID={userID.id}/>
         {/* <AuthorLookup authString={authString} author={userID} />
         <AuthorInbox authString={authString} author={userID} /> */} 
         <div style={{
@@ -97,7 +98,7 @@ function App() {
           {postItemComponents}
         </div>
         {/* <p>{userID.id}</p> */}
-        <GithubActivity userID={userID.id}/>
+        
       </div>
     );
   }

@@ -13,7 +13,7 @@ function GithubActivityCard(props) {
     }
     
     return (
-        <Card style={{ width: '70%', margin:'1em' }}>
+        <Card >
           <Card.Body>
             <Card.Title>{githubContent.type}</Card.Title>
             <Card.Text>
