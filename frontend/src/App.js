@@ -97,7 +97,7 @@ function App() {
           {postItemComponents}
         </div>
         {/* <p>{userID.id}</p> */}
-        {/* <GithubActivity userID={userID.id}/> */}
+        <GithubActivity userID={userID.id}/>
       </div>
     );
   }
