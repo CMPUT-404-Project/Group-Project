@@ -122,6 +122,20 @@ function PostSubmit(props) {
  }
 
   const submitPost = () => {
+    var body_of_request = {
+      title: contactInfo.title,
+      source: props.author.id, // what is this?
+      origin: props.author.id, // what is this?
+      description: contactInfo.description,
+      contentType: contentType,
+      content: contactInfo.content,
+      author: props.author,
+      visibility: contactInfo.visibility,
+      unlisted: contactInfo.unlisted,
+    }
+    if (contactInfo.categories){
+      body_of_request.categories = contactInfo.categories.split(',').map(cat => cat.trim());
+    }
     fetch(
       props.author.id + '/posts/', // url
       {
@@ -131,21 +145,9 @@ function PostSubmit(props) {
             'Content-Type': 'application/json',
             'Authorization': 'Basic ' + props.authString
         },
-        body: JSON.stringify({
-          title: contactInfo.title,
-          source: props.author.id, // what is this?
-          origin: props.author.id, // what is this?
-          description: contactInfo.description,
-          contentType: contentType,
-          content: contactInfo.content,
-          author: props.author,
-          // comments: contactInfo.comments,
-          visibility: contactInfo.visibility,
-          categories: contactInfo.categories.split(',').map(cat => cat.trim()),
-          // unlisted: contactInfo.unlisted,
-          // image: null,
-        })
+        body: JSON.stringify(body_of_request)
       }).then((response) => response.json()).then( (resp) => {
+        // if friends: send to their inbox
         console.log(resp);
           axios.get(props.author.id + '/followers/').then((response) => {
             console.log(response.data);
@@ -241,6 +243,7 @@ function PostSubmit(props) {
                   >
                     <option value="PUBLIC">Public</option>
                     <option value="FRIENDS">Friends</option>
+                    <option value="PRIVATE">Private</option>
                   </Form.Control>
                 </Form.Group>
 
