@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { author_id_to_number, determine_headers, determine_inbox_endpoint } from './components/helper_functions';
+import { author_id_to_number, determine_headers, determine_inbox_endpoint, object_is_local } from './components/helper_functions';
 
 
 
@@ -18,6 +18,32 @@ async function getGithub(userID){
     return githubActivities;
 }
 
+async function updateFollowing(authorObject, authstring){
+    axios.get(authorObject.id+"/sendrequest/", {headers:{Authorization:'Basic ' + authstring}})
+    .then((resp) => {
+        console.log(resp.data.items);
+        var authors_im_trying_to_follow = resp.data.items.filter((oneRequest) => oneRequest.actor.id===authorObject.id)
+                                            .filter((oneRequest) => !oneRequest.status)
+                                            .map((oneRequest) => oneRequest.object);
+        for (let i=0; i<authors_im_trying_to_follow.length; i++){
+            // get that person's followers
+            axios.get(
+                authors_im_trying_to_follow[i].id+'/followers/',
+                {headers:determine_headers(authors_im_trying_to_follow[i].id)}
+            ).then(resp => {
+                // if I am in resp.data.items, set the status to true
+                console.log(resp.data.items);
+            });
+            // if (object_is_local(authors_im_trying_to_follow[i].id)){
+            //     axios.get(authors_im_trying_to_follow[i].id+'/followers/',{headers:determine_headers(authors_im_trying_to_follow[i].id)})
+            // }
+            // check if I'm in it
+            // if yes, set this row in the table to true
+
+        }
+    })
+}
+
 
 async function gatherAll(authorObject, authString){
     // console.log(authorObject);
@@ -30,6 +56,8 @@ async function gatherAll(authorObject, authString){
         console.log("Something went wrong with github.");
         console.log("It's either invalid or rate-limited.");
     }
+
+    await updateFollowing(authorObject, authString); // this doesn't need await
     
     var total_posts = [];
     try {

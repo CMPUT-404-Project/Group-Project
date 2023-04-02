@@ -18,6 +18,17 @@ function Following(props) {
         axios.get(props.author.id+"/sendrequest/", {headers:{Authorization:'Basic ' + props.authString}})
         .then((resp) => {
             console.log(resp.data.items);
+            // var authors_im_trying_to_follow = resp.data.items.filter((oneRequest) => oneRequest.actor.id===props.author.id)
+            //                                     .filter((oneRequest) => !oneRequest.status)
+            //                                     .map((oneRequest) => oneRequest.object);
+            
+            // for (let i=0; i<authors_im_trying_to_follow.length; i++){
+            //     // get that person's followers
+            //     axios.get(authors_im_trying_to_follow[i].id+'/followers/',)
+            //     // check if I'm in it
+            //     // if yes, set this row in the table to true
+
+            // }
             set_authors_you_follow(resp.data.items
                             .filter((oneRequest) => oneRequest.actor.id===props.author.id)
                             .filter((oneRequest) => oneRequest.status));
