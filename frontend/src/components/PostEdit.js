@@ -44,8 +44,8 @@ function PostEdit(props) {
           // image: null,
         })
       }).then(function (response) {
-        // After Making a post, refresh the 
-        gatherAll(props.author).then(result => props.setPostItems(result));
+        // After Making a post, refresh the
+        gatherAll(props.postContent.author, props.authString).then(result => props.setPostItems(result));
         handleClose();
         // axios.get(props.postContent.author.id + '/posts').then(res => {
         //   props.setPostItems(res.data.items);

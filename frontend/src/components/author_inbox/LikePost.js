@@ -17,7 +17,9 @@ function LikePost(props) {
     useEffect(() => {
         axios.get(`${props.message.id}/likes`)
             .then(response => {
-                setLikes(response.data.items);
+                if (response.data.items){
+                    setLikes(response.data.items);
+                }
             })
             .catch(error => {
                 console.log(error);

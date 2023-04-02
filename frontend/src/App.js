@@ -29,7 +29,7 @@ function App() {
     // Update the document title using the browser API
     console.log('Loading Posts')
     if (authString !== ''){
-      gatherAll(userID).then((result) => {
+      gatherAll(userID, authString).then((result) => {
         console.log(result);
         setPostItems(result);
       })

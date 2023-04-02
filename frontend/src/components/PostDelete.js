@@ -21,7 +21,7 @@ function PostDelete(props) {
     const handleDelete = () => {
         axios.delete(props.postContent.id)
         .then(function (response) {
-                    gatherAll(props.author).then(result => props.setPostItems(result));
+                    gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
                     handleClose();
                     
             })

@@ -29,10 +29,11 @@ function Navigation(props) {
           <PostSubmit authString={props.authString} author={props.author} setPostItems={props.setPostItems}/>
           <AuthorLookup authString={props.authString} author={props.author} />
           <AuthorInbox authString={props.authString} author={props.author} />
-          <Button variant="success" onClick={() => gatherAll(props.author)}>Refresh</Button>
+          <Button variant="success" onClick={() => gatherAll(props.author, props.authString)}>Refresh</Button>
         </Nav>
       </Container>
     </Navbar>
+    
   );
   // }
     
