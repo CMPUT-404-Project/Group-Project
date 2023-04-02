@@ -7,6 +7,8 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { gatherAll } from '../Logic';
 import { determine_inbox_endpoint } from './helper_functions';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import IconButton from "@mui/material/IconButton";
 
 
 
@@ -184,10 +186,12 @@ function PostSubmit(props) {
 
   return (
     <>
-      <Button variant="dark" onClick={handleShow}>
+      {/* <Button variant="dark" onClick={handleShow}>
         Create Post
-      </Button>
-
+      </Button> */}
+      <IconButton size="large" onClick={handleShow}>
+        <PostAddIcon/>
+    </IconButton>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Create Post</Modal.Title>

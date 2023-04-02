@@ -87,9 +87,9 @@ function App() {
         <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems} currPosts={postItems}/>
 
         {/* Author Actions */}
-        {/* <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
-        <AuthorLookup authString={authString} author={userID} />
-        <AuthorInbox authString={authString} author={userID} /> */}
+        <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
+        {/* <AuthorLookup authString={authString} author={userID} />
+        <AuthorInbox authString={authString} author={userID} /> */} 
         <div style={{
           margin:'auto',
           width: '90%',

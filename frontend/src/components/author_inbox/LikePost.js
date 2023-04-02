@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import axios from 'axios';
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from "@mui/material/IconButton";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
@@ -69,6 +72,9 @@ function LikePost(props) {
             <Button variant="outline-success" onClick={processLikeClick}>
                 {liked ? 'Liked' : 'Like'}
             </Button>
+            {/* <IconButton variant="outline-success" onClick={processLikeClick}>
+                <FavoriteBorderIcon />
+            </IconButton> */}
             {likes.map((like, index) => (<p key={index}>{like.author.displayName} liked this post</p>))}
         </>
     );

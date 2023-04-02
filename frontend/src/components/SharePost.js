@@ -6,6 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { gatherAll } from '../Logic';
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from "@mui/material/IconButton";
 
 function SharePost(props) {
 
@@ -69,10 +71,12 @@ function SharePost(props) {
 
   return (
     <>
-      <Button variant="outline-info" onClick={handleShow}>
+      {/* <Button variant="outline-info" onClick={handleShow}>
         Share
-      </Button>
-
+      </Button> */}
+      <IconButton onClick={handleShow}>
+        <SendIcon/>
+    </IconButton>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Share Post</Modal.Title>

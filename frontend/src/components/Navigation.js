@@ -27,7 +27,7 @@ function Navigation(props) {
       <Container>
         <Navbar.Brand href="#">Social Distribution</Navbar.Brand>
         <Nav className="me-auto">
-          <PostSubmit authString={props.authString} author={props.author} setPostItems={props.setPostItems}/>
+          {/* <PostSubmit authString={props.authString} author={props.author} setPostItems={props.setPostItems}/> */}
           <AuthorLookup authString={props.authString} author={props.author} />
           <AuthorInbox authString={props.authString} author={props.author} />
           <Button variant="success" onClick={() => gatherAll(props.author, props.authString)}>Refresh</Button>

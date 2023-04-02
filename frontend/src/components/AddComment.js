@@ -6,6 +6,8 @@ import Form from 'react-bootstrap/Form';
 import axios from "axios";
 import Card from 'react-bootstrap/Card';
 import InputGroup from 'react-bootstrap/InputGroup';
+import CommentIcon from '@mui/icons-material/Comment';
+import IconButton from "@mui/material/IconButton";
 
 function AddComment( props ) {
   const [show, setShow] = useState(false);
@@ -88,9 +90,12 @@ function AddComment( props ) {
 
   return (
     <>
-    <Button variant="outline-primary" onClick={handleShow}>
+    {/* <Button variant="outline-primary" onClick={handleShow}>
         Comment
-    </Button>
+    </Button> */}
+    <IconButton onClick={handleShow}>
+      <CommentIcon/>
+    </IconButton>
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Comments</Modal.Title>
