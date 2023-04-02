@@ -14,7 +14,14 @@ function Following(props) {
     const [authors_you_follow, set_authors_you_follow] = useState([]);
 
     useEffect(() => {
-        // axios.get(props.author.id, {headers:{Authorization:props.authString}}).then((resp) => set_authors_you_follow(resp.data.items));
+        console.log({headers:{Authorization:props.authString}});
+        axios.get(props.author.id+"/sendrequest/", {headers:{Authorization:'Basic ' + props.authString}})
+        .then((resp) => {
+            console.log(resp.data.items);
+            set_authors_you_follow(resp.data.items
+                            .filter((oneRequest) => oneRequest.actor.id===props.author.id)
+                            .filter((oneRequest) => oneRequest.status));
+        });
     }, []); // run this when it renders
 
     const remove_an_author = (hostname, authorID) => {
@@ -24,10 +31,11 @@ function Following(props) {
         console.log("Unfollowing: ", authorID);
     }
 
+    console.log(authors_you_follow);
     const authors_you_follow_components = authors_you_follow.map((author) => {
         return (<ListGroup.Item key={author.id}>
-            {author.displayName}
-            <Button variant="outline-danger" onClick={() => remove_an_author(author.host, author.id)}>Unfollow</Button>
+            {author.object.displayName}
+            {/* <Button variant="outline-danger" onClick={() => remove_an_author(author.host, author.id)}>Unfollow</Button> */}
         </ListGroup.Item>);
     });
     
