@@ -40,10 +40,12 @@ async function gatherAll(authorObject){
         var total_authors = [];
         
         var local_authors = await axios.get("https://distributed-social-net.herokuapp.com/service/authors");
-        local_authors = local_authors.data.items;
+        local_authors = local_authors.data.items.filter(oneaut => oneaut.id.startsWith("https://distributed-social-net.herokuapp.com/service/authors"));
         // console.log(local_authors)
         for (let i=0; i<local_authors.length; i++){
+            console.log(local_authors[i].displayName);
             var local_post = await axios.get(local_authors[i].id + '/posts/');
+            // console.log(local_post.data);
             total_posts = total_posts.concat(local_post.data.items);
         }
 
