@@ -26,7 +26,7 @@ function Followers(props) {
     }
 
     useEffect(() => {
-        axios.get(props.author.id + '/followers').then(response => set_your_followers(response.data));
+        axios.get(props.author.id + '/followers/').then(response => set_your_followers(response.data));
     } , []);// run this once
 
     if (your_followers.length === 0){

@@ -6,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { gatherAll } from '../Logic';
+import { determine_inbox_endpoint } from './helper_functions';
 
 
 
@@ -165,20 +166,18 @@ function PostSubmit(props) {
           axios.get(props.author.id + '/followers/').then((response) => {
             console.log(response.data);
             response.data.items.forEach( (minion) => {
-              axios.post(minion.id + '/inbox/', resp);
-              axios.post(minion.id + '/inbox', resp);
+              axios.post(minion.id + determine_inbox_endpoint(minion.id), resp);
             })
           })
         } else if (contactInfo.visibility === "PRIVATE")
         {
-          axios.post(privateFriendTarget + '/inbox/', resp);
-          axios.post(privateFriendTarget + '/inbox', resp);
+          axios.post(privateFriendTarget + determine_inbox_endpoint(privateFriendTarget), resp);
         }
           
         }
       ).then(function (response) {
         // After Making a post, refresh the main page
-        gatherAll(props.author).then(result => props.setPostItems(result));
+        // gatherAll(props.author).then(result => props.setPostItems(result));
         discardContent();
       });
   };

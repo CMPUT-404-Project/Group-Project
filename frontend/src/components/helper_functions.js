@@ -42,6 +42,23 @@ export function determine_headers(url_request){
     }
 }
 
+export function determine_inbox_endpoint(url_request){
+    if (url_request.includes("distributed-social-net.herokuapp.com") ||
+        url_request.includes("social-distribution-group21.herokuapp.com")){
+        // our team: team 18
+        console.log("you should probably build the string yourself")
+        return "/inbox/"
+    } else {
+        /**
+         * floating-fjord-51978.herokuapp.com
+         * socialdistcmput404.herokuapp.com
+         * 
+         */
+        // return an empty header object
+        return "/inbox"
+    }
+}
+
 export function determine_posts_endpoint(url_request){
     if (url_request.includes("floating-fjord-51978.herokuapp.com")){
         // team 19
