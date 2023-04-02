@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { author_id_to_number, determine_headers } from './components/helper_functions';
+import { author_id_to_number, determine_headers, determine_inbox_endpoint } from './components/helper_functions';
 
 
 
@@ -19,7 +19,7 @@ async function getGithub(userID){
 }
 
 
-async function gatherAll(authorObject){
+async function gatherAll(authorObject, authString){
     // console.log(authorObject);
     var postsToShare;
     var githubActivities = [];
@@ -34,8 +34,13 @@ async function gatherAll(authorObject){
     var total_posts = [];
     try {
         
-        
-        // console.log(githubActivities);
+        var posts_from_inbox = await axios.get(
+            authorObject.id+determine_inbox_endpoint(authorObject.id),
+            {headers:{Authorization: authString}}
+        );
+        posts_from_inbox = posts_from_inbox.data.items.filter(inb => inb.type==="post");
+        total_posts = total_posts.concat(posts_from_inbox);
+        console.log(total_posts);
 
         var total_authors = [];
         

@@ -44,7 +44,7 @@ function SharePost(props) {
             }
           }
         ).then(() => {
-          gatherAll(props.author).then(result => props.setPostItems(result));
+          gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
           handleClose();
         })
     } else {
@@ -60,7 +60,7 @@ function SharePost(props) {
             }
           }
         ).then(() => {
-          gatherAll(props.author).then(result => props.setPostItems(result));
+          gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
           handleClose();
         })
     }
