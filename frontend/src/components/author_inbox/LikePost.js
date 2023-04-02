@@ -76,8 +76,9 @@ function LikePost(props) {
 
 
     return (
-        <div className="like-post">
-          <Button variant="outline-success" onClick={processLikeClick}>
+      <div className="like-post">
+          <Button variant="outline-success" onClick={processLikeClick}
+            className={liked ? 'like-button liked' : 'like-button'}>
             {liked ? 'Liked' : 'Like'}
           </Button>
           {likes.length > 0 && (

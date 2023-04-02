@@ -78,9 +78,10 @@ function LikeComment(props) {
 
     return (
         <div className="like-post">
-          <Button variant="outline-success" onClick={processLikeClick}>
-            {liked ? 'Liked' : 'Like'}
-          </Button>
+        <Button variant="outline-success" onClick={processLikeClick}
+          className={liked ? 'like-button liked' : 'like-button'}>
+          {liked ? 'Liked' : 'Like'}
+        </Button>
           {likes.length > 0 && (
             <div
               className="like-count"

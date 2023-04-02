@@ -33,6 +33,11 @@ z-index: 1;
 .like-list li {
 margin-bottom: 4px;
 }
+
+.like-button.liked {
+    background-color: green;
+    color: white;
+}
   
   
   
