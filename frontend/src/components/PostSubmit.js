@@ -39,7 +39,7 @@ function PostSubmit(props) {
       contentType: "text/plain",
       content: "",
       author: props.author,
-      categories: [],
+      categories: "",
       comments: "",
       visibility: "PUBLIC",
       fileToUpload: null,
@@ -57,7 +57,7 @@ function PostSubmit(props) {
     contentType: "text/plain",
     content: "",
     author: props.author,
-    categories: [],
+    categories: "",
     comments: "",
     visibility: "PUBLIC",
     unlisted: false,
@@ -90,7 +90,6 @@ function PostSubmit(props) {
   };
 
   const { v4: uuidv4 } = require('uuid');
-
 
   // Source:  https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
   function getBase64(file) {
@@ -142,6 +141,7 @@ function PostSubmit(props) {
           author: props.author,
           // comments: contactInfo.comments,
           visibility: contactInfo.visibility,
+          categories: contactInfo.categories.split(',').map(cat => cat.trim()),
           // unlisted: contactInfo.unlisted,
           // image: null,
         })
