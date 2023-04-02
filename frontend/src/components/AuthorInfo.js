@@ -35,7 +35,7 @@ return (
     <Modal.Body>
 
         <p style={{ textAlign: "center" }}> <img src={props.postContent.author.profileImage} width="50" height="50" style={ {borderRadius: "20px" }}/></p>
-        <p>UserName: {props.postContent.author.displayName}</p>
+        <p>Display Name: {props.postContent.author.displayName}</p>
         <p>Github: <a href={props.postContent.author.github}> {props.postContent.author.github} </a>  </p>
      
 
