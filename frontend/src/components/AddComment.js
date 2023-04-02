@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import axios from "axios";
 import Card from 'react-bootstrap/Card';
 import InputGroup from 'react-bootstrap/InputGroup';
+import LikeComment from './author_inbox/LikeComment.js';
 
 function AddComment( props ) {
   const [show, setShow] = useState(false);
@@ -21,7 +22,7 @@ function AddComment( props ) {
     }
 
   useEffect(handleCommentView, [show]);
-  var commentView = comments.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment}</Card.Body></Card>)
+  var commentView = comments.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment} <LikeComment comment={comm} author={props.author} /></Card.Body></Card>)
   
   
   const [content, setContent] = useState('');

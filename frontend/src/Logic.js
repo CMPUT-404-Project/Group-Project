@@ -4,29 +4,29 @@ import { author_id_to_number } from './components/helper_functions';
 
 
 
-async function getGithub(userID){
-    console.log("githubActivities");
-    console.log(userID);
-    let githubActivities = await fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ userID:author_id_to_number(userID.id) })
-    }).then(response => response.json())
-    console.log(githubActivities);
-    return githubActivities;
-}
+// async function getGithub(userID){
+//     console.log("githubActivities");
+//     console.log(userID);
+//     let githubActivities = await fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify({ userID:author_id_to_number(userID.id) })
+//     }).then(response => response.json())
+//     console.log(githubActivities);
+//     return githubActivities;
+// }
 
 
 async function gatherAll(authorObject){
     // console.log(authorObject);
     var postsToShare;
-    let githubActivities = await getGithub(authorObject);
-        githubActivities = githubActivities.map((item ) => {
-            item.published = item.created_at;
-            return item;
-        })
+    // let githubActivities = await getGithub(authorObject);
+    //     githubActivities = githubActivities.map((item ) => {
+    //         item.published = item.created_at;
+    //         return item;
+    //     })
     var total_posts = [];
     try {
         
@@ -99,7 +99,7 @@ async function gatherAll(authorObject){
         }
 
         // combine it with the github activities
-        total_posts = total_posts.concat(githubActivities);
+        //total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
         // sort it so most recent at the top
         total_posts.sort(function(a,b){
@@ -164,7 +164,7 @@ async function gatherAll(authorObject){
         // Handle errors
         console.log(error);
         // combine it with the github activities
-        total_posts = total_posts.concat(githubActivities);
+        //total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
         // sort it so most recent at the top
         total_posts.sort(function(a,b){
