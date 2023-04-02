@@ -8,6 +8,7 @@ import PostSubmit from './PostSubmit';
 import AuthorLookup from './author_lookup/AuthorLookup';
 import AuthorInbox from './author_inbox/AuthorInbox';
 import { gatherAll } from '../Logic';
+import UserProfile from './user_profile/UserProfile';
 
 function Navigation(props) {
   // if (!props.loggedin){
@@ -33,7 +34,8 @@ function Navigation(props) {
           <Button variant="success" onClick={() => gatherAll(props.author, props.authString)}>Refresh</Button>
         </Nav>
         <Nav className="ml-auto">
-          <Nav.Link>{props.author.displayName}</Nav.Link>
+          {/* <Nav.Link>{props.author.displayName}</Nav.Link> */}
+          <UserProfile authString={props.authString} author={props.author} postContent={props.postObject} setPostItems={props.setPostItems} />
           <img src={props.author.profileImage} width="30" height="30" style={ {borderRadius: "20px" }}/>
         
 
