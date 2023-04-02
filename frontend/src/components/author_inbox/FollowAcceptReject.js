@@ -10,6 +10,15 @@ import { author_id_to_number, object_is_local } from '../helper_functions';
 
 function FollowAcceptReject(props) {
 
+    const [showAcceptButton, setShowAcceptButton] = useState(false);
+    axios.get(props.author.id + '/followers/',{headers:{'Authorization': 'Basic ' + props.authString}})
+        .then((resp) => {
+            // if they don't already follow me
+            if(resp.data.items.filter(aut => aut.id===props.message.actor.id).length === 0){
+                setShowAcceptButton(true);
+            }
+        })
+
     // URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
     const acceptFollowRequest = () => {
         // console.log(props.message);
@@ -22,20 +31,18 @@ function FollowAcceptReject(props) {
             { headers: { // config
                 'Authorization': 'Basic ' + props.authString
             }}
-        ).then(console.log("Done!"))
+        ).then(e => {console.log("Done!"); setShowAcceptButton(false);})
     };
 
-    const rejectFollowRequest = () => {
-
-    };
-
-
-    
+    if(!showAcceptButton){
+        return (<></>)
+    }
+ 
     return (
         <>
             <br/>
             <Button variant='outline-success' onClick={acceptFollowRequest}>Accept</Button>
-            <Button variant="outline-danger"  onClick={rejectFollowRequest}>Reject</Button>
+            {/* <Button variant="outline-danger"  onClick={rejectFollowRequest}>Reject</Button> */}
         </>
     );
 }
