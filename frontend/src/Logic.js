@@ -22,11 +22,15 @@ async function getGithub(userID){
 async function gatherAll(authorObject){
     // console.log(authorObject);
     var postsToShare;
-    let githubActivities = await getGithub(authorObject);
-        githubActivities = githubActivities.map((item ) => {
-            item.published = item.created_at;
-            return item;
-        })
+    var githubActivities = [];
+    try{
+        // githubActivities = await getGithub(authorObject);
+        // githubActivities = githubActivities.map((item ) => {item.published = item.created_at;return item;})
+    } catch (error) {
+        console.log("Something went wrong with github.");
+        console.log("It's either invalid or rate-limited.");
+    }
+    
     var total_posts = [];
     try {
         
