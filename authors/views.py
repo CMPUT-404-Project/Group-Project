@@ -137,6 +137,18 @@ class AuthorList(APIView):
     @swagger_auto_schema(operation_description="Get a list of all authors", responses={200: AuthorSerializer(many=True) , 400: 'Bad Request'})
     def get(self, request):
         query_set = Author.objects.all()
+        
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+
+        if page_number and size:
+            paginator = Paginator(query_set, size)
+            try:
+                query_set = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                query_set = paginator.get_page(1).object_list
+            except EmptyPage:
+                query_set = paginator.get_page(paginator.num_pages).object_list
+        
         serializer = AuthorSerializer(query_set, many=True)
         return Response({"type": "authors", "items": serializer.data}, status=status.HTTP_200_OK)
 
