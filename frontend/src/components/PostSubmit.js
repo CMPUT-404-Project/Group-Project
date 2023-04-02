@@ -18,6 +18,7 @@ function PostSubmit(props) {
   const handleShow = () => setShow(true);
 
   const [contentType, setContentType] = useState('text/plain');
+  const [privateFriendTarget, setPrivateFriendTarget] = useState('');
   const [showUploadOption, setShowUploadOption] = useState(false);
   const [showTextOption, setShowTextOption] = useState(true);
 
@@ -104,6 +105,7 @@ function PostSubmit(props) {
     };
  }
 
+ // for rendering the input field for the post content
  var main_content_input;
  if ((contentType === 'image/png;base64') || (contentType ==='image/jpeg;base64') || (contentType ==='application/base64')){
   main_content_input =  <Form.Group className="mb-3" controlId="Add Image">
@@ -119,6 +121,15 @@ function PostSubmit(props) {
                           <Form.Label>Post Content</Form.Label>
                           <Form.Control as="textarea" rows={5} placeholder="content" name="content" value={contactInfo.content} onChange={onChangeHandler}/>
                         </Form.Group>
+ }
+
+ var form_for_private_post = "";
+ if (contactInfo.visibility === "PRIVATE"){
+  form_for_private_post = <Form.Group className="mb-3" controlId="friendTarget">
+                            <Form.Label>Friend Target</Form.Label>
+                            <Form.Control type="text" placeholder="ID of Target" name="friendTarget"
+                              value={privateFriendTarget} onChange={(e) => setPrivateFriendTarget(e.target.value)}/>
+                          </Form.Group>
  }
 
   const submitPost = () => {
@@ -147,8 +158,10 @@ function PostSubmit(props) {
         },
         body: JSON.stringify(body_of_request)
       }).then((response) => response.json()).then( (resp) => {
-        // if friends: send to their inbox
-        console.log(resp);
+        // if friends: send to your follower's inbox
+        // console.log(resp);
+        if (contactInfo.visibility === "FRIENDS")
+        { // send to followers
           axios.get(props.author.id + '/followers/').then((response) => {
             console.log(response.data);
             response.data.items.forEach( (minion) => {
@@ -156,6 +169,12 @@ function PostSubmit(props) {
               axios.post(minion.id + '/inbox', resp);
             })
           })
+        } else if (contactInfo.visibility === "PRIVATE")
+        {
+          axios.post(privateFriendTarget + '/inbox/', resp);
+          axios.post(privateFriendTarget + '/inbox', resp);
+        }
+          
         }
       ).then(function (response) {
         // After Making a post, refresh the main page
@@ -246,7 +265,8 @@ function PostSubmit(props) {
                     <option value="PRIVATE">Private</option>
                   </Form.Control>
                 </Form.Group>
-
+                
+                {form_for_private_post}
                 
 
                 <Form.Group className="mb-3" controlId="unlisted">
