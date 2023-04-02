@@ -147,7 +147,7 @@ class PostLikes(APIView):
 
         likes = Like.objects.all().filter(object=post.url)
         if not likes:
-            return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"type": "warning", "message": "No likes found"}, status=status.HTTP_204_NO_CONTENT)
         
         page_number, size = request.GET.get('page'), request.GET.get('size')
         if page_number and size:

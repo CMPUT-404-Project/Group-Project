@@ -76,7 +76,7 @@ class Author(models.Model):
     displayName = models.CharField(max_length=200,unique=True)
     url = models.CharField(max_length=200)
     github = models.CharField(max_length=200, null=True)
-    profileImage = models.CharField(null=True,blank=True, max_length=200)
+    profileImage = models.TextField(null=True, blank=True)
 
     #returns id of the author
     def get_id(self):
