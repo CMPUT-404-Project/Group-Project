@@ -226,7 +226,7 @@ def get_inbox(receiving_author, data): #receiving_author is the author who is re
         # get author id
         author_id = author_data.get('id')
         if not author_id: return Response({"type": "error", "message": "Author id not found"}, status=status.HTTP_400_BAD_REQUEST)
-        if ('/' in author_id) and ("authors " in author_id):     
+        if ('/' in author_id) and ('authors' in author_id):     
             author_id = get_author_id(author_id)
         else: 
             return Response({"type": "error", "message": "Invalid author ID format"}, status=status.HTTP_400_BAD_REQUEST)
