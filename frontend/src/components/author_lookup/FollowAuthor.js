@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from 'axios';
 import signup from '../signup';
+import { determine_headers, determine_inbox_endpoint, object_is_local } from '../helper_functions';
 
 function FollowAuthor(props) {
 
@@ -28,43 +29,43 @@ function FollowAuthor(props) {
       };
 
     const sendRequest = () => {
+        var request_headers = {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + props.authString
+        }
 
         // GET the author we want to follow
-        axios.get(contactInfo.id)
+        axios.get(contactInfo.id, {headers:determine_headers(contactInfo.id)})
             .then((response) => {
+                var request_body = { // body
+                    "type": "follow",
+                    "summary": props.author.displayName + " wants to follow " + response.data.displayName,
+                    "actor": props.author,
+                    "object": response.data,
+                };
                 console.log(response.data);
-                axios.post(
-                    // response.data.id + '/inbox/', // url for our database
-                    response.data.id + '/inbox', // url for floating fjord
-                    { // body
-                        "type": "follow",
-                        "summary": props.author.displayName + " wants to follow " + response.data.displayName,
-                        "actor": props.author,
-                        "object": response.data,
-                    }, 
-                    {
-                        'Accept': '*/*',
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Basic ' + props.authString
-                    }
-                )
 
-                // DUPLICATED CODE FOR inconsistent APIs
-                axios.post(
-                    // response.data.id + '/inbox/', // url for our database
-                    response.data.id + '/inbox/', // url for floating fjord
-                    { // body
-                        "type": "follow",
-                        "summary": props.author.displayName + " wants to follow " + response.data.displayName,
-                        "actor": props.author,
-                        "object": response.data,
-                    }, 
-                    {
-                        'Accept': '*/*',
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Basic ' + props.authString
-                    }
-                )
+                if (object_is_local(contactInfo.id)){
+                    axios.post(
+                        response.data.id + determine_inbox_endpoint(response.data.id),
+                        request_body,
+                        {headers:request_headers}
+                    )
+                } else {
+                    axios.post(
+                        props.author.id + '/sendrequest/',
+                        response.data,
+                        {headers:request_headers}
+                    ).then( sendRequestResponse => {
+                        axios.post(
+                            // response.data.id + '/inbox/', // url for our database
+                            response.data.id + determine_inbox_endpoint(response.data.id),
+                            sendRequestResponse.data.follow_request,
+                            {headers:determine_headers(contactInfo.id)}
+                        )
+                    });
+                }
             });
     };
 
