@@ -55,10 +55,17 @@ function EditProfile(props) {
               github: userInfo.github,
               profileImage: userInfo.profileImage,
             })
-          }).then(function (response) {
+          }).then((response) => {
             // After Making a post, refresh the
             //gatherAll(props.postContent.author, props.authString).then(result => props.setPostItems(result));
-            console.log(userInfo.displayName);
+            console.log(response);
+            props.setAuthorToDisplay(
+              {
+                ...props.author,
+                displayName: userInfo.displayName,
+                github: userInfo.github,
+              }
+            );
             handleClose();
             // axios.get(props.postContent.author.id + '/posts').then(res => {
             //   props.setPostItems(res.data.items);
