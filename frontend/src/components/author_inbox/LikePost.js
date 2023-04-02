@@ -69,12 +69,13 @@ function LikePost(props) {
 
     return (
         <>
-            <Button variant="outline-success" onClick={processLikeClick}>
+            {/* <Button variant="outline-success" onClick={processLikeClick}>
                 {liked ? 'Liked' : 'Like'}
-            </Button>
-            {/* <IconButton variant="outline-success" onClick={processLikeClick}>
+            </Button> */}
+            <IconButton variant="outline-success" onClick={processLikeClick}>
                 <FavoriteBorderIcon />
-            </IconButton> */}
+                {liked ? 'Liked' : 'Like'}
+            </IconButton>
             {likes.map((like, index) => (<p key={index}>{like.author.displayName} liked this post</p>))}
         </>
     );
