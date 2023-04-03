@@ -31,7 +31,7 @@ console.log(props.author)
 //console.log(author)
 return (
     <>
-    <Button variant="dark"  onClick={() => {handleAuthorView();handleShow();}}>
+    <Button variant="sucess"  onClick={() => {handleAuthorView();handleShow();}}>
              {authorToDisplay.displayName}
           </Button>
 

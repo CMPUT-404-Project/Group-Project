@@ -52,7 +52,7 @@ function Post(props) {
   }
     
     return (
-        <Card style={{ width: '100%', margin:'1em' }}>
+        <Card style={{ background:"#CFE9DB", width: '100%', margin:'1em' }}>
         {/* use the line below for image posts */}
         { props.postObject.contentType === 'text/plain'||props.postObject.contentType === 'text/markdown'?"":<Card.Img variant="top" src= {props.postObject.content} alt = "This is the uploaded image" />}
         
@@ -74,8 +74,8 @@ function Post(props) {
             <LikePost message={props.postObject} author={props.author} authString={props.authString} />
           </Card.Body>
 
-          <ListGroup variant="flush">
-            <ListGroup.Item>
+          <ListGroup  variant="flush">
+            <ListGroup.Item style={{background: "#F3F5F4"}}>
                 {/* <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" /> */}
                 <AuthorInfo author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
                 {/* | */}
