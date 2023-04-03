@@ -9,6 +9,7 @@ import AuthorLookup from './author_lookup/AuthorLookup';
 import AuthorInbox from './author_inbox/AuthorInbox';
 import { gatherAll } from '../Logic';
 import UserProfile from './user_profile/UserProfile';
+import GithubActivity from './GithubActivity';
 
 function Navigation(props) {
   // if (!props.loggedin){
@@ -31,6 +32,7 @@ function Navigation(props) {
           {/* <PostSubmit authString={props.authString} author={props.author} setPostItems={props.setPostItems}/> */}
           <AuthorLookup authString={props.authString} author={props.author} />
           <AuthorInbox authString={props.authString} author={props.author} />
+          <GithubActivity userID={props.author.id}/>
           <Button variant="success" onClick={() => gatherAll(props.author, props.authString)}>Refresh</Button>
         </Nav>
         <Nav className="ml-auto">
