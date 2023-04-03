@@ -75,7 +75,7 @@ function App() {
     return(
       <div className="App" >
         {/* <Navigation loggedin={loggedin}/> */}
-        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
+        {/* <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} /> */}
         <LoginForm setAuthString={setAuthString} setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
     );
