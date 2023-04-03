@@ -13,7 +13,6 @@ function FollowAuthor(props) {
 
     const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false);
     // var actorAuthor = {}; // this is the person we are trying to follow
     // const handleShow = () => setShow(true);
 
@@ -22,6 +21,8 @@ function FollowAuthor(props) {
         id: "",
         actorAuthor: {},
       });
+      
+    const handleClose = () => {setShow(false); setContactInfo({id: "",actorAuthor: {},})};
     
       const onChangeHandler = (event) => {
         let contactInfoHolder = { ...contactInfo, [event.target.name]: event.target.value };
@@ -78,7 +79,7 @@ function FollowAuthor(props) {
                             response.data.id + determine_inbox_endpoint(response.data.id),
                             sendRequestResponse.data.follow_request,
                             {headers:determine_headers(contactInfo.id)}
-                        )
+                        ).then((resp) => setContactInfo({id: "",actorAuthor: {},}));
                     });
                 }
                 
