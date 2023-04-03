@@ -91,31 +91,47 @@ async function gatherAll(authorObject, authString){
 
         var total_authors = [];
         
+        console.log("Fetch from ours");
         var local_authors = await axios.get("https://distributed-social-net.herokuapp.com/service/authors");
-        local_authors = local_authors.data.items.filter(oneaut => oneaut.id.startsWith("https://distributed-social-net.herokuapp.com/service/authors"));
+        local_authors = local_authors.data.items
+                            .filter(oneaut => oneaut.id.startsWith("https://distributed-social-net.herokuapp.com/service/authors"))
+                            .filter(oneaut => oneaut.host==="https://distributed-social-net.herokuapp.com/");
         // console.log(local_authors)
         for (let i=0; i<local_authors.length; i++){
             console.log(local_authors[i].displayName);
-            var local_post = await axios.get(local_authors[i].id + '/posts/');
-            // console.log(local_post.data);
-            total_posts = total_posts.concat(local_post.data.items);
+            var local_post = []
+            try {
+                var local_post = await axios.get(local_authors[i].id + '/posts/');
+                // console.log(local_post.data);
+            } catch (error){
+                console.log(error)
+            } finally {
+                total_posts = total_posts.concat(local_post.data.items);
+            }
         }
 
         // This is for team 21
+        console.log("Fetch from Team 21");
         var local_authors_from_team21 = await axios.get(
             "https://social-distribution-group21.herokuapp.com//service/authors/",
             {
                 headers: determine_headers("https://social-distribution-group21.herokuapp.com//service/authors/")
             });
-        local_authors_from_team21 = local_authors_from_team21.data.items.filter(oneaut => oneaut.id.startsWith("https://social-distribution-group21.herokuapp.com//service/authors/"));
+        local_authors_from_team21 = local_authors_from_team21.data.items
+                                        .filter(oneaut => oneaut.id.startsWith("https://social-distribution-group21.herokuapp.com//service/authors/"))
+                                        .filter(oneaut => oneaut.host==="https://social-distribution-group21.herokuapp.com/");
         // console.log(local_authors)
         for (let i=0; i<local_authors_from_team21.length; i++){
-            var local_post = await axios.get(
-                local_authors_from_team21[i].id + '/posts',
-                {
-                    headers: determine_headers(local_authors_from_team21[i].id)
-                });
-            total_posts = total_posts.concat(local_post.data.posts);
+            try {
+                var local_post = await axios.get(
+                    local_authors_from_team21[i].id + '/posts',
+                    {
+                        headers: determine_headers(local_authors_from_team21[i].id)
+                    });
+                    total_posts = total_posts.concat(local_post.data.posts);
+            } catch (error){
+                console.log(error)
+            }
         }
 
         // CORS errors
@@ -153,22 +169,28 @@ async function gatherAll(authorObject, authString){
         //     total_posts = total_posts.concat(local_post.data.posts);
         // }
 
-        // This is for team 21
+        // This is for team 19
+        console.log("Fetch from Team 19");
         var local_authors_from_team21 = await axios.get(
             "https://floating-fjord-51978.herokuapp.com/authors/",
             {
                 headers: determine_headers("https://floating-fjord-51978.herokuapp.com/authors/")
             });
-        local_authors_from_team21 = local_authors_from_team21.data.items.filter(oneaut => oneaut.id.startsWith("https://floating-fjord-51978.herokuapp.com/authors/"));
+        local_authors_from_team21 = local_authors_from_team21.data.items
+                                        .filter(oneaut => oneaut.id.startsWith("https://floating-fjord-51978.herokuapp.com/authors/"))
+                                        .filter(oneaut => oneaut.host==="https://floating-fjord-51978.herokuapp.com/");
         // console.log(local_authors)
         for (let i=0; i<local_authors_from_team21.length; i++){
-            var local_post = await axios.get(
+            try {var local_post = await axios.get(
                 local_authors_from_team21[i].id + '/posts',
                 {
                     headers: determine_headers(local_authors_from_team21[i].id)
                 });
                 console.log(local_post);
             total_posts = total_posts.concat(local_post.data.items);
+            } catch (error) {
+                console.log(error);
+            }
         }
         // filter by public post
         total_posts = total_posts.filter(onePost => onePost.visibility==="PUBLIC");
