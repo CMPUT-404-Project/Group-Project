@@ -5,6 +5,7 @@ import axios from 'axios';
 import SendIcon from '@mui/icons-material/Send';
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 import './likestyle.css';
 
@@ -129,10 +130,35 @@ function LikePost(props) {
 
 
     return (
+      // <div className="like-post">
+      //     {/* <Button variant="outline-success" onClick={processLikeClick}
+      //       className={liked ? 'like-button liked' : 'like-button'}>
+      //       {liked ? 'Liked' : 'Like'}
+      //     </Button> */}
+      //     <Button variant="outline-success" onClick={processLikeClick}
+      //       className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
+      //       {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
+      //     </Button>
+      //     {likes.length > 0 && (
+      //       <div
+      //         className="like-count"
+      //         onClick={() => setShowLikesList(!showLikesList)}
+      //       >
+      //         {likes.length} {likes.length === 1 ? 'like' : 'likes'}
+      //       </div>
+      //     )}
+      //     {showLikesList && (
+      //       <ul className="like-list">
+      //         {likes.map((like, index) => (
+      //           <li key={index}>{like.author.displayName}</li>
+      //         ))}
+      //       </ul>
+      //     )}
+      //   </div>
       <div className="like-post">
           <Button variant="outline-success" onClick={processLikeClick}
-            className={liked ? 'like-button liked' : 'like-button'}>
-            {liked ? 'Liked' : 'Like'}
+            className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
+            {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
           </Button>
           {likes.length > 0 && (
             <div
