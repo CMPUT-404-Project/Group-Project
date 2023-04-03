@@ -2,6 +2,7 @@
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Badge from 'react-bootstrap/Badge';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import PostModal from './PostModal';
@@ -23,6 +24,15 @@ function Post(props) {
   if (props.postObject.contentType === "text/markdown"){
     main_content = <ReactMarkdown>{props.postObject.content}</ReactMarkdown>
   }
+
+  var visibility_style = "primary"
+  if (props.postObject.visibility.toLowerCase()==="friends"){
+    visibility_style = "success";
+  } else if (props.postObject.visibility.toLowerCase()==="private"){
+    visibility_style = "warning";
+  }
+
+  
 
   var extra_buttons = "";
   if (props.postObject.author.id === props.author.id){
@@ -48,7 +58,7 @@ function Post(props) {
         
           {/* The Card.Body can be rendered conditionally. depending on the type of text that it is. */}
           <Card.Body>
-            <Card.Title>{props.postObject.title}</Card.Title>
+            <Card.Title>{props.postObject.title}</Card.Title><Badge bg={visibility_style}>{props.postObject.visibility}</Badge>
             { props.postObject.contentType === 'text/plain'||props.postObject.contentType === 'text/markdown'?<Card.Text>{main_content}</Card.Text>:""}
             {/* <Card.Text>
               {main_content}
