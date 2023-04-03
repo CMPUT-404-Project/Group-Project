@@ -4,6 +4,9 @@ import axios from 'axios';
 import './likestyle.css';
 import { determine_headers } from '../helper_functions';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import IconButton from "@mui/material/IconButton";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 function LikeComment(props) {
     const [liked, setLiked] = useState(false);
@@ -121,20 +124,21 @@ function LikeComment(props) {
 
     return (
         <div className="like-post">
-        <Button variant="outline-success" onClick={processLikeClick}
-          className={liked ? 'like-button liked' : 'like-button'}>
-          {liked ? 'Liked' : 'Like'}
-        </Button>
-          {likes.length > 0 && (
+        <IconButton variant="outline-success" onClick={processLikeClick}
+            className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
+            {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
+          </IconButton>
+          {likes.length >= 0 && (
             <div
               className="like-count"
-              onClick={() => setShowLikesList(!showLikesList)}
+              onMouseEnter={() => setShowLikesList(!showLikesList)}
+              onMouseLeave={() => setShowLikesList(!showLikesList)}
             >
-              {likes.length} {likes.length === 1 ? 'like' : 'likes'}
+              {likes.length}
             </div>
           )}
           {showLikesList && (
-            <ul className="like-list">
+            <ul className="like-list2">
               {likes.map((like, index) => (
                 <li key={index}>{like.author.displayName}</li>
               ))}

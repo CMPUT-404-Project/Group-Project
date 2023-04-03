@@ -158,16 +158,17 @@ function LikePost(props) {
 
 
       <div className="like-post">
-          <Button variant="outline-success" onClick={processLikeClick}
+          <IconButton variant="outline-success" onClick={processLikeClick}
             className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
             {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
-          </Button>
-          {likes.length > 0 && (
+          </IconButton>
+          {likes.length >= 0 && (
             <div
               className="like-count"
-              onClick={() => setShowLikesList(!showLikesList)}
+              onMouseEnter={() => setShowLikesList(!showLikesList)}
+              onMouseLeave={() => setShowLikesList(!showLikesList)}
             >
-              {likes.length} {likes.length === 1 ? 'like' : 'likes'}
+              {likes.length}
             </div>
           )}
           {showLikesList && (
