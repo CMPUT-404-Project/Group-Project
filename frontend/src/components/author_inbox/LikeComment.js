@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import axios from 'axios';
 import './likestyle.css';
-
+import { determine_headers } from '../helper_functions';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 function LikeComment(props) {
@@ -41,14 +41,20 @@ function LikeComment(props) {
         if (!hasLiked) {
             setLiked(true);
             setHasLiked(true);
+            const url = `${comm.author.id}/inbox/`;
+            var headers = determine_headers(url);
+            if (Object.keys(headers).length === 0) {
+              headers = {Authorization: "Basic " + props.authString};
+            }
             axios.post(
-                `${comm.author.id}/inbox/`,
+                url,
                 {
                     type: 'like',
                     author: props.author,
                     object: comm.id,
                     summary: `${props.author.displayName} likes your comment`
                 },
+                { headers }
             ).then(response => {console.log('sent to inbox');
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
@@ -63,6 +69,7 @@ function LikeComment(props) {
                     object: comm.id,
                     summary: `${props.author.displayName} likes your comment`
                 },
+                { headers }
             ).then(response => {console.log('sent to inbox');
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
