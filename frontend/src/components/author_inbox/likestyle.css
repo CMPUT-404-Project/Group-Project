@@ -1,0 +1,59 @@
+
+
+.like-post {
+position: relative;
+display: inline-block;
+}
+
+
+.like-count {
+position: absolute;
+bottom: 30%;
+left: 90%;
+cursor: pointer;
+}
+
+.like-list {
+position: absolute;
+/* top: calc(-100% - 5px - (20px * ${likes.length})); */
+
+top: -20%;
+left: 200%;
+transform: translateX(-50%);
+background-color: #fff;
+border: 1px solid #ccc;
+padding: 5px;
+list-style: none;
+margin: 0;
+cursor: default;
+z-index: 1;
+}
+.like-list2 {
+    position: absolute;
+    /* top: calc(-100% - 5px - (20px * ${likes.length})); */
+    
+    top: 75%;
+    left: 100%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    size: 2px;
+    list-style: none;
+    margin: 0;
+    cursor: default;
+    z-index: 1;
+    }
+.like-list li {
+margin-bottom: 4px;
+}
+
+.like-button.liked {
+    background-color: green;
+    color: white;
+}
+  
+  
+  
+
+  
