@@ -178,8 +178,7 @@ async function gatherAll(authorObject, authString){
             });
         local_authors_from_team21 = local_authors_from_team21.data.items
                                         .filter(oneaut => oneaut.id.startsWith("https://floating-fjord-51978.herokuapp.com/authors/"))
-                                        .filter(oneaut => oneaut.host==="https://floating-fjord-51978.herokuapp.com/");
-        // console.log(local_authors)
+                                        .filter(oneaut => oneaut.host==="https://floating-fjord-51978.herokuapp.com");
         for (let i=0; i<local_authors_from_team21.length; i++){
             try {var local_post = await axios.get(
                 local_authors_from_team21[i].id + '/posts',
