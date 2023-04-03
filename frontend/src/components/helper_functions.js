@@ -28,7 +28,8 @@ export function determine_headers(url_request){
     } else if (url_request.includes("social-distribution-group21.herokuapp.com")){
         // team 21 
         return {
-            Authorization: "Token 99074546c54ae7c69e75370467c28d337ea19243"
+            Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+            // Authorization: "Token 99074546c54ae7c69e75370467c28d337ea19243"
         }
         
     } else if (url_request.includes("distributed-social-net.herokuapp.com")){
