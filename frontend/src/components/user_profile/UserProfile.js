@@ -30,7 +30,7 @@ console.log(props.author)
 //console.log(author)
 return (
     <>
-    <Button variant="sucess"  onClick={() => {handleAuthorView();handleShow();}}>
+    <Button variant="dark"  onClick={() => {handleAuthorView();handleShow();}}>
              {props.authorToDisplay.displayName}
           </Button>
 

@@ -95,7 +95,7 @@ async function gatherAll(authorObject, authString){
         var local_authors = await axios.get("https://distributed-social-net.herokuapp.com/service/authors");
         local_authors = local_authors.data.items
                             .filter(oneaut => oneaut.id.startsWith("https://distributed-social-net.herokuapp.com/service/authors"))
-                            .filter(oneaut => oneaut.host==="https://distributed-social-net.herokuapp.com/");
+                            .filter(oneaut => oneaut.host.startsWith("https://distributed-social-net.herokuapp.com"));
         // console.log(local_authors)
         for (let i=0; i<local_authors.length; i++){
             console.log(local_authors[i].displayName);
@@ -119,7 +119,7 @@ async function gatherAll(authorObject, authString){
             });
         local_authors_from_team21 = local_authors_from_team21.data.items
                                         .filter(oneaut => oneaut.id.startsWith("https://social-distribution-group21.herokuapp.com//service/authors/"))
-                                        .filter(oneaut => oneaut.host==="https://social-distribution-group21.herokuapp.com/");
+                                        .filter(oneaut => oneaut.host.startsWith("https://social-distribution-group21.herokuapp.com/"));
         // console.log(local_authors)
         for (let i=0; i<local_authors_from_team21.length; i++){
             try {
@@ -178,7 +178,7 @@ async function gatherAll(authorObject, authString){
             });
         local_authors_from_team21 = local_authors_from_team21.data.items
                                         .filter(oneaut => oneaut.id.startsWith("https://floating-fjord-51978.herokuapp.com/authors/"))
-                                        .filter(oneaut => oneaut.host==="https://floating-fjord-51978.herokuapp.com");
+                                        .filter(oneaut => oneaut.host.startsWith("https://floating-fjord-51978.herokuapp.com"));
         for (let i=0; i<local_authors_from_team21.length; i++){
             try {var local_post = await axios.get(
                 local_authors_from_team21[i].id + '/posts',

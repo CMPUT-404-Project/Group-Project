@@ -43,7 +43,7 @@ function AuthorLookup(props) {
     
     return (
         <>
-        <Button variant="success" onClick={() => setShow(true)}>
+        <Button variant="dark" onClick={() => setShow(true)}>
           Author Lookup
         </Button>
   

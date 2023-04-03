@@ -83,7 +83,7 @@ function App() {
 
   else if (loggedin === true) {
     return (
-      <div className="App" style={{background:"#85AB8B"}}>
+      <div className="App" style={{background:"#FFFFFF"}}>
         <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems} currPosts={postItems}/>
 
         {/* Author Actions */}

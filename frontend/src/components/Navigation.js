@@ -27,7 +27,7 @@ function Navigation(props) {
     const [authorToDisplay, setAuthorToDisplay] = useState(props.author);
     console.log(props.author);
     return (
-      <Navbar sticky="top" bg="success" variant="dark">
+      <Navbar sticky="top" bg="dark" variant="dark">
       <Container>
         <Navbar.Brand href="#"><h3>Social Distribution</h3></Navbar.Brand>
         <Nav className="me-auto">

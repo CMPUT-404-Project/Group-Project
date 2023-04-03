@@ -38,7 +38,7 @@ function GithubActivity({userID}) {
 
   return (
     <>
-      <Button variant="success" onClick={() => setShow(true)}>GitHub</Button>
+      <Button variant="dark" onClick={() => setShow(true)}>GitHub</Button>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
             <Modal.Title>Recent Github Activities</Modal.Title>

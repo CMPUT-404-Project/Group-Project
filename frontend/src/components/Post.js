@@ -52,13 +52,13 @@ function Post(props) {
   }
     
     return (
-        <Card style={{ background:"#CFE9DB", width: '100%', margin:'1em' }}>
+        <Card style={{ background:"#E8E8E8", width: '100%', margin:'1em' }}>
         {/* use the line below for image posts */}
         { props.postObject.contentType === 'text/plain'||props.postObject.contentType === 'text/markdown'?"":<Card.Img variant="top" src= {props.postObject.content} alt = "This is the uploaded image" />}
         
           {/* The Card.Body can be rendered conditionally. depending on the type of text that it is. */}
           <Card.Body>
-            <Card.Title>{props.postObject.title}</Card.Title><Badge bg={visibility_style}>{props.postObject.visibility}</Badge>
+            <Card.Title>{props.postObject.title}</Card.Title><Badge bg={visibility_style}>{props.postObject.visibility}</Badge> <br/><br/>
             { props.postObject.contentType === 'text/plain'||props.postObject.contentType === 'text/markdown'?<Card.Text>{main_content}</Card.Text>:""}
             {/* <Card.Text>
               {main_content}
@@ -75,7 +75,7 @@ function Post(props) {
           </Card.Body>
 
           <ListGroup  variant="flush">
-            <ListGroup.Item style={{background: "#F3F5F4"}}>
+            <ListGroup.Item style={{background: "#FFFFFF"}}>
                 {/* <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" /> */}
                 <AuthorInfo author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
                 {/* | */}
