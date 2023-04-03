@@ -20,6 +20,7 @@ function AuthorInfo(props) {
 
 
 console.log(props.postContent.author)
+let url = new URL(props.postContent.author.host);
 
 return (
     <>
@@ -36,7 +37,7 @@ return (
 
         <p style={{ textAlign: "center" }}> <img src={props.postContent.author.profileImage} width="50" height="50" style={ {borderRadius: "20px" }}/></p>
         <p><b>Display Name: </b>{props.postContent.author.displayName}</p>
-        <p><b>Host: </b>{props.postContent.author.host}</p>
+        <p><b>Host: </b>{url.host}</p>
         <p><b>Github: </b><a href={props.postContent.author.github}> {props.postContent.author.github} </a>  </p>
         <p><a href={props.postContent.author.id}> User ID </a>  </p>
      
