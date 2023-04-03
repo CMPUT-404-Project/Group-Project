@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
 import { gatherAll } from '../Logic';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from "@mui/material/IconButton";
 
 function PostDelete(props) {
     const [show, setShow] = useState(false);
@@ -30,10 +32,13 @@ function PostDelete(props) {
         
             return (
                 <>
-                <Button variant="outline-danger"  onClick={handleShow}>
+                {/* <Button variant="outline-danger"  onClick={handleShow}>
                          Delete
                       </Button>
-    
+     */}        
+                <IconButton size="large" onClick={handleShow}>
+        <DeleteIcon/>
+    </IconButton>
                 <Modal show={show} onHide={handleClose} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Delete Confirmation</Modal.Title>
