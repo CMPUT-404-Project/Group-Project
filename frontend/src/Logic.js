@@ -63,10 +63,9 @@ async function gatherAll(authorObject, authString){
     
     var total_posts = [];
     try {
-        
         var posts_from_inbox = await axios.get(
             authorObject.id+determine_inbox_endpoint(authorObject.id),
-            {headers:{Authorization: authString}}
+            {headers:{Authorization: "Basic " + authString}}
         );
         posts_from_inbox = posts_from_inbox.data.items.filter(inb => inb.type==="post");
         total_posts = total_posts.concat(posts_from_inbox);
