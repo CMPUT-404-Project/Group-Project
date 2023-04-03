@@ -8,6 +8,7 @@ import axios from 'axios';
 import { gatherAll } from '../Logic';
 import SendIcon from '@mui/icons-material/Send';
 import IconButton from "@mui/material/IconButton";
+import { determine_headers, determine_inbox_endpoint } from './helper_functions';
 
 function SharePost(props) {
 
@@ -52,6 +53,7 @@ function SharePost(props) {
         })
     } else {
         // send to followers only
+        clonePost.visibility = "FRIENDS";
         axios.post(
           props.author.id + '/posts/', // url
           clonePost,
@@ -62,7 +64,19 @@ function SharePost(props) {
               'Authorization': 'Basic ' + props.authString
             }
           }
-        ).then(() => {
+        ).then((post_response) => {
+          axios.get(
+            props.author.id + '/followers/',
+            {headers: {'Accept': '*/*','Content-Type': 'application/json','Authorization': 'Basic ' + props.authString}}
+          ).then((follower_response) => {
+            follower_response.data.items.forEach((oneFollower) => {
+              axios.post(
+                oneFollower.id + determine_inbox_endpoint(oneFollower.id),
+                post_response.data,
+                determine_headers(oneFollower.id)
+              )
+            })
+          })
           gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
           handleClose();
         })
