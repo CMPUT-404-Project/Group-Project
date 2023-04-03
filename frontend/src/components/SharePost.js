@@ -9,6 +9,8 @@ import { gatherAll } from '../Logic';
 import SendIcon from '@mui/icons-material/Send';
 import IconButton from "@mui/material/IconButton";
 import { determine_headers, determine_inbox_endpoint } from './helper_functions';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 function SharePost(props) {
 
@@ -89,9 +91,11 @@ function SharePost(props) {
       {/* <Button variant="outline-info" onClick={handleShow}>
         Share
       </Button> */}
+      <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="overlay-example">Share</Tooltip>}>
       <IconButton onClick={handleShow}>
         <SendIcon/>
-    </IconButton>
+      </IconButton>
+      </OverlayTrigger>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Share Post</Modal.Title>
