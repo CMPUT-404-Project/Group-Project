@@ -42,7 +42,7 @@ function Post(props) {
   }
     
     return (
-        <Card style={{ width: '70%', margin:'1em' }}>
+        <Card style={{ width: '100%', margin:'1em' }}>
         {/* use the line below for image posts */}
         { props.postObject.contentType === 'text/plain'||props.postObject.contentType === 'text/markdown'?"":<Card.Img variant="top" src= {props.postObject.content} alt = "This is the uploaded image" />}
         

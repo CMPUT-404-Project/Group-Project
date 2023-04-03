@@ -14,7 +14,6 @@ export function object_is_local(text){
     return text.includes("distributed-social-net.herokuapp.com/");
 }
 
-
 export function determine_headers(url_request){
     if (url_request.includes("floating-fjord-51978.herokuapp.com")){
         // team 19
@@ -24,12 +23,12 @@ export function determine_headers(url_request){
     } else if (url_request.includes("socialdistcmput404.herokuapp.com")){
         // team 10
         return {
-            Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+            Authorization: "Token 510A233343210757FB490505AA2E9B52A3D678BF"
         }
     } else if (url_request.includes("social-distribution-group21.herokuapp.com")){
         // team 21 
         return {
-            Authorization: "Basic Z3Vlc3Q6Z3Vlc3Q="
+            Authorization: "Token 99074546c54ae7c69e75370467c28d337ea19243"
         }
         
     } else if (url_request.includes("distributed-social-net.herokuapp.com")){
