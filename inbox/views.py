@@ -185,19 +185,25 @@ def get_inbox(receiving_author, data): #receiving_author is the author who is re
         else:
             #create a new comment and return it
             try:
+                #get the post
+                post = Post.objects.get(id=post_id)
+                data['post'] = post_id
+
                 #check if the author exists in our db
                 author_data = data.pop('author')
                 if Author.objects.filter(id=author_id).exists():
                     author = Author.objects.get(id=author_id)
                 else:
-                    return Response({"type": "error", "message": "There's no relationship between the sending author and receiving author (none of them follow the other one)"}, status=status.HTTP_400_BAD_REQUEST)
+                    #if the post is public then create a new author
+                    if post.visibility == 'PUBLIC':
+                        author = create_new_author(author_id,author_data)
+                        author.save()
+                    else:
+                        return Response({"type": "error", "message": "There's no relationship between the sending author and receiving author (none of them follow the other one)"}, status=status.HTTP_400_BAD_REQUEST)
                     #make a new author
                     #author = create_new_author(author_id,author_data)
                     #author.save()
 
-                #get the post
-                post = Post.objects.get(id=post_id)
-                data['post'] = post_id
                 #create a new comment
                 comment_ser = CommentSerializer(data=data, context={'comment_id': comment_id, 'comment_url': id_url})
                 if comment_ser.is_valid():
@@ -233,21 +239,14 @@ def get_inbox(receiving_author, data): #receiving_author is the author who is re
         
 
         try:
-            # check if the author exists in our db
-            if Author.objects.filter(id=author_id).exists():
-                author = Author.objects.get(id=author_id)
-            else:
-                return Response({"type": "error", "message": "There's no relationship between the sending author and receiving author (none of them follow the other one)"}, status=status.HTTP_400_BAD_REQUEST)
-                # make a new author
-                # author = create_new_author(author_id, author_data)
-                # author.save()
 
-            # object_url checks
+             # object_url checks
             if ('/' in object_url) and ('posts' in object_url) and ('authors' in object_url): 
                 post_id = get_post_id(object_url)
                 #post_auth_id = get_author_id(object_url)
             else:
                 return Response({"type": "error", "message": "Invalid object url format"}, status=status.HTTP_400_BAD_REQUEST)
+            
 
             ## check if author and post exist
             
@@ -258,6 +257,20 @@ def get_inbox(receiving_author, data): #receiving_author is the author who is re
             #if post does not exist
             if not Post.objects.filter(id=post_id).exists():
                 return Response({"type": "error", "message": "Post does not exist in our database"}, status=status.HTTP_400_BAD_REQUEST)
+
+            post = Post.objects.get(id=post_id)
+            # check if the author exists in our db
+            if Author.objects.filter(id=author_id).exists():
+                author = Author.objects.get(id=author_id)
+            else:
+                return Response({"type": "error", "message": "There's no relationship between the sending author and receiving author (none of them follow the other one)"}, status=status.HTTP_400_BAD_REQUEST)
+                # make a new author
+                # author = create_new_author(author_id, author_data)
+                # author.save()
+
+           
+
+            
             
             if 'comment' in object_url:
                 # do checks for comment like
