@@ -30,6 +30,7 @@ function SharePost(props) {
     // clone the post content type: https://www.samanthaming.com/tidbits/70-3-ways-to-clone-objects/
     const clonePost = JSON.parse(JSON.stringify(props.postContent));
     clonePost.source = props.author.id;
+    clonePost.categories = [];
     // clonePost.source = props.author; // idk if this is how it's supposed to be
     console.log(clonePost);
     if (shareInput == "PUBLIC"){
