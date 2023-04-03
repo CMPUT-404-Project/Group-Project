@@ -11,6 +11,9 @@ import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from "@mui/material/IconButton";
 
 import LikeComment from './author_inbox/LikeComment.js';
+import { object_is_local } from './helper_functions';
+import { determine_headers } from './helper_functions';
+import { determine_inbox_endpoint } from './helper_functions';
 
 
 function AddComment( props ) {
@@ -49,6 +52,7 @@ function AddComment( props ) {
       type:"comment",
       contentType: "text/plain",
       comment:"",
+
     })
     // setShow(false)
   }
@@ -57,7 +61,9 @@ function AddComment( props ) {
   const handleSubmit = () => {
     // if (!content) return;
     console.log(props)
-    axios.post(
+    if (object_is_local(props.postContent.author.id))
+    { console.log("Local Post")
+      axios.post(
       `${props.postContent.id}/comments`,
       {
         author: props.author,
@@ -73,6 +79,7 @@ function AddComment( props ) {
         }}).then(function (response) {
           // response.data.type = "comment";
           // response.id = response.id;
+          console.log(response.data)
           axios.post(
             `${props.postContent.author.id}/inbox/`,
             response.data,
@@ -90,6 +97,32 @@ function AddComment( props ) {
             //   discardContent();
             // })
           });
+        }
+      else{
+        console.log("Foreign Post")
+        axios.post( props.postContent.author.id + determine_inbox_endpoint(props.postContent.author.id), 
+        {
+          author: props.author,
+          type: contactInfo.type,
+          contentType: contactInfo.contentType,
+          id: props.postContent.id + '/comments',
+          comment: contactInfo.comment,
+        }, 
+        { 
+          headers: determine_headers(props.postContent.author.id)
+        }) 
+        .then(function (response)
+        {
+          console.log(response);
+          discardContent();
+          handleClose();
+        })
+        .catch(function (error) 
+        {
+          console.log(error);
+        });
+
+      }
   };
 
   return (
