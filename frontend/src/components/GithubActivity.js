@@ -11,7 +11,7 @@ function GithubActivity({userID}) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
 
-  useEffect(() => handleClick(),[]);
+  // useEffect(() => handleClick(),[]);
 
   const handleClick = () => {
     fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
@@ -23,7 +23,8 @@ function GithubActivity({userID}) {
     })
       .then(response => response.json())
       .then(data => {
-        setActivity(data);
+        // setActivity(data);
+        setActivity([]);
       })
       .catch(error => {
         console.error(error);
