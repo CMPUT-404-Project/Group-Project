@@ -49,33 +49,66 @@ function FollowAuthor(props) {
                     "object": response.data,
                 };
                 console.log(response.data);
-                axios.get("https://distributed-social-net.herokuapp.com/service/authors").then((list_of_authors) => {
-                    console.log(list_of_authors.data)
-                    let list_of_authors_filtered = list_of_authors.data.items.filter((oneAuthor) => oneAuthor.id===contactInfo.id);
-                    console.log(list_of_authors_filtered)
-                    if (list_of_authors_filtered){
+                if (object_is_local(contactInfo.id)){
+                    axios.post(
+                        response.data.id + determine_inbox_endpoint(response.data.id),
+                        request_body,
+                        {headers:{
+                            'Accept': '*/*',
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Basic ' + props.authString
+                        }}
+                    )
+                } else {
+                    console.log("WE POST TO OUR SENDREQUEST ENDPOINT");
+                    axios.post(
+                        props.author.id + '/sendrequest/',
+                        response.data,
+                        {headers:{
+                            'Accept': '*/*',
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Basic ' + props.authString
+                        }}
+                    ).then( sendRequestResponse => {
+                        sendRequestResponse.data.follow_request.type = "follow";
+                        console.log("WE SEND THE REQUEST TO THEM");
+                        console.log(sendRequestResponse.data);
                         axios.post(
+                            // response.data.id + '/inbox/', // url for our database
                             response.data.id + determine_inbox_endpoint(response.data.id),
-                            request_body,
-                            {headers:request_headers}
+                            sendRequestResponse.data.follow_request,
+                            {headers:determine_headers(contactInfo.id)}
                         )
-                    } else {
-                        axios.post(
-                            props.author.id + '/sendrequest/',
-                            response.data,
-                            {headers:request_headers}
-                        ).then( sendRequestResponse => {
-                            sendRequestResponse.data.follow_request.type = "follow";
-                            console.log(sendRequestResponse.data);
-                            axios.post(
-                                // response.data.id + '/inbox/', // url for our database
-                                response.data.id + determine_inbox_endpoint(response.data.id),
-                                sendRequestResponse.data.follow_request,
-                                {headers:determine_headers(contactInfo.id)}
-                            )
-                        });
-                    }
-                })
+                    });
+                }
+                
+                // axios.get("https://distributed-social-net.herokuapp.com/service/authors").then((list_of_authors) => {
+                //     console.log(list_of_authors.data)
+                //     let list_of_authors_filtered = list_of_authors.data.items.filter((oneAuthor) => oneAuthor.id===contactInfo.id);
+                //     console.log(list_of_authors_filtered)
+                //     if (list_of_authors_filtered){
+                //         axios.post(
+                //             response.data.id + determine_inbox_endpoint(response.data.id),
+                //             request_body,
+                //             {headers:request_headers}
+                //         )
+                //     } else {
+                //         axios.post(
+                //             props.author.id + '/sendrequest/',
+                //             response.data,
+                //             {headers:request_headers}
+                //         ).then( sendRequestResponse => {
+                //             sendRequestResponse.data.follow_request.type = "follow";
+                //             console.log(sendRequestResponse.data);
+                //             axios.post(
+                //                 // response.data.id + '/inbox/', // url for our database
+                //                 response.data.id + determine_inbox_endpoint(response.data.id),
+                //                 sendRequestResponse.data.follow_request,
+                //                 {headers:determine_headers(contactInfo.id)}
+                //             )
+                //         });
+                //     }
+                // })
                 // if (object_is_local(contactInfo.id)){
                     
                 // } else {

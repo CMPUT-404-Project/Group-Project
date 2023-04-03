@@ -50,7 +50,7 @@ export function determine_inbox_endpoint(url_request){
         return "/inbox/"
     } else {
         /**
-         * floating-fjord-51978.herokuapp.com
+         * floating-fjord-51978.herokuapp.com: team 19
          * socialdistcmput404.herokuapp.com
          * 
          */

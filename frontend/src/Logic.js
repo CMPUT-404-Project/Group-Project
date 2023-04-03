@@ -21,19 +21,37 @@ async function getGithub(userID){
 async function updateFollowing(authorObject, authstring){
     axios.get(authorObject.id+"/sendrequest/", {headers:{Authorization:'Basic ' + authstring}})
     .then((resp) => {
-        console.log(resp.data.items);
+        // console.log("AUTHORS IM TRYING TO FOLLOW");
+        // console.log(resp.data.items);
         var authors_im_trying_to_follow = resp.data.items.filter((oneRequest) => oneRequest.actor.id===authorObject.id)
                                             .filter((oneRequest) => !oneRequest.status)
                                             .map((oneRequest) => oneRequest.object);
+        // console.log("AUTHORS IM TRYING TO FOLLOW FILTERED");
+        // console.log(authors_im_trying_to_follow);
         for (let i=0; i<authors_im_trying_to_follow.length; i++){
-            // get that person's followers
+            // get that person's followers\
             axios.get(
-                authors_im_trying_to_follow[i].id+'/followers/',
+                authors_im_trying_to_follow[i].id+'/followers',
                 {headers:determine_headers(authors_im_trying_to_follow[i].id)}
             ).then(resp => {
                 // if I am in resp.data.items, set the status to true
+                // console.log("CHECKING FOLLOWERS OF ");
+                // console.log(authors_im_trying_to_follow[i]);
+                // console.log(resp.data);
+                // console.log(resp.data.items.map(oneAuthor => oneAuthor.id));
+                // console.log(authorObject.id);
+                // console.log(resp.data.items.map(oneAuthor => oneAuthor.id).includes(authorObject.id));
+                // console.log("BODY OF THE REQUEST");
+                // console.log(authors_im_trying_to_follow[i]);
                 if(resp.data.items.map(oneAuthor => oneAuthor.id).includes(authorObject.id)){
                     // send a put request to the followers endpoint
+                    // console.log("YO WHAT THE FUCK");
+                    // console.log(resp.data.items[i]);
+                    axios.post(
+                        authorObject.id+"/sendrequest/",
+                        authors_im_trying_to_follow[i],
+                        {headers:{Authorization:"Basic " + authstring}}
+                    ).then(e => console.log("DONE FOLLOWING")).catch(e => console.log("EPIC FAIL!"));
                 }
                 // if (resp.data.items.includes()
             });

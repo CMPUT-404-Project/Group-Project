@@ -78,10 +78,6 @@ function Post(props) {
             <ListGroup.Item>
                 {/* <img width="100px" src="https://i.imgur.com/k7XVwpB.jpeg" /> */}
                 <AuthorInfo author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
-                <Card.Link 
-                  href={props.postObject.author.url}>{props.postObject.author.displayName} 
-                  {/* onChange={(e) => } */}
-                </Card.Link>
                 {/* | */}
                 {/* <Card.Link href={props.postObject.author.github}>Github</Card.Link> */}
             </ListGroup.Item>
