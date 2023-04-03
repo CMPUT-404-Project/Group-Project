@@ -36,7 +36,8 @@ function LikeComment(props) {
     const processLikeClick = () => {
         //console.log(props.author.id) //this is me
         //console.log(message.author.id) //this is the author of the post i am seeing in my inbox
-        
+        const vis = props.vis.toLowerCase();
+      
         // '//service' doesn't work
         if (!hasLiked) {
             setLiked(true);
@@ -46,6 +47,7 @@ function LikeComment(props) {
             if (Object.keys(headers).length === 0) {
               headers = {Authorization: "Basic " + props.authString};
             }
+            if (vis === "public") {
             axios.post(
                 url,
                 {
@@ -75,8 +77,42 @@ function LikeComment(props) {
                                 setHasLiked(true);;
                                 }
             ).catch(error => {console.log(error);});
-        }
-    };
+          }
+
+          else if (vis === 'friends' || vis === 'private') {
+            const sub = comm.id.substring(comm.id.indexOf('/authors'));
+            axios.post('https://distributed-social-net.herokuapp.com/service'+sub+'/likes',{author: props.author})
+            .then(response => {
+              console.log('like:', response.data);
+              const like = response.data;
+
+              axios.post(
+                url,
+                like,
+                { headers }
+              ).then(response => {console.log('sent to inbox');
+                                  setLikes([...likes, { author: props.author }])
+                                  setHasLiked(true);;
+                                  }
+              ).catch(error => {console.log(error);});
+              
+              axios.post(
+                  `${comm.author.id}/inbox`,
+                  like,
+                  { headers }
+              ).then(response => {console.log('sent to inbox');
+                                  setLikes([...likes, { author: props.author }])
+                                  setHasLiked(true);;
+                                  }
+              ).catch(error => {console.log(error);});
+              
+              })
+            .catch(error => {
+              console.error('Error liking comment:', error);
+            });
+          };
+      }
+    }
 
     const handleLikesListClick = () => {
         setShowLikesList(!showLikesList);

@@ -90,38 +90,38 @@ function LikePost(props) {
               ).catch(error => {console.log(error);});
           }
 
-        else if (vis === 'friends' || vis === 'private') {
-          const sub = props.message.id.substring(props.message.id.indexOf('/service'));
-          axios.post('https://distributed-social-net.herokuapp.com'+sub+'/likes',{author: props.author})
-          .then(response => {
-            console.log('like:', response.data);
-            const like = response.data;
+          else if (vis === 'friends' || vis === 'private') {
+            const sub = props.message.id.substring(props.message.id.indexOf('/authors'));
+            axios.post('https://distributed-social-net.herokuapp.com/service'+sub+'/likes',{author: props.author})
+            .then(response => {
+              console.log('like:', response.data);
+              const like = response.data;
 
-            axios.post(
-              url,
-              like,
-              { headers }
-            ).then(response => {console.log('sent to inbox');
-                                setLikes([...likes, { author: props.author }])
-                                setHasLiked(true);;
-                                }
-            ).catch(error => {console.log(error);});
-            
-            axios.post(
-                `${props.message.author.id}/inbox`,
+              axios.post(
+                url,
                 like,
                 { headers }
-            ).then(response => {console.log('sent to inbox');
-                                setLikes([...likes, { author: props.author }])
-                                setHasLiked(true);;
-                                }
-            ).catch(error => {console.log(error);});
-            
-            })
-          .catch(error => {
-            console.error('Error liking post:', error);
-          });
-        } 
+              ).then(response => {console.log('sent to inbox');
+                                  setLikes([...likes, { author: props.author }])
+                                  setHasLiked(true);;
+                                  }
+              ).catch(error => {console.log(error);});
+              
+              axios.post(
+                  `${props.message.author.id}/inbox`,
+                  like,
+                  { headers }
+              ).then(response => {console.log('sent to inbox');
+                                  setLikes([...likes, { author: props.author }])
+                                  setHasLiked(true);;
+                                  }
+              ).catch(error => {console.log(error);});
+              
+              })
+            .catch(error => {
+              console.error('Error liking post:', error);
+            });
+          }
     };
   }
     const handleLikesListClick = () => {
