@@ -10,6 +10,7 @@ import AuthorInbox from './author_inbox/AuthorInbox';
 import { gatherAll } from '../Logic';
 import UserProfile from './user_profile/UserProfile';
 import GithubActivity from './GithubActivity';
+import { useState } from 'react';
 
 function Navigation(props) {
   // if (!props.loggedin){
@@ -23,6 +24,7 @@ function Navigation(props) {
   //     </Navbar>
   //   )
   // } else {
+    const [authorToDisplay, setAuthorToDisplay] = useState(props.author);
     console.log(props.author);
     return (
       <Navbar sticky="top" bg="success" variant="dark">
@@ -40,8 +42,8 @@ function Navigation(props) {
                                                       .then(result => props.setPostItems(result))}>
             ⟳</Button>
           {/* <Nav.Link>{props.author.displayName}</Nav.Link> */}
-          <UserProfile authString={props.authString} author={props.author} postContent={props.postObject} setPostItems={props.setPostItems} />
-          <img src={props.author.profileImage} width="30" height="30" style={ {borderRadius: "20px" }}/>
+          <UserProfile setAuthorToDisplay={setAuthorToDisplay} authorToDisplay={authorToDisplay}  authString={props.authString} author={props.author} postContent={props.postObject} setPostItems={props.setPostItems} />
+          <img src={authorToDisplay.profileImage} width="30" height="30" style={ {borderRadius: "20px" }}/>
         
 
         </Nav>

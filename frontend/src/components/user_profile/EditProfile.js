@@ -18,9 +18,9 @@ function EditProfile(props) {
         id: props.author.id,
         url: props.author.id,
         host: props.author.id,
-        displayName: props.author.displayName,
-        github: props.author.github,
-        profileImage: props.author.profileImage,
+        displayName: props.authorToDisplay.displayName,
+        github: props.authorToDisplay.github,
+        profileImage: props.authorToDisplay.profileImage,
       });
 
     const discardChanges = () => {
@@ -29,9 +29,9 @@ function EditProfile(props) {
             id: props.author.id,
             url: props.author.id,
             host: props.author.id,
-            displayName: props.author.displayName,
-            github: props.author.github,
-            profileImage: props.author.profileImage,
+            displayName: props.authorToDisplay.displayName,
+            github: props.authorToDisplay.github,
+            profileImage: props.authorToDisplay.profileImage,
         })
         setShow(false)
       }
@@ -64,6 +64,7 @@ function EditProfile(props) {
                 ...props.author,
                 displayName: userInfo.displayName,
                 github: userInfo.github,
+                profileImage: userInfo.profileImage
               }
             );
             handleClose();
