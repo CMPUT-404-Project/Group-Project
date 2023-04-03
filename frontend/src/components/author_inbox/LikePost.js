@@ -177,7 +177,7 @@ function LikePost(props) {
                 <li key={index}>{like.author.displayName}</li>
               ))}
             </ul>
-          )} */}
+          )}
         </div>
       
       );
