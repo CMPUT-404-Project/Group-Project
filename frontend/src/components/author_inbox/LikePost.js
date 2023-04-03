@@ -92,7 +92,7 @@ function LikePost(props) {
 
         else if (vis === 'friends' || vis === 'private') {
           const sub = props.message.id.substring(props.message.id.indexOf('/service'));
-          axios.post('https://distributed-social-net.herokuapp.com'+sub+'/likes')
+          axios.post('https://distributed-social-net.herokuapp.com'+sub+'/likes',{author: props.author})
           .then(response => {
             console.log('like:', response.data);
             const like = response.data;
@@ -118,12 +118,12 @@ function LikePost(props) {
             ).catch(error => {console.log(error);});
             
             })
-            .catch(error => {
-              console.error('Error liking post:', error);
-            });
+          .catch(error => {
+            console.error('Error liking post:', error);
+          });
         } 
     };
-
+  }
     const handleLikesListClick = () => {
         setShowLikesList(!showLikesList);
     }
@@ -155,6 +155,8 @@ function LikePost(props) {
       //       </ul>
       //     )}
       //   </div>
+
+
       <div className="like-post">
           <Button variant="outline-success" onClick={processLikeClick}
             className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
@@ -176,9 +178,10 @@ function LikePost(props) {
             </ul>
           )}
         </div>
+      
       );
       
-}
+  
 }
 
 export default LikePost;
