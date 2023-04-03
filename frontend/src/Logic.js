@@ -32,14 +32,16 @@ async function updateFollowing(authorObject, authstring){
                 {headers:determine_headers(authors_im_trying_to_follow[i].id)}
             ).then(resp => {
                 // if I am in resp.data.items, set the status to true
-                console.log(resp.data.items);
+                if(resp.data.items.map(oneAuthor => oneAuthor.id).includes(authorObject.id)){
+                    // send a put request to the followers endpoint
+                }
+                // if (resp.data.items.includes()
             });
             // if (object_is_local(authors_im_trying_to_follow[i].id)){
             //     axios.get(authors_im_trying_to_follow[i].id+'/followers/',{headers:determine_headers(authors_im_trying_to_follow[i].id)})
             // }
             // check if I'm in it
             // if yes, set this row in the table to true
-
         }
     })
 }
