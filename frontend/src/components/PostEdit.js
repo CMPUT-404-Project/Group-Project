@@ -6,6 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { gatherAll } from '../Logic';
+import IconButton from "@mui/material/IconButton";
+import EditIcon from '@mui/icons-material/Edit';
 
 function PostEdit(props) {
 
@@ -60,10 +62,12 @@ function PostEdit(props) {
 
   return (
     <>
-      <Button variant="outline-secondary" onClick={handleShow}>
+      {/* <Button variant="outline-secondary" onClick={handleShow}>
         Edit
-      </Button>
-
+      </Button> */}
+      <IconButton size="large" onClick={handleShow}>
+        <EditIcon/>
+    </IconButton>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Post</Modal.Title>
