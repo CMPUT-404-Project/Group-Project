@@ -45,6 +45,7 @@ function LikePost(props) {
         //console.log(props.author.id) //this is me
         //console.log(message.author.id) //this is the author of the post i am seeing in my inbox
         console.log(message.id)
+        const vis = message.visibility.toLowerCase();
         // '//service' doesn't work
         if (!hasLiked) {
             setLiked(true);
@@ -56,15 +57,50 @@ function LikePost(props) {
               headers = {Authorization: "Basic " + props.authString};
             }
             console.log(headers)
+            if (vis === "public") {
+
+              axios.post(
+                  url,
+                  {
+                      type: 'like',
+                      author: props.author,
+                      object: message.id,
+                      summary: `${props.author.displayName} likes your post`
+                  },
+                  { headers }
+              ).then(response => {console.log('sent to inbox');
+                                  setLikes([...likes, { author: props.author }])
+                                  setHasLiked(true);;
+                                  }
+              ).catch(error => {console.log(error);});
+              
+              axios.post(
+                  `${props.message.author.id}/inbox`,
+                  {
+                      type: 'like',
+                      author: props.author,
+                      object: message.id,
+                      summary: `${props.author.displayName} likes your post`
+                  },
+                  { headers }
+              ).then(response => {console.log('sent to inbox');
+                                  setLikes([...likes, { author: props.author }])
+                                  setHasLiked(true);;
+                                  }
+              ).catch(error => {console.log(error);});
+          }
+
+        else if (vis === 'friends' || vis === 'private') {
+          const sub = props.message.id.substring(props.message.id.indexOf('/service'));
+          axios.post('https://distributed-social-net.herokuapp.com'+sub+'/likes')
+          .then(response => {
+            console.log('like:', response.data);
+            const like = response.data;
+
             axios.post(
-                url,
-                {
-                    type: 'like',
-                    author: props.author,
-                    object: message.id,
-                    summary: `${props.author.displayName} likes your post`
-                },
-                { headers }
+              url,
+              like,
+              { headers }
             ).then(response => {console.log('sent to inbox');
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
@@ -73,19 +109,19 @@ function LikePost(props) {
             
             axios.post(
                 `${props.message.author.id}/inbox`,
-                {
-                    type: 'like',
-                    author: props.author,
-                    object: message.id,
-                    summary: `${props.author.displayName} likes your post`
-                },
+                like,
                 { headers }
             ).then(response => {console.log('sent to inbox');
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
                                 }
             ).catch(error => {console.log(error);});
-        }
+            
+            })
+            .catch(error => {
+              console.error('Error liking post:', error);
+            });
+        } 
     };
 
     const handleLikesListClick = () => {
@@ -142,6 +178,7 @@ function LikePost(props) {
         </div>
       );
       
+}
 }
 
 export default LikePost;
