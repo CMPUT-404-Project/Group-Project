@@ -106,7 +106,7 @@ async function gatherAll(authorObject, authString){
             } catch (error){
                 console.log(error)
             } finally {
-                total_posts = total_posts.concat(local_post.data.items);
+                total_posts = total_posts.concat(local_post.data.items.filter((onePost) => onePost.visibility==="PUBLIC"));
             }
         }
 
@@ -128,7 +128,7 @@ async function gatherAll(authorObject, authString){
                     {
                         headers: determine_headers(local_authors_from_team21[i].id)
                     });
-                    total_posts = total_posts.concat(local_post.data.posts);
+                    total_posts = total_posts.concat(local_post.data.posts.filter((onePost) => onePost.visibility==="PUBLIC"));
             } catch (error){
                 console.log(error)
             }
@@ -186,13 +186,13 @@ async function gatherAll(authorObject, authString){
                     headers: determine_headers(local_authors_from_team21[i].id)
                 });
                 console.log(local_post);
-            total_posts = total_posts.concat(local_post.data.items);
+            total_posts = total_posts.concat(local_post.data.items.filter((onePost) => onePost.visibility==="PUBLIC"));
             } catch (error) {
                 console.log(error);
             }
         }
         // filter by public post
-        total_posts = total_posts.filter(onePost => onePost.visibility==="PUBLIC");
+        // total_posts = total_posts.filter(onePost => onePost.visibility==="PUBLIC");
         // combine it with the github activities
         total_posts = total_posts.concat(githubActivities);
         console.log(total_posts);
