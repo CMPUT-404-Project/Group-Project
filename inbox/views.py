@@ -317,10 +317,9 @@ class InboxDetail(APIView):
     @swagger_auto_schema(operation_description="Get inbox of the current author", responses={200: InboxSerializer(many=True)})
     def get(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
-        # if not request.user.is_authenticated:
-        #     return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
-        # if request.user.id != author.user.id:
-        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_400_BAD_REQUEST) 
+        if not request.user.is_authenticated:
+            return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+        
         
         inbox_object = Inbox.objects.filter(author=author)
         inbox_data = [ser_inbox_items(item) for item in inbox_object]
@@ -342,10 +341,9 @@ class InboxDetail(APIView):
     @swagger_auto_schema(operation_description="Delete inbox of the current author", responses={200: "type: success, message: Inbox deleted"})
     def delete(self, request, author_id):
         author = get_object_or_404(Author, id=author_id)
-        # if not request.user.is_authenticated:
-        #     return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
-        # if request.user.id != author.user.id:
-        #     return Response({"type": "error", "message": "Not authorized"}, status=status.HTTP_400_BAD_REQUEST) 
+        if not request.user.is_authenticated:
+            return Response({"type": "error", "message": "Not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+       
         
         inbox_object = Inbox.objects.all().filter(author=author)
         inbox_object.delete()
