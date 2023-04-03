@@ -33,7 +33,9 @@ function Navigation(props) {
           <AuthorLookup authString={props.authString} author={props.author} />
           <AuthorInbox authString={props.authString} author={props.author} />
           <GithubActivity userID={props.author.id}/>
-          <Button variant="success" onClick={() => gatherAll(props.author, props.authString)}>Refresh</Button>
+          <Button variant="success" onClick={() => gatherAll(props.author, props.authString)
+                                                      .then(result => props.setPostItems(result))}>
+            Refresh</Button>
         </Nav>
         <Nav className="ml-auto">
           {/* <Nav.Link>{props.author.displayName}</Nav.Link> */}

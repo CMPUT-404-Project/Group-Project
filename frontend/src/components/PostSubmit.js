@@ -185,11 +185,11 @@ function PostSubmit(props) {
   };
 
   return (
-    <>
+    <div style={{"zIndex": "1000", "position": "fixed", "bottom": "15px", "right": "15px"}}>
       {/* <Button variant="dark" onClick={handleShow}>
         Create Post
       </Button> */}
-      <IconButton size="large" onClick={handleShow}>
+      <IconButton color={"primary"} size="large" onClick={handleShow}>
         <PostAddIcon/>
     </IconButton>
       <Modal show={show} onHide={handleClose}>
@@ -296,7 +296,7 @@ function PostSubmit(props) {
             </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </div>
   );
 }
 
