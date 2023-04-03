@@ -73,7 +73,7 @@ function App() {
 
   if(loggedin === false) {
     return(
-      <div className="App">
+      <div className="App" >
         {/* <Navigation loggedin={loggedin}/> */}
         <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
         <LoginForm setAuthString={setAuthString} setUserID={setUserID} setLoggedin={setLoggedin}/>
@@ -83,7 +83,7 @@ function App() {
 
   else if (loggedin === true) {
     return (
-      <div className="App">
+      <div className="App" style={{background:"#85AB8B"}}>
         <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems} currPosts={postItems}/>
 
         {/* Author Actions */}
@@ -93,7 +93,7 @@ function App() {
         <AuthorInbox authString={authString} author={userID} /> */} 
         <div style={{
           margin:'auto',
-          width: '90%',
+          width: '50%',
           }}>
           {postItemComponents}
         </div>

@@ -109,7 +109,7 @@ function AuthorInbox(props) {
     
     return (
         <>
-        <Button variant="dark" onClick={handleShow}>
+        <Button variant="success" onClick={handleShow}>
           Inbox
         </Button>
   

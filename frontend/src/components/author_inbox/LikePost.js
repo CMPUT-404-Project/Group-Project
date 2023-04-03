@@ -156,7 +156,8 @@ function LikePost(props) {
       //     )}
       //   </div>
       <div className="like-post">
-          <Button variant="outline-success" onClick={processLikeClick}
+        <Button>fasd</Button>
+          {/* <Button variant="outline-success" onClick={processLikeClick}
             className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
             {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
           </Button>
@@ -174,7 +175,7 @@ function LikePost(props) {
                 <li key={index}>{like.author.displayName}</li>
               ))}
             </ul>
-          )}
+          )} */}
         </div>
       );
       
