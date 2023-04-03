@@ -25,7 +25,6 @@ function PostDelete(props) {
         .then(function (response) {
                     gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
                     handleClose();
-                    
             })
         }
     

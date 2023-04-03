@@ -40,7 +40,7 @@ function Post(props) {
     extra_buttons = (
       <>
         <PostEdit authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
-        <PostDelete author={props.author}  postContent={props.postObject} setPostItems={props.setPostItems}/>
+        <PostDelete author={props.author} authString={props.authString}  postContent={props.postObject} setPostItems={props.setPostItems}/>
       </>
     )
   } else {
