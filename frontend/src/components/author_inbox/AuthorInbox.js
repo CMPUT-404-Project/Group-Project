@@ -59,7 +59,7 @@ function AuthorInbox(props) {
           Inbox
         </Button>
   
-        <Modal show={show} onHide={handleClose} fullscreen={true} centered>
+        <Modal show={show} onHide={handleClose} size="xl" centered>
           <Modal.Header closeButton>
             <Modal.Title>Inbox</Modal.Title>
           </Modal.Header>
