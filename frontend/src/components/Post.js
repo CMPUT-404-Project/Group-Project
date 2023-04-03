@@ -61,7 +61,7 @@ function Post(props) {
             <AddComment author={props.author} authString={props.authString} postContent={props.postObject} setPostItems={props.setPostItems}/>
             
             {/* <LikePost  message={props.message} author={props.postObject.author} authString={props.authString} /> */}
-            <LikePost message={props.postObject} author={props.author}/>
+            <LikePost message={props.postObject} author={props.author} authString={props.authString} />
           </Card.Body>
 
           <ListGroup variant="flush">

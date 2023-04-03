@@ -8,7 +8,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import './likestyle.css';
 
-
+import { determine_headers } from '../helper_functions';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 function LikePost(props) {
@@ -48,14 +48,22 @@ function LikePost(props) {
         if (!hasLiked) {
             setLiked(true);
             setHasLiked(true);
+
+            const url = `${props.message.author.id}/inbox/`;
+            var headers = determine_headers(url);
+            if (Object.keys(headers).length === 0) {
+              headers = {Authorization: "Basic " + props.authString};
+            }
+            console.log(headers)
             axios.post(
-                `${props.message.author.id}/inbox/`,
+                url,
                 {
                     type: 'like',
                     author: props.author,
                     object: message.id,
                     summary: `${props.author.displayName} likes your post`
                 },
+                { headers }
             ).then(response => {console.log('sent to inbox');
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
@@ -70,6 +78,7 @@ function LikePost(props) {
                     object: message.id,
                     summary: `${props.author.displayName} likes your post`
                 },
+                { headers }
             ).then(response => {console.log('sent to inbox');
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
