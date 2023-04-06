@@ -18,7 +18,7 @@ function LikeComment(props) {
     var url = `${comm.id}/likes`;
     var headers = determine_headers(url);
     // const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
-    const inbox = determine_inbox_endpoint(url);
+   
     
     useEffect(() => {
         axios.get(url, { headers })
@@ -31,7 +31,7 @@ function LikeComment(props) {
     }, []);
     
     useEffect(() => {
-        if (likes.length > 0) {
+        if (likes && likes.length > 0) {
             setLiked(likes.some(like => like.author.id === props.author.id));
             setHasLiked(likes.some(like => like.author.id === props.author.id));
         }
@@ -48,6 +48,8 @@ function LikeComment(props) {
             setLiked(true);
             setHasLiked(true);
             const post = props.post;
+            var uri = `${comm.author.id}`;
+            var inbox = determine_inbox_endpoint(uri);
             var url = `${comm.author.id}${inbox}`;
             
             var headers = determine_headers(url);
@@ -72,7 +74,9 @@ function LikeComment(props) {
                                 }
             ).catch(error => {if (error.response && error.response.data.message === "Post does not exist in our database"){
                                 console.log('error handling');
-                                var uri = `${post.author.id}${inbox}`;
+                                uri = `${post.author.id}`;
+                                inbox = determine_inbox_endpoint(uri);
+                                uri = `${post.author.id}${inbox}`;
                                 var header = determine_headers(uri);
                                 console.log('headers are here>');
                                 console.log(header);
@@ -134,7 +138,7 @@ function LikeComment(props) {
             className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
             {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
           </IconButton>
-          {likes.length >= 0 && (
+          {likes && likes.length >= 0 && (
             <div
               className="like-count"
               onMouseEnter={() => setShowLikesList(!showLikesList)}

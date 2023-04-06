@@ -25,7 +25,6 @@ function LikePost(props) {
     const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
     var url = `${props.message.id}/likes`;
     var headers = determine_headers(url);
-    const inbox = determine_inbox_endpoint(url);
     
     useEffect(() => {
         axios.get(url, { headers })
@@ -57,6 +56,8 @@ function LikePost(props) {
             setLiked(true);
             setHasLiked(true);
 
+            var uri = `${props.message.author.id}`;
+            const inbox = determine_inbox_endpoint(uri);
             var url = `${props.message.author.id}${inbox}`;
             var headers = determine_headers(url);
             if (Object.keys(headers).length === 0) {
