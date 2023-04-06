@@ -12,7 +12,7 @@ This blogging/social network platform will allow the importing of other sources 
 For more information about the project description refer to [project orgs](https://github.com/CMPUT-404-Project/Group-Project/blob/main/project.org).
 
 # Servers 
-- [Frontend]()
+- [Frontend](https://social-team-18.netlify.app/)
 - [Backend](https://distributed-social-net.herokuapp.com/)
 - [API Docs](https://distributed-social-net.herokuapp.com/)
 
