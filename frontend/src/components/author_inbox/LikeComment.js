@@ -87,7 +87,7 @@ function LikeComment(props) {
                                 axios.post(
                                   uri,
                                   {
-                                      type: 'Like',
+                                      type: 'like',
                                       author: props.author,
                                       object: comm.id,
                                       summary: `${props.author.displayName} likes a comment on your post`
