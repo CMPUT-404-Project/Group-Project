@@ -15,11 +15,12 @@ function LikeComment(props) {
     const [showLikesList, setShowLikesList] = useState(false);
 
     const comm = props.comment;
-    
+    var url = `${comm.id}/likes`;
+    var headers = determine_headers(url);
     // const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
     
     useEffect(() => {
-        axios.get(`${comm.id}/likes`)
+        axios.get(url, { headers })
             .then(response => {
                 setLikes(response.data.items);
             })
@@ -45,12 +46,13 @@ function LikeComment(props) {
         if (!hasLiked) {
             setLiked(true);
             setHasLiked(true);
-            const url = `${comm.author.id}/inbox/`;
+            var url = `${comm.author.id}/inbox/`;
             var headers = determine_headers(url);
             if (Object.keys(headers).length === 0) {
               headers = {Authorization: "Basic " + props.authString};
             }
             if (vis === "public") {
+            console.log('here');
             axios.post(
                 url,
                 {

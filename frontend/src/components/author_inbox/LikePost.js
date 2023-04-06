@@ -23,9 +23,11 @@ function LikePost(props) {
 
     const message = props.message;
     const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
+    var url = `${props.message.id}/likes`;
+    var headers = determine_headers(url);
     
     useEffect(() => {
-        axios.get(`${props.message.id}/likes`)
+        axios.get(url, { headers })
             .then(response => {
                 if (response.data.items){
                     setLikes(response.data.items);
@@ -54,7 +56,7 @@ function LikePost(props) {
             setLiked(true);
             setHasLiked(true);
 
-            const url = `${props.message.author.id}/inbox/`;
+            var url = `${props.message.author.id}/inbox/`;
             var headers = determine_headers(url);
             if (Object.keys(headers).length === 0) {
               headers = {Authorization: "Basic " + props.authString};
