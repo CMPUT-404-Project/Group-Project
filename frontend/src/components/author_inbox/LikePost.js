@@ -36,7 +36,7 @@ function LikePost(props) {
             .catch(error => {
                 console.log(error);
             });
-    }, [hasLiked]);
+    }, []);
     
     useEffect(() => {
         if (likes.length > 0) {
