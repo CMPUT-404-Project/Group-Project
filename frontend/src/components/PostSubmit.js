@@ -135,6 +135,8 @@ function PostSubmit(props) {
                           </Form.Group>
  }
 
+ var new_new_post_object;
+
   const submitPost = () => {
     var body_of_request = {
       title: contactInfo.title,
@@ -163,6 +165,7 @@ function PostSubmit(props) {
       }).then((response) => response.json()).then( (resp) => {
         // if friends: send to your follower's inbox
         // console.log(resp);
+        new_new_post_object = resp;
         if (contactInfo.visibility === "FRIENDS")
         { // send to followers
           axios.get(props.author.id + '/followers/').then((response) => {
@@ -179,6 +182,7 @@ function PostSubmit(props) {
         }
       ).then(function (response) {
         // After Making a post, refresh the main page
+        props.setPostItems([new_new_post_object, ...props.postItems]);
         gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
         discardContent();
       });

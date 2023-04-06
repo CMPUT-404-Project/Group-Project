@@ -87,7 +87,7 @@ function App() {
         <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems} currPosts={postItems}/>
 
         {/* Author Actions */}
-        <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
+        <PostSubmit authString={authString} author={userID} postItems={postItems} setPostItems={setPostItems}/>
         
         {/* <AuthorLookup authString={authString} author={userID} />
         <AuthorInbox authString={authString} author={userID} /> */} 
