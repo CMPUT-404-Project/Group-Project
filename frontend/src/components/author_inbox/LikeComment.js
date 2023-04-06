@@ -7,6 +7,8 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 function LikeComment(props) {
     const [liked, setLiked] = useState(false);
@@ -23,7 +25,9 @@ function LikeComment(props) {
     useEffect(() => {
         axios.get(url, { headers })
             .then(response => {
+              if (response.data.items){
                 setLikes(response.data.items);
+            }
             })
             .catch(error => {
                 console.log(error);
@@ -83,7 +87,7 @@ function LikeComment(props) {
                                 axios.post(
                                   uri,
                                   {
-                                      type: 'like',
+                                      type: 'Like',
                                       author: props.author,
                                       object: comm.id,
                                       summary: `${props.author.displayName} likes a comment on your post`
@@ -131,30 +135,43 @@ function LikeComment(props) {
         setShowLikesList(!showLikesList);
     }
 
-
+    var likesview = likes?.map((like) => (<p>{like.author.displayName}</p>))
     return (
-        <div className="like-post">
-        <IconButton variant="outline-success" onClick={processLikeClick}
-            className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
-            {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
-          </IconButton>
-          {likes && likes.length >= 0 && (
-            <div
-              className="like-count"
-              onMouseEnter={() => setShowLikesList(!showLikesList)}
-              onMouseLeave={() => setShowLikesList(!showLikesList)}
-            >
-              {likes.length}
-            </div>
-          )}
-          {showLikesList && (
-            <ul className="like-list2">
-              {likes.map((like, index) => (
-                <li key={index}>{like.author.displayName}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+        // <div className="like-post">
+        // <IconButton variant="outline-success" onClick={processLikeClick}
+        //     className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
+        //     {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
+        //   </IconButton>
+        //   {likes && likes.length >= 0 && (
+        //     <div
+        //       className="like-count"
+        //       onMouseEnter={() => setShowLikesList(!showLikesList)}
+        //       onMouseLeave={() => setShowLikesList(!showLikesList)}
+        //     >
+        //       {likes.length}
+        //     </div>
+        //   )}
+        //   {showLikesList && (
+        //     <ul className="like-list2">
+        //       {likes.map((like, index) => (
+        //         <li key={index}>{like.author.displayName}</li>
+        //       ))}
+        //     </ul>
+        //   )}
+        // </div>
+
+      <div className="like-post">    
+      <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="overlay-example">Like</Tooltip>}>
+      <IconButton variant="outline-success" onClick={processLikeClick} className={liked ? "liked" : "not-liked"}>
+          {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+      </IconButton>
+      </OverlayTrigger>
+
+      <OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="overlay-example">{likesview}</Tooltip>}>
+        <Button variant="outline">{likes.length}</Button>
+      </OverlayTrigger>
+
+      </div>
       );
 }
 
