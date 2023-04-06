@@ -46,7 +46,7 @@ function AddComment( props ) {
     
 
   useEffect(handleCommentView, [show]);
-  var commentView = comments?.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment} <LikeComment comment={comm} author={props.author} authString={props.authString} vis={props.postContent.visibility} /></Card.Body></Card>)
+  var commentView = comments?.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment} <LikeComment comment={comm} author={props.author} authString={props.authString} vis={props.postContent.visibility} post={props.postContent}/></Card.Body></Card>)
   
   
   const [content, setContent] = useState('');

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import axios from 'axios';
 import './likestyle.css';
-import { determine_headers } from '../helper_functions';
+import { determine_headers, determine_inbox_endpoint } from '../helper_functions';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import IconButton from "@mui/material/IconButton";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -18,6 +18,7 @@ function LikeComment(props) {
     var url = `${comm.id}/likes`;
     var headers = determine_headers(url);
     // const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
+    const inbox = determine_inbox_endpoint(url);
     
     useEffect(() => {
         axios.get(url, { headers })
@@ -46,13 +47,16 @@ function LikeComment(props) {
         if (!hasLiked) {
             setLiked(true);
             setHasLiked(true);
-            var url = `${comm.author.id}/inbox/`;
+            const post = props.post;
+            var url = `${comm.author.id}${inbox}`;
+            
             var headers = determine_headers(url);
+            
             if (Object.keys(headers).length === 0) {
               headers = {Authorization: "Basic " + props.authString};
             }
             if (vis === "public") {
-            console.log('here');
+            
             axios.post(
                 url,
                 {
@@ -66,26 +70,35 @@ function LikeComment(props) {
                                 setLikes([...likes, { author: props.author }])
                                 setHasLiked(true);;
                                 }
-            ).catch(error => {console.log(error);});
+            ).catch(error => {if (error.response && error.response.data.message === "Post does not exist in our database"){
+                                console.log('error handling');
+                                var uri = `${post.author.id}${inbox}`;
+                                var header = determine_headers(uri);
+                                console.log('headers are here>');
+                                console.log(header);
+                                axios.post(
+                                  uri,
+                                  {
+                                      type: 'like',
+                                      author: props.author,
+                                      object: comm.id,
+                                      summary: `${props.author.displayName} likes a comment on your post`
+                                  },
+                                  {headers: header}
+                                ).then(response => {console.log('sent to inbox');
+                                                  setLikes([...likes, { author: props.author }])
+                                                  setHasLiked(true);})
+
+                              } else {
+                                console.log(error);
+                              }
+                              });
             
-            axios.post(
-                `${comm.author.id}/inbox`,
-                {
-                    type: 'like',
-                    author: props.author,
-                    object: comm.id,
-                    summary: `${props.author.displayName} likes your comment`
-                },
-                { headers }
-            ).then(response => {console.log('sent to inbox');
-                                setLikes([...likes, { author: props.author }])
-                                setHasLiked(true);;
-                                }
-            ).catch(error => {console.log(error);});
           }
 
           else if (vis === 'friends' || vis === 'private') {
             const sub = comm.id.substring(comm.id.indexOf('/authors'));
+            console.log('in friends')
             axios.post('https://distributed-social-net.herokuapp.com/service'+sub+'/likes',{author: props.author})
             .then(response => {
               console.log('like:', response.data);
@@ -101,15 +114,6 @@ function LikeComment(props) {
                                   }
               ).catch(error => {console.log(error);});
               
-              axios.post(
-                  `${comm.author.id}/inbox`,
-                  like,
-                  { headers }
-              ).then(response => {console.log('sent to inbox');
-                                  setLikes([...likes, { author: props.author }])
-                                  setHasLiked(true);;
-                                  }
-              ).catch(error => {console.log(error);});
               
               })
             .catch(error => {

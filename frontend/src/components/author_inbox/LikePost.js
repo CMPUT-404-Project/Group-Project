@@ -9,7 +9,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 import './likestyle.css';
 
-import { determine_headers } from '../helper_functions';
+import { determine_headers, determine_inbox_endpoint } from '../helper_functions';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -25,6 +25,7 @@ function LikePost(props) {
     const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
     var url = `${props.message.id}/likes`;
     var headers = determine_headers(url);
+    const inbox = determine_inbox_endpoint(url);
     
     useEffect(() => {
         axios.get(url, { headers })
@@ -56,7 +57,7 @@ function LikePost(props) {
             setLiked(true);
             setHasLiked(true);
 
-            var url = `${props.message.author.id}/inbox/`;
+            var url = `${props.message.author.id}${inbox}`;
             var headers = determine_headers(url);
             if (Object.keys(headers).length === 0) {
               headers = {Authorization: "Basic " + props.authString};
@@ -77,22 +78,9 @@ function LikePost(props) {
                                   setLikes([...likes, { author: props.author }])
                                   setHasLiked(true);;
                                   }
-              ).catch(error => {console.log(error);});
+              ).catch(error =>  {console.log(error);});
               
-              axios.post(
-                  `${props.message.author.id}/inbox`,
-                  {
-                      type: 'like',
-                      author: props.author,
-                      object: message.id,
-                      summary: `${props.author.displayName} likes your post`
-                  },
-                  { headers }
-              ).then(response => {console.log('sent to inbox');
-                                  setLikes([...likes, { author: props.author }])
-                                  setHasLiked(true);;
-                                  }
-              ).catch(error => {console.log(error);});
+             
           }
 
           else if (vis === 'friends' || vis === 'private') {
@@ -112,15 +100,6 @@ function LikePost(props) {
                                   }
               ).catch(error => {console.log(error);});
               
-              axios.post(
-                  `${props.message.author.id}/inbox`,
-                  like,
-                  { headers }
-              ).then(response => {console.log('sent to inbox');
-                                  setLikes([...likes, { author: props.author }])
-                                  setHasLiked(true);;
-                                  }
-              ).catch(error => {console.log(error);});
               
               })
             .catch(error => {
