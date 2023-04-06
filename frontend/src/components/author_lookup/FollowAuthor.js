@@ -27,7 +27,8 @@ function FollowAuthor(props) {
     var authorOptionsComponents = authorOptions.map(oneaut => {
         let url = new URL(oneaut.host);
         return (
-        <option value={oneaut.id}>{url.host + " -- " + oneaut.displayName}</option>
+            // <option value={oneaut.id} key={oneaut.id}>{url.host + " -- " + oneaut.displayName}</option>
+            <option value={oneaut.id} key={oneaut.id}>{oneaut.displayName}</option>
     )})
 
     // var actorAuthor = {}; // this is the person we are trying to follow
@@ -176,8 +177,8 @@ function FollowAuthor(props) {
                     Follow
                 </Button>
             <br />
-            <Form.Text className="text-muted">{"Other ID: " + contactInfo.id}</Form.Text><br />
-            <Form.Text className="text-muted">{"Your ID: " + props.author.id}</Form.Text>
+            {/* <Form.Text className="text-muted">{"Other ID: " + contactInfo.id}</Form.Text><br />
+            <Form.Text className="text-muted">{"Your ID: " + props.author.id}</Form.Text> */}
         </Form>
     );
 }
