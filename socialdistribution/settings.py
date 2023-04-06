@@ -99,10 +99,10 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd53ec0944ntllo',
-        'USER': 'tvnsjgcnkfvmze',
-        'PASSWORD': '366bb85c5db401039ce2f530e0ad9b9f267bbadf95e52d57806b1be3fb67fa09',
-        'HOST': 'ec2-34-197-91-131.compute-1.amazonaws.com',
+        'NAME': 'd4ctane1lue1dk',
+        'USER': 'lpxzuyxobizjnu',
+        'PASSWORD': 'cfdd340146c07276c8f70ef67102d0e6ded1cd88b06606e0c1f5ad6d091e4d02',
+        'HOST': 'ec2-44-215-40-87.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
