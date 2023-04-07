@@ -257,5 +257,4 @@ class ImageView(APIView):
             return Response(base64.b64decode(post.content),status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-    
-        
+

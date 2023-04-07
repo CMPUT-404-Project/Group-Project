@@ -3,17 +3,16 @@ import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import Card from 'react-bootstrap/Card';
-import CommentCard from './CommentCard';
-import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { gatherAll } from '../Logic';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from "@mui/material/IconButton";
 
 function PostDelete(props) {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
 
     const [contactInfo, setContactInfo] = useState({
         postTitle: props.postContent.title,
@@ -22,27 +21,23 @@ function PostDelete(props) {
       });
 
     const handleDelete = () => {
-        axios.delete('http://127.0.0.1:8000/authors/' + props.postContent.author + '/posts/' + props.postContent.id)
+        axios.delete(props.postContent.id)
         .then(function (response) {
-                    axios.get('http://127.0.0.1:8000/authors/' + props.postContent.author + '/posts').then(res => {
-                    props.setPostItems(res.data.items)
+                    gatherAll(props.author, props.authString).then(result => props.setPostItems(result));
                     handleClose();
-                    setContactInfo({
-                    postTitle: contactInfo.postTitle,
-                    postContent: contactInfo.postContent,
-                    postID: props.postContent.id,
-                    })
-                })
             })
         }
     
         
             return (
                 <>
-                <Button variant="danger"  onClick={handleShow}>
+                {/* <Button variant="outline-danger"  onClick={handleShow}>
                          Delete
                       </Button>
-    
+     */}        
+                <IconButton size="large" onClick={handleShow}>
+        <DeleteIcon/>
+    </IconButton>
                 <Modal show={show} onHide={handleClose} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Delete Confirmation</Modal.Title>

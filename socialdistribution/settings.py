@@ -15,6 +15,7 @@ import os
 import sys
 import django_heroku
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +29,7 @@ SECRET_KEY = 'django-insecure-$_36yrktyy9k)66uqv1kx9gx7h2)2a^du_mp$55pjd1w(17hbg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['distributed-social-net.herokuapp.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -53,7 +54,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -112,6 +112,11 @@ DATABASES = {
         'NAME': 'test_db',
         'USER': 'globaluser',
         'PASSWORD': 'globalpassword',
+        'NAME': 'db_socialdistribution',
+        'USER': 'globaluser',
+        'PASSWORD': 'globalpassword',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 
 }
@@ -158,12 +163,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-# STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-if not os.path.exists(STATIC_ROOT):
-    os.makedirs(STATIC_ROOT)
 STATIC_URL = 'static/'
-django_heroku.settings(locals())
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

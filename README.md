@@ -1,22 +1,37 @@
-CMPUT404-project-socialdistribution
+
+CMPUT404 Project SocialDistribution
 ===================================
 
-CMPUT404-project-socialdistribution
+# About
+The web is fundamentally interconnected and peer to peer. There’s no really great reason why we should all use facebook or google+ or myspace or something like that. If these social networks came up with an API we could probably link between them and use the social network we wanted. 
 
-See project.org (plain-text/org-mode) for a description of the project.
+Thus in the spirit of [diaspora](https://diasporafoundation.org/) we want to build something like diaspora but far far simpler.
 
-Make a distributed social network!
+This blogging/social network platform will allow the importing of other sources of posts (github, twitter, etc.) as well allow the distributing sharing of posts and content.
 
-Contributing
-============
+For more information about the project description refer to [project orgs](https://github.com/CMPUT-404-Project/Group-Project/blob/main/project.org).
 
-Send a pull request and be sure to update this file with your name.
+# Servers 
+- [Frontend](https://social-team-18.netlify.app/)
+- [Backend](https://distributed-social-net.herokuapp.com/)
+- [API Docs](https://distributed-social-net.herokuapp.com/)
 
-Licensing
-========================
+# Video Demo
+[Youtube Video](https://www.youtube.com/watch?v=apOuXu6-s_U)
 
-Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
+
+# Contributing
+
+`Vaibhav Chugh`
+`Harsh Patel`
+`Richmond Naviza`
+`Mashiad Hasan`
+`Richeek Mathur`
+
+
+
+
+# Licensing
+LICENSE'D under the Apache 2 license by Abram Hindle and contributors.
 
 All text is licensed under the CC-BY-SA 4.0 http://creativecommons.org/licenses/by-sa/4.0/deed.en_US
-
-Added text.
