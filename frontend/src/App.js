@@ -73,9 +73,9 @@ function App() {
 
   if(loggedin === false) {
     return(
-      <div className="App">
+      <div className="App" >
         {/* <Navigation loggedin={loggedin}/> */}
-        <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} />
+        {/* <AuthorSignupForm signedup={signedup} setSignedup={setSignedup} /> */}
         <LoginForm setAuthString={setAuthString} setUserID={setUserID} setLoggedin={setLoggedin}/>
       </div>
     );
@@ -83,17 +83,17 @@ function App() {
 
   else if (loggedin === true) {
     return (
-      <div className="App">
+      <div className="App" style={{background:"#FFFFFF"}}>
         <Navigation loggedin={loggedin} authString={authString} author={userID} setPostItems={setPostItems} currPosts={postItems}/>
 
         {/* Author Actions */}
-        <PostSubmit authString={authString} author={userID} setPostItems={setPostItems}/>
+        <PostSubmit authString={authString} author={userID} postItems={postItems} setPostItems={setPostItems}/>
         
         {/* <AuthorLookup authString={authString} author={userID} />
         <AuthorInbox authString={authString} author={userID} /> */} 
         <div style={{
           margin:'auto',
-          width: '90%',
+          width: '50%',
           }}>
           {postItemComponents}
         </div>

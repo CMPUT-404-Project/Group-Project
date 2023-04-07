@@ -14,6 +14,9 @@ import LikeComment from './author_inbox/LikeComment.js';
 import { object_is_local } from './helper_functions';
 import { determine_headers } from './helper_functions';
 import { determine_inbox_endpoint } from './helper_functions';
+import { v4 as uuid } from 'uuid';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 
 function AddComment( props ) {
@@ -23,14 +26,27 @@ function AddComment( props ) {
   
   const [comments, setComments] = useState([]);
   const handleCommentView = () => {
-    axios.get( props.postContent.id +'/comments')
+    console.log(props.postContent)
+    console.log(determine_headers(props.postContent.author.id))
+    const url_request = props.postContent.id
+    axios.get( props.postContent.id +'/comments',
+    { 
+      headers: determine_headers(props.postContent.author.id),
+    }) 
+
     //.then((response) => {setComments(response.data.comments[0].comment);})
-    .then((response) => {setComments(response.data.comments)})
+    .then((response) => {
+      if((url_request.includes("floating-fjord-51978.herokuapp.com")))
+        {setComments(response.data.items)}
+      else{
+        setComments(response.data.comments)
+      }})
     .catch(error => console.log(error));
     }
+    
 
   useEffect(handleCommentView, [show]);
-  var commentView = comments.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment} <LikeComment comment={comm} author={props.author} authString={props.authString} vis={props.postContent.visibility} /></Card.Body></Card>)
+  var commentView = comments?.map((comm) => <Card><Card.Body>{comm.author.displayName}{": "}{comm.comment} <LikeComment comment={comm} author={props.author} authString={props.authString} vis={props.postContent.visibility} post={props.postContent}/></Card.Body></Card>)
   
   
   const [content, setContent] = useState('');
@@ -61,8 +77,11 @@ function AddComment( props ) {
   const handleSubmit = () => {
     // if (!content) return;
     console.log(props)
+    const unique_id = uuid();
+    if (props.postContent.visibility.toLowerCase()==="friends" || props.postContent.visibility.toLowerCase()==="private"){
     if (object_is_local(props.postContent.author.id))
-    { console.log("Local Post")
+    { 
+      console.log("Local Post")
       axios.post(
       `${props.postContent.id}/comments`,
       {
@@ -97,7 +116,7 @@ function AddComment( props ) {
             //   discardContent();
             // })
           });
-        }
+        }}
       else{
         console.log("Foreign Post")
         axios.post( props.postContent.author.id + determine_inbox_endpoint(props.postContent.author.id), 
@@ -105,7 +124,7 @@ function AddComment( props ) {
           author: props.author,
           type: contactInfo.type,
           contentType: contactInfo.contentType,
-          id: props.postContent.id + '/comments',
+          id: props.postContent.id +'/comments/' + unique_id,
           comment: contactInfo.comment,
         }, 
         { 
@@ -114,6 +133,7 @@ function AddComment( props ) {
         .then(function (response)
         {
           console.log(response);
+          //console.log(props.postContent.id +'/comments/'+ unique_id);
           discardContent();
           handleClose();
         })
@@ -130,9 +150,11 @@ function AddComment( props ) {
     {/* <Button variant="outline-primary" onClick={handleShow}>
         Comment
     </Button> */}
+    <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="overlay-example">Comments</Tooltip>}>
     <IconButton onClick={handleShow}>
       <CommentIcon/>
     </IconButton>
+    </OverlayTrigger>
     <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Comments</Modal.Title>

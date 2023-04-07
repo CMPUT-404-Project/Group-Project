@@ -9,8 +9,11 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 import './likestyle.css';
 
-import { determine_headers } from '../helper_functions';
+import { determine_headers, determine_inbox_endpoint } from '../helper_functions';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { Text } from 'react-markdown/lib/ast-to-react';
 
 function LikePost(props) {
     const [liked, setLiked] = useState(false);
@@ -20,9 +23,11 @@ function LikePost(props) {
 
     const message = props.message;
     const origin = message.origin.endsWith('/') ? message.origin : `${message.origin}/`;
+    var url = `${props.message.id}/likes`;
+    var headers = determine_headers(url);
     
     useEffect(() => {
-        axios.get(`${props.message.id}/likes`)
+        axios.get(url, { headers })
             .then(response => {
                 if (response.data.items){
                     setLikes(response.data.items);
@@ -51,7 +56,9 @@ function LikePost(props) {
             setLiked(true);
             setHasLiked(true);
 
-            const url = `${props.message.author.id}/inbox/`;
+            var uri = `${props.message.author.id}`;
+            const inbox = determine_inbox_endpoint(uri);
+            var url = `${props.message.author.id}${inbox}`;
             var headers = determine_headers(url);
             if (Object.keys(headers).length === 0) {
               headers = {Authorization: "Basic " + props.authString};
@@ -72,22 +79,9 @@ function LikePost(props) {
                                   setLikes([...likes, { author: props.author }])
                                   setHasLiked(true);;
                                   }
-              ).catch(error => {console.log(error);});
+              ).catch(error =>  {console.log(error);});
               
-              axios.post(
-                  `${props.message.author.id}/inbox`,
-                  {
-                      type: 'like',
-                      author: props.author,
-                      object: message.id,
-                      summary: `${props.author.displayName} likes your post`
-                  },
-                  { headers }
-              ).then(response => {console.log('sent to inbox');
-                                  setLikes([...likes, { author: props.author }])
-                                  setHasLiked(true);;
-                                  }
-              ).catch(error => {console.log(error);});
+             
           }
 
           else if (vis === 'friends' || vis === 'private') {
@@ -107,15 +101,6 @@ function LikePost(props) {
                                   }
               ).catch(error => {console.log(error);});
               
-              axios.post(
-                  `${props.message.author.id}/inbox`,
-                  like,
-                  { headers }
-              ).then(response => {console.log('sent to inbox');
-                                  setLikes([...likes, { author: props.author }])
-                                  setHasLiked(true);;
-                                  }
-              ).catch(error => {console.log(error);});
               
               })
             .catch(error => {
@@ -128,57 +113,22 @@ function LikePost(props) {
         setShowLikesList(!showLikesList);
     }
 
+    var likesview = likes?.map((like) => (<p>{like.author.displayName}</p>))
 
     return (
-      // <div className="like-post">
-      //     {/* <Button variant="outline-success" onClick={processLikeClick}
-      //       className={liked ? 'like-button liked' : 'like-button'}>
-      //       {liked ? 'Liked' : 'Like'}
-      //     </Button> */}
-      //     <Button variant="outline-success" onClick={processLikeClick}
-      //       className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
-      //       {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
-      //     </Button>
-      //     {likes.length > 0 && (
-      //       <div
-      //         className="like-count"
-      //         onClick={() => setShowLikesList(!showLikesList)}
-      //       >
-      //         {likes.length} {likes.length === 1 ? 'like' : 'likes'}
-      //       </div>
-      //     )}
-      //     {showLikesList && (
-      //       <ul className="like-list">
-      //         {likes.map((like, index) => (
-      //           <li key={index}>{like.author.displayName}</li>
-      //         ))}
-      //       </ul>
-      //     )}
-      //   </div>
 
+      <div className="like-post">    
+      <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="overlay-example">Like</Tooltip>}>
+      <IconButton variant="outline-success" onClick={processLikeClick} className={liked ? "liked" : "not-liked"}>
+          {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+      </IconButton>
+      </OverlayTrigger>
 
-      <div className="like-post">
-          <IconButton variant="outline-success" onClick={processLikeClick}
-            className={liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}>
-            {liked ? <IconButton><FavoriteIcon/></IconButton> : <IconButton><FavoriteBorderIcon/></IconButton>}
-          </IconButton>
-          {likes.length >= 0 && (
-            <div
-              className="like-count"
-              onMouseEnter={() => setShowLikesList(!showLikesList)}
-              onMouseLeave={() => setShowLikesList(!showLikesList)}
-            >
-              {likes.length}
-            </div>
-          )}
-          {showLikesList && (
-            <ul className="like-list">
-              {likes.map((like, index) => (
-                <li key={index}>{like.author.displayName}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+      <OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={<Tooltip id="overlay-example">{likesview}</Tooltip>}>
+        <Button variant="outline">{likes.length}</Button>
+      </OverlayTrigger>
+
+      </div>
       
       );
       

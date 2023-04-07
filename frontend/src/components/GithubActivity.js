@@ -11,7 +11,7 @@ function GithubActivity({userID}) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
 
-  useEffect(() => handleClick(),[]);
+  // useEffect(() => handleClick(),[]);
 
   const handleClick = () => {
     fetch('https://distributed-social-net.herokuapp.com/service/authors/github/', {
@@ -24,6 +24,7 @@ function GithubActivity({userID}) {
       .then(response => response.json())
       .then(data => {
         setActivity(data);
+        // setActivity([]);
       })
       .catch(error => {
         console.error(error);
@@ -38,7 +39,7 @@ function GithubActivity({userID}) {
 
   return (
     <>
-      <Button variant="dark" onClick={() => setShow(true)}>GitHub</Button>
+      <Button variant="dark" onClick={() => {handleClick(); setShow(true);}}>GitHub</Button>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
             <Modal.Title>Recent Github Activities</Modal.Title>

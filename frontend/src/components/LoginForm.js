@@ -62,7 +62,7 @@ const LoginForm = ({setAuthString, setUserID, setLoggedin}) => {
     <Form onSubmit={handleLogin}>
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Username</Form.Label>
-        <Form.Control type="text" placeholder="Enter email" value={authusername} onChange={(e) => setAuthUsername(e.target.value)}/>
+        <Form.Control type="text" placeholder="Enter username" value={authusername} onChange={(e) => setAuthUsername(e.target.value)}/>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicPassword">

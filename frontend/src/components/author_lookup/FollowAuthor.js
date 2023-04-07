@@ -1,6 +1,6 @@
 
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -8,16 +8,33 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import axios from 'axios';
 import signup from '../signup';
 import { determine_headers, determine_inbox_endpoint, object_is_local } from '../helper_functions';
+import { getAuthors } from '../../Logic';
 
 function FollowAuthor(props) {
 
     const [show, setShow] = useState(false);
+    const [authorOptions, setAuthorOptions] = useState([]);
+
+    const loadAuthors = () => {
+        getAuthors(props.author, props.authString).then(resp => {
+            console.log("LOAD AUTHORS");
+            console.log(resp);
+            setAuthorOptions(resp);
+        });
+    }
+    useEffect( () => loadAuthors(), []);
+
+    var authorOptionsComponents = authorOptions.map(oneaut => {
+        let url = new URL(oneaut.host);
+        return (
+            // <option value={oneaut.id} key={oneaut.id}>{url.host + " -- " + oneaut.displayName}</option>
+            <option value={oneaut.id} key={oneaut.id}>{oneaut.displayName}</option>
+    )})
 
     // var actorAuthor = {}; // this is the person we are trying to follow
     // const handleShow = () => setShow(true);
 
     const [contactInfo, setContactInfo] = useState({
-        // hostaddress: "127.0.0.1:8000",
         id: "",
         actorAuthor: {},
       });
@@ -28,6 +45,8 @@ function FollowAuthor(props) {
         let contactInfoHolder = { ...contactInfo, [event.target.name]: event.target.value };
         setContactInfo(contactInfoHolder);
       };
+
+    
 
     const sendRequest = () => {
         var request_headers = {
@@ -137,18 +156,29 @@ function FollowAuthor(props) {
         <Form>
             <h5> Follow Authors </h5>
 
-            <InputGroup className="mb-3">
-                <InputGroup.Text id="inputGroup-sizing-default">
+                {/* <InputGroup.Text id="inputGroup-sizing-default">
                     UserID
-                </InputGroup.Text>
+                </InputGroup.Text> */}
                 {/* <Form.Label>Username</Form.Label> */}
-                <Form.Control type="text" placeholder="id" name="id" value={contactInfo.id} onChange={onChangeHandler}/>
-                <Button variant="outline-secondary" id="button-addon2" onClick={sendRequest}>
+                {/* <Form.Control type="text" placeholder="id" name="id" value={contactInfo.id} onChange={onChangeHandler}/> */}
+
+                <Form.Group className="mb-3" controlId="visibility">
+                    <Form.Label>Visibility</Form.Label>
+                  <Form.Control as="select" value={contactInfo.visibility}
+                    onChange={e => {setContactInfo({ ...contactInfo, id: e.target.value });}}>
+                    {authorOptionsComponents}
+
+                    
+                  </Form.Control>
+                </Form.Group>
+
+
+                <Button variant="outline-primary" id="button-addon2" onClick={sendRequest}>
                     Follow
-                </Button> <br />
-            </InputGroup>
-            
-            <Form.Text className="text-muted">{"Your ID: " + props.author.id}</Form.Text>
+                </Button>
+            <br />
+            {/* <Form.Text className="text-muted">{"Other ID: " + contactInfo.id}</Form.Text><br />
+            <Form.Text className="text-muted">{"Your ID: " + props.author.id}</Form.Text> */}
         </Form>
     );
 }

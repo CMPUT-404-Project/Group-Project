@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import FollowAcceptReject from './FollowAcceptReject';
 import LikePost from './LikePost';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 
 function InboxItem(props) {
@@ -15,13 +16,20 @@ function InboxItem(props) {
 
     switch(message.type){
         case "post":
-            // user_origin = <Card.Link href={message.actor.url}>{message.actor.displayName}</Card.Link>;
+            var content_to_render;
+            if (message.contentType === 'text/plain'){
+                content_to_render = <Card.Text>{message.content}</Card.Text>
+            } else if (message.contentType === 'text/markdown') {
+                content_to_render = <ReactMarkdown>{message.content}</ReactMarkdown>
+            } else {
+                content_to_render = <Card.Img variant="top" src= {message.content} alt = "This is the uploaded image" />
+            }
             return (
                 <Card style={{ width: '100%' }} border={"success"}>
                 <Card.Body>
                     <Card.Title>{message.title}</Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">{message.type}</Card.Subtitle>
-                    <Card.Text>{message.content}</Card.Text>
+                    {content_to_render}
                     <LikePost  message={message} author={props.author} authString={props.authString} />
                 </Card.Body>
                 </Card>
