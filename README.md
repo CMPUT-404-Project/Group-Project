@@ -17,7 +17,7 @@ For more information about the project description refer to [project orgs](https
 - [API Docs](https://distributed-social-net.herokuapp.com/)
 
 # Video Demo
-<iframe width="560" height="315" src="https://www.youtube.com/embed/mqYfPmdW2YI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[Youtube Video](https://youtu.be/mqYfPmdW2YI)
 
 
 # Contributing
