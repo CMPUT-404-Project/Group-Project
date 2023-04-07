@@ -17,7 +17,7 @@ For more information about the project description refer to [project orgs](https
 - [API Docs](https://distributed-social-net.herokuapp.com/)
 
 # Video Demo
-[Youtube Video](https://youtu.be/mqYfPmdW2YI)
+https://drive.google.com/file/d/1TlbCbtxwUak9OvNhfxpydW6A0110KBLW/view?usp=sharing
 
 
 # Contributing
