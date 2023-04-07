@@ -42,4 +42,5 @@ urlpatterns = [
     path('auth/login/', views.user_login, name='user_login'),
     path('auth/signup/', views.signup, name='signup'),
     path('service/authors',include('authors.urls')),
+    path('nodes/', include('nodes.urls')),
 ]

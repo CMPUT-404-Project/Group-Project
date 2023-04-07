@@ -5,7 +5,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_url", read_only=True)
     class Meta:
         model = Author
-        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profile_image']
+        fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profileImage']
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(many=False, required=False)

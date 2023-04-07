@@ -137,6 +137,18 @@ class AuthorList(APIView):
     @swagger_auto_schema(operation_description="Get a list of all authors", responses={200: AuthorSerializer(many=True) , 400: 'Bad Request'})
     def get(self, request):
         query_set = Author.objects.all()
+        
+        page_number, size = request.GET.get('page'), request.GET.get('size')
+
+        if page_number and size:
+            paginator = Paginator(query_set, size)
+            try:
+                query_set = paginator.get_page(page_number).object_list
+            except PageNotAnInteger:
+                query_set = paginator.get_page(1).object_list
+            except EmptyPage:
+                query_set = paginator.get_page(paginator.num_pages).object_list
+        
         serializer = AuthorSerializer(query_set, many=True)
         return Response({"type": "authors", "items": serializer.data}, status=status.HTTP_200_OK)
 
@@ -180,7 +192,7 @@ def send_request(sender, receiver, requests):
             return Response({"type": "error", "message": f"{sender.displayName} is already following {receiver.displayName}"}, status=status.HTTP_400_BAD_REQUEST)
         #follow request already sent (pending)
         else:
-            # If the request has been sent already, and they call the PUT again, it turns to true
+            # If the request has been sent already, and they call the PUT again, turn it to true
             follow_request_approval = FollowRequest.objects.get(actor_id = sender.id , object_id = receiver.id)
             follow_request_approval.status = True
             follow_request_approval.save()

@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
+import django_heroku
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +46,8 @@ INSTALLED_APPS = [
     'authors',
     'posts',
     'inbox',
+    'nodes',
+    'django_heroku',
     'corsheaders', #for rest api
 ]
 
@@ -96,13 +101,29 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd4ctane1lue1dk',
+        'USER': 'lpxzuyxobizjnu',
+        'PASSWORD': 'cfdd340146c07276c8f70ef67102d0e6ded1cd88b06606e0c1f5ad6d091e4d02',
+        'HOST': 'ec2-44-215-40-87.compute-1.amazonaws.com',
+        'PORT': '5432',
+    },
+    'test': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'test_db',
+        'USER': 'globaluser',
+        'PASSWORD': 'globalpassword',
         'NAME': 'db_socialdistribution',
         'USER': 'globaluser',
         'PASSWORD': 'globalpassword',
         # 'HOST': 'localhost',
         # 'PORT': '5432',
     }
+
 }
+
+# Use the test database for testing
+if 'test' in sys.argv:
+    DATABASES['default'] = DATABASES['test']
 
 
 # White listing the localhost:3000 port

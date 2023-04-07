@@ -147,7 +147,7 @@ class PostLikes(APIView):
 
         likes = Like.objects.all().filter(object=post.url)
         if not likes:
-            return Response({"type": "error", "message": "No likes found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"type": "warning", "message": "No likes found"}, status=status.HTTP_204_NO_CONTENT)
         
         page_number, size = request.GET.get('page'), request.GET.get('size')
         if page_number and size:
@@ -253,8 +253,8 @@ class ImageView(APIView):
         author = get_object_or_404(Author, id=author_id)
         post = get_object_or_404(Post, id=post_id)
         
-        if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" or post.content_type == "application/base64":
+        if post.contentType == "image/png;base64" or post.contentType == "image/jpeg;base64" or post.contentType == "application/base64":
             return Response(base64.b64decode(post.content),status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-    
+

@@ -16,6 +16,6 @@ urlpatterns = [
     path('/<str:author_id>/sendrequest/', views.SendFollowRequest.as_view()),
     #path('/<str:author_id>/posts', include('posts.urls')),
     path('/<str:author_id>/posts/', include(posts_urlpatterns)),
-    path('/<str:author_id>/inbox/', include('inbox.urls')),
+    path('/<str:author_id>/inbox', include('inbox.urls')),
     path('/<str:author_id>/liked', views.AuthorLiked.as_view(), name = 'liked'),
 ]
